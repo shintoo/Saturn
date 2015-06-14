@@ -12,7 +12,7 @@
  |            | Copies the value of the source  |                             |
  |            | into the destination.           |                             |
  +----------------------------------------------------------------------------+
- | add        | Takes two arguments             | add foo, bar  ; foo is 10   |
+ | add        | Takes two arguments             | add foo, bar  ; foo is 15   |
  |            | Adds the source's value to the  |                             |
  |            | destination.                    |                             |
  +----------------------------------------------------------------------------+
