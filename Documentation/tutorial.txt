@@ -58,7 +58,6 @@ Control Flow
                jqe nequalsm            ; if n == m, print 'n == m'
                cmp n, m
                jne nisnotm             ; if n != m, print 'n != m'
-               out stdout, '\n'
 
          nism: out stdout, n
                out stdout, ' == '

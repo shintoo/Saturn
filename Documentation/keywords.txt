@@ -1,0 +1,19 @@
+
+ +----------------------------------------------------------------------------+
+ | keyword    | description                     | example                     |
+ +----------------------------------------------------------------------------+
+ +----------------------------------------------------------------------------+
+ | new        | Takes one or two arguments      | new foo                     |
+ |            | Creates a variable; if a source | new bar, 10                 |
+ |            | is provided, initializes the    |                             |
+ |            | variable to that value.         |                             |
+ +----------------------------------------------------------------------------+
+ | mov        | Takes two arguments             | mov foo, 5    ; foo is  5   |
+ |            | Copies the value of the source  |                             |
+ |            | into the destination.           |                             |
+ +----------------------------------------------------------------------------+
+ | add        | Takes two arguments             | add foo, bar  ; foo is 10   |
+ |            | Adds the source's value to the  |                             |
+ |            | destination.                    |                             |
+ +----------------------------------------------------------------------------+
+
