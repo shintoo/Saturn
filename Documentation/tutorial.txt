@@ -1,0 +1,74 @@
+Basics
+
+Comments
+
+  Only single-line comments are supported; they begin with the semicolon
+  character ';' and end at a newline.
+
+      ; Read in a number, double it, then print the original
+      ; and the number doubled
+      new orig
+      new dbl                   ; dbl is a variable, not a type 
+      rin orig
+      mov dbl, orig
+      mul dbl, 2
+      out stdout, orig
+      out stdout, '\n'
+      out stdout, dbl
+
+Declarations
+
+  To declare a variable, you can use the `new` keyword:
+
+      new far                   ; Declares an empty variable
+      new foo, 10.21            ; Initialize variable foo to 10.21
+      new bar, 'Hello'          ; Initialize variable bar to 'Hello'
+
+Assignment, and More
+
+  Declared variables can be manipulataed with some:
+
+      add foo, 3                ; foo now equals 13.21
+      add bar, ', World!'       ; bar now equals 'Hello, World!'
+      sub foo, 8.5              ; foo is now 4.71
+      sub bar, 'o, W'           ; bar now equals 'Hellord!'
+      add bar, foo              ; bar is now 'Hellord!4.71'
+
+Control Flow
+
+  With Saturn, labels can be used to set locations. Then, the `jmp`
+  instruction can be used to jump to that location.
+
+            new count           ; Always initialized to 0
+            ; An infinite loop
+      loop: inc count
+            out stdout, count
+            out stdout, '\n'
+            jmp loop
+
+  In the Saturn environment, conditional jumps are used to execute
+  certain collections of statements depending on a condition. This
+  condition is set by the previous statement. Here, `cmp` is used,
+  which sets the condition to true if the arguments are equal, or
+  to false if they are not.
+
+               new n, 8
+               new m, 10
+               cmp n, m
+               jqe nequalsm            ; if n == m, print 'n == m'
+               cmp n, m
+               jne nisnotm             ; if n != m, print 'n != m'
+               out stdout, '\n'
+
+         nism: out stdout, n
+               out stdout, ' == '
+               out stdout, m
+               jmp end
+
+      nisnotm: out stdout, n
+               out stdout, ' != '
+               out stdout, m
+
+          end: out stdout, '\n'
+
+
