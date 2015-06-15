@@ -109,8 +109,8 @@ Statement * NewStatement(void) {
 }
 
 void DeleteStatement(Statement *st) {
+	free(st->command);
 	for (int i = 0; i < st->argcount; i++) {
-		free(st->command);
 		if (strstr(st->args[i]->var->label, "_LITERAL")) {
 			free(st->args[i]->var);
 			free(st->args[i]);

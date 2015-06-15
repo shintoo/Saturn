@@ -16,15 +16,16 @@ int main(int argc, char **argv) {
 		/* Parse the line */
 		line = GetLine(src);
 		printf("Line %d: %s", __linecount, line);
-//		if ((instruction = ProcessLine(line)) == NULL) {
-//			continue;
-//		}
+		instruction = ProcessLine(line);
+		if (instruction  == NULL) {
+			continue;
+		}
 	
 		/* This function is not part of the interpreter, just used
 		 * here for demonstration. */
-//		PrintStatement(instruction);
+		PrintStatement(instruction);
 
-//		DeleteStatement(instruction);
+		DeleteStatement(instruction);
 	}
 
 	return 0;
