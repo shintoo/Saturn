@@ -129,20 +129,21 @@ void INC(Arg *dst);
 
 void DEC(Arg *dst);
 
-void INT(Arg *dst, const Arg *src);
+void RIN(Arg *dst, const Arg *src);
 
-void FLT(Arg *dst, const Arg *src);
+void OUT(Arg *dst, const Arg *src);
 
-void CHR(Arg *dst, const Arg *src);
-
-void STR(Arg *dst, const Arg *src);
+void NEW(Arg *dst, const Arg *src);
 
 /*********************************************************/
 /*                   Misc Functions                      */
 /*********************************************************/
 
+/* Count the amount of lines in a file */
+int CountLines(FILE *src);
+
 /* Retreive the line from the file                       */
-char * GetLine(FILE *source, int line);
+char * GetLine(FILE *source);
 
 /* Abort interpretation and print error, 
  * including the line number and a detail.

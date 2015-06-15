@@ -2,34 +2,29 @@
 #include <stdlib.h>
 #include "Saturn.h"
 
+extern int __linecount;
+
 void PrintStatement(const Statement *st);
 
-int main(void) {
-	/* These lines do not make sense; their purpose is to merely demonstrate */
-	char *lines[] = {
-		"add 'G', 76\n",
-		"sub 6.5, 10\n",
-		"\n",
-		"mul 10, 5.3\n",
-		"inc 15\n"
-	};
-	/* All lines are terminated with a newline, any other 
-	 * whitespace is insignificant,
-	 * however, there must be whitespace between tokens */
+int main(int argc, char **argv) {
+	FILE *src = fopen(argv[1], "r");
+	int linecount = CountLines(src);
+	char *line;
 
 	Statement *instruction;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < linecount; i++) {
 		/* Parse the line */
-		printf("Line %d: %s", i, lines[i]);
-		if ((instruction = ProcessLine(lines[i])) == NULL) {
-			continue;
-		}
+		line = GetLine(src);
+		printf("Line %d: %s", __linecount, line);
+//		if ((instruction = ProcessLine(line)) == NULL) {
+//			continue;
+//		}
 	
 		/* This function is not part of the interpreter, just used
 		 * here for demonstration. */
-		PrintStatement(instruction);
+//		PrintStatement(instruction);
 
-		DeleteStatement(instruction);
+//		DeleteStatement(instruction);
 	}
 
 	return 0;
@@ -46,7 +41,7 @@ void PrintStatement(const Statement *st) {
 			case _CHR: printf("\'%c\'\n", st->args[i]->var->val.CHR); break;
 			case _STR: printf("\"%s\"\n", st->args[i]->var->val.STR); break;
 		}
-		
+		putchar('\n');
 	}
 
 }
