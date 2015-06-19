@@ -4,9 +4,11 @@
 #include <string.h>
 
 #include "types.h"
-#include "parse.c"
+#include "parse.h"
+#include "instructions.h"
 
 int __linecount = 0;
+extern void (*instructions[11])(Arg *, const Arg *);
 
 Environment env;
 
@@ -22,6 +24,19 @@ void Init(void) {
 	env.vars = malloc(sizeof(20 * sizeof(Var *)));
 	env.memsize = 20;
 	env.varcount = 0;
+
+	instructions[0] =  sint;
+	instructions[1] =  sflt;
+	instructions[2] =  sstr;
+//	instructions[3] =  sadd;
+//	instructions[4] =  ssub;
+//	instructions[5] =  smul;
+//	instructions[6] =  sdiv;
+//	instructions[7] =  sinc;
+//	instructions[8] =  sdec;
+	instructions[9] =  smov;
+//	instructions[10] = srin;
+	instructions[11] = sout; 
 }
 
 void End(void) {
@@ -64,8 +79,34 @@ Statement * Parse(char *line) {
 		return NULL;
 	}
 	ToUpper(token);
-	ret->command = token;
-
+	
+	/* This looks stupid here, but makes sense later */
+	if (strstr("INT", token)) {
+		ret->command = INT;
+	} else if (strstr("FLT", token)) {
+		ret->command = FLT;
+	} else if (strstr("STR", token)) {
+		ret->command = STR;
+	} else if (strstr("ADD", token)) {
+		ret->command = ADD;
+	} else if (strstr("SUB", token)) {
+		ret->command = SUB;
+	} else if (strstr("MUL", token)) {
+		ret->command = MUL;
+	} else if (strstr("DIV", token)) {
+		ret->command = DIV;
+	} else if (strstr("INC", token)) {
+		ret->command = INC;
+	} else if (strstr("DEC", token)) {
+		ret->command = DEC;
+	} else if (strstr("MOV", token)) {
+		ret->command = MOV;
+	} else if (strstr("RIN", token)) {
+		ret->command = RIN;
+	} else if (strstr("OUT", token)) {
+		ret->command = OUT;
+	}
+	
 	token = strtok(NULL, " ");
 	if (!token) {                     // 0 arguments
 		ret->argcount = 0;
@@ -112,7 +153,7 @@ Arg * CreateArg(char *token) {
 		  Abort("Illegal character beginning argument: ", token);
 	}
 
-	newarg = CreateVarArg(token); // Adds to env
+	newarg = CreateVarArg(token);
 
 	return newarg;
 }
@@ -136,8 +177,10 @@ Arg * CreateStringLiteral(char *token) {
 	
 	ret = malloc(sizeof(Arg));
 	ret->isliteral = true;
-	ret->type = _STR;
-	ret->val.STR = token;
+	ret->var = malloc(sizeof(Var));
+	ret->var->label = "STR_LITERAL";
+	ret->var->type = _STR;
+	ret->var->val.STR = token;
 
 	return ret;
 }
@@ -152,18 +195,22 @@ Arg * CreateNumericLiteral(char *token) {
 			continue;
 		}
 		if (!isdigit(token[i])) {
-			Abort("Numeric literals may only contain digits and a decimal: ", token);
+			Abort("Numeric literals may only contain digits and a decimal: ",
+			       token);
 		}
 	}
 
 	ret = malloc(sizeof(Arg));
 	ret->isliteral = true;
+	ret->var = malloc(sizeof(Var));
 	if (flt) {
-		ret->type = _FLT;
-		ret->val.FLT = atof(token);
+		ret->var->label = "FLT_LITERAL";
+		ret->var->type = _FLT;
+		ret->var->val.FLT = atof(token);
 	} else {
-		ret->type = _INT;
-		ret->val.INT = atoi(token);
+		ret->var->label = "INT_LITERAL";
+		ret->var->type = _INT;
+		ret->var->val.INT = atoi(token);
 	}
 
 	return ret;
@@ -184,16 +231,8 @@ Arg * CreateVarArg(char *token) {
 	if ((ret->var = Env(token)) != NULL) {
 		return ret;
 	}
-	
-	ret->var = malloc(sizeof(Var));
-	ret->var->label = token;
-	
-	if (env.varcount == env.memsize) {
-		env.vars = realloc(env.vars, 10);
-		env.memsize += 10;
-	}
-	env.vars[env.varcount] = ret->var;
-	env.varcount++;
+	ret = malloc(sizeof(Arg));
+	ret->isliteral = false;
 
 	return ret;
 }
@@ -206,7 +245,7 @@ Var * Env(char *token) {
 	}
 	return NULL;
 }
-
+/*
 void Validate(const Statement * st) {
 	if (st->argcount == 0) {
 		Abort("Too few arguments supplied for: ", st->command);
@@ -221,9 +260,12 @@ void Validate(const Statement * st) {
 	if (strstr(__COMMANDS1, st->command) && st->argcount != 1) {
 		Abort("Expected one argument for: ", st->command);
 	}
-
+	
+	if (st->args[0]->isliteral) {
+		Abort("Error: illegal literal first argument", "");
+	}
 }
-
+*/
 Statement * NewStatement(void) {
 	Statement *newst = malloc(sizeof(Statement));
 	newst->args = malloc(2 * sizeof(Arg *));
@@ -240,6 +282,7 @@ void DeleteStatement(Statement *st) {
 
 void Abort(char *error, char *detail) {
 	printf("%d: %s%s\n", __linecount, error, detail);
+	End();
 	exit(EXIT_FAILURE);
 }
 

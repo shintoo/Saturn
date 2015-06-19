@@ -2,29 +2,6 @@
 #define _INSTRUCTIONS_H_
 #include "types.h"
 
-/*********************************************************/
-/*                   Var Functions                       */
-/*********************************************************/
-
-/* Creates an INT variable with the label and value */
-Var * NewINT(const char *label, const int val);
-
-/* Creates a FLT variable with the label and value */
-Var *NewFLT(const char *label, const float val);
-
-/* Creates a STR variable with the label and value */
-Var *NewSTR(const char *label, const char *val);
-
-/* Creates a CHR variable with the label and value */
-Var *NewCHR(const char *label, const char val);
-
-/* Creates a FIL variable with the label, the name
- * of the file, and the type to open it with       */
-Var *NewFIL(const char *label, const char *name, const char *opts);
-
-/* Deletes a Var and it's contents */
-void DelVar(Var *v);
-
 
 /*********************************************************/
 /*              Instruction Functions                    */
@@ -34,20 +11,32 @@ void smov(Arg *dst, const Arg *src);
 
 void sadd(Arg *dst, const Arg *src);
 
+void ssub(Arg *dst, const Arg *src);
+
 void smul(Arg *dst, const Arg *src);
 
 void sdiv(Arg *dst, const Arg *src);
-
-void sinc(Arg *dst);
-
-void sdec(Arg *dst);
 
 void srin(Arg *dst, const Arg *src);
 
 void sout(Arg *dst, const Arg *src);
 
-/* new instruction */
-void snew(Arg *dst, const Arg *src);
+/* declaration instructions *
+ * if src is null, the var  *
+ * is not initialized       */
+void sint(Arg *dst, const Arg *src);
+
+void sflt(Arg *dst, const Arg *src);
+
+void sstr(Arg *dst, const Arg *src);
+
+/* These two only have the second parameter
+ * so that they may be in the same array
+ * of function pointers as the rest. All
+ * calls to these two functions will have
+ * NULL as the second argument. */
+void sinc(Arg *dst, const Arg *src);
+void sdec(Arg *dst, const Arg *src);
 
 /*********************************************************/
 /*                   Misc Functions                      */
