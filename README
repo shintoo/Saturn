@@ -3,18 +3,18 @@
 What is Saturn?
 
     Saturn is a general purpose, high-level interpreted programming language
-    intending to provide robust features while maintaining extreme simplicity.  
+    intending to provide robust features while maintaining extreme simplicity. 
 
 What's Saturn like?
 
   Syntactically, it is heavily inspired by x86 Assembly. Semantically, it is
-  high-level in that it is dynamically typed, and keywords are type-agnostic.
-  For example, printing an integer and printing a string to a filestream is
-  exactly the same:  
+  high-level, and keywords are type-agnostic For example, printing an integer
+  and printing a string to a filestream is exactly the same:  
 
-      new myint, 6
-      new mystr, 'Hello!\n'
+      int myint, 6
+	  add myint, 4
+      str mystr, 'Hello!\n'
       out stdout, myint
       out stdout, mystr
 
-
+More information can be found in the Documentation/ directory.

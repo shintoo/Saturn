@@ -1,16 +1,28 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "Saturn.h"
+#include <stdbool.h>
+#include "types.h"
+#include "parse.h"
+#include "instructions.h"
 
 extern int __linecount;
 
 void PrintStatement(const Statement *st);
 
 int main(int argc, char **argv) {
-	FILE *src = fopen(argv[1], "r");
-	int linecount = CountLines(src);
+	FILE *src;
 	char line[32];
+	int linecount;
+
+	if (argc != 1) {
+		src = fopen(argv[1], "r");
+		linecount = CountLines(src);
+	}
+	else {
+		puts("saturn: fatal error: no input files\ninterpretation terminated.");
+		exit(EXIT_FAILURE);
+	}
 
 	Init();
 
@@ -25,7 +37,7 @@ int main(int argc, char **argv) {
 
 		/* Skip empty lines */
 		if (instruction == NULL) {
-			printf("Blank line");
+			printf("<blank line>\n");
 			continue;
 		}
 		
@@ -35,9 +47,13 @@ int main(int argc, char **argv) {
 		/* This function is not part of the interpreter, just used
 		 * here for demonstration. */
 		PrintStatement(instruction);
+		
+		/* Execute the instruction */
+		Execute(instruction);
 
 		/* Delete the statement, free all memory used for it and for literals */
 		DeleteStatement(instruction);
+
 	}
 	
 	End();

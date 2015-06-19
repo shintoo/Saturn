@@ -58,7 +58,9 @@ Statement * Parse(char *line) {
 	}
 	
 	token = strtok(line, " ");
-	if (!token) { printf("empty line"); return NULL; }
+	if (token[0] == '\n') {
+		return NULL;
+	}
 	ToUpper(token);
 	ret->command = token;
 

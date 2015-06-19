@@ -1,63 +1,8 @@
-#ifndef _MYLANG_H_
-#define _MYLANG_H_
+#ifndef _PARSE_H_
+#define _PARSE_H_
 #include <stdio.h>
 #include <stdbool.h>
-
-enum types {_INT, _FLT, _STR };
-enum tokentypes { _ARG, _STATEMENT };
-
-typedef union _val {
-	int INT;
-	float FLT;
-	char CHR;
-	char *STR;
-	FILE *FIL;
-} Val;
-
-/* the variable */
-typedef struct _var {
-	char *label;
-	enum types type;
-	Val val;
-} Var;
-
-/* Allow for _arg union to be a member
- * of Statement structure
- */
-struct _arg;
-
-/* A single line consisting of an
- * command and it's arguments(s);
- * ex: "INT M" or "ADD M, 1"
- */
-typedef struct _statement {
-	char *command;
-	int argcount;
-	struct _arg **args;
-} Statement;
-
-/* Either a variable or a statement.
- * e.g.: in "ADD N, M", argument 1
- * is a Var. in "CND EQL N, M",
- * argument 1 is a statement, and
- * the only argument.
- */
-typedef struct _arg {
-	bool isliteral;
-	union {
-		Var *var;            // Variable
-		struct {             // Literal
-			enum types type;
-			Val val;
-		};
-	};
-} Arg;
-
-typedef struct _env {
-	int varcount;
-	int memsize;
-	Var **vars;
-} Environment;
+#include "types.h"
 
 /*********************************************************/
 /*                Environment Functions                  */
@@ -68,35 +13,10 @@ void Init(void);
 
 /* Find if a variable is in the environment from
  * it's label */
- Var *Env(char *token);
+Var *Env(char *token);
 
 /* Delete the environment */
 void End(void);
-
-
-
-/*********************************************************/
-/*                   Var Functions                       */
-/*********************************************************/
-
-/* Creates an INT variable with the label and value */
-Var * NewINT(const char *label, const int val);
-
-/* Creates a FLT variable with the label and value */
-Var *NewFLT(const char *label, const float val);
-
-/* Creates a STR variable with the label and value */
-Var *NewSTR(const char *label, const char *val);
-
-/* Creates a CHR variable with the label and value */
-Var *NewCHR(const char *label, const char val);
-
-/* Creates a FIL variable with the label, the name
- * of the file, and the type to open it with       */
-Var *NewFIL(const char *label, const char *name, const char *opts);
-
-/* Deletes a Var and it's contents */
-void DelVar(Var *v);
 
 /*********************************************************/
 /*                      Arg Functions                    */
@@ -148,29 +68,6 @@ void DeleteStatement(Statement *st);
 
 /* Execute a statement */
 void Execute(const Statement *st);
-
-/*********************************************************/
-/*              Instruction Functions                    */
-/*********************************************************/
-
-void smov(Arg *dst, const Arg *src);
-
-void sadd(Arg *dst, const Arg *src);
-
-void smul(Arg *dst, const Arg *src);
-
-void sdiv(Arg *dst, const Arg *src);
-
-void sinc(Arg *dst);
-
-void sdec(Arg *dst);
-
-void srin(Arg *dst, const Arg *src);
-
-void sout(Arg *dst, const Arg *src);
-
-/* new instruction */
-void snew(Arg *dst, const Arg *src);
 
 /*********************************************************/
 /*                   Misc Functions                      */
