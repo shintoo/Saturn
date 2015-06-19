@@ -50,7 +50,7 @@ typedef struct _statement {
  * the only argument.
  */
 typedef struct _arg {
-	char *label;    // Used for creating variables
+	char *token;    // Used for creating variables
 	bool isliteral;
 	Var *var;
 } Arg;

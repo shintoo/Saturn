@@ -2,6 +2,7 @@
 #define _INSTRUCTIONS_H_
 #include "types.h"
 
+void AddToEnv(Var *v);
 
 /*********************************************************/
 /*              Instruction Functions                    */

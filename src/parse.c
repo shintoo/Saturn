@@ -10,7 +10,7 @@
 int __linecount = 0;
 extern void (*instructions[11])(Arg *, const Arg *);
 
-Environment env;
+Environment *env;
 
 const char *__COMMANDS2  =
 	"MOV ADD SUB MUL DIV "
@@ -21,9 +21,10 @@ const char *__COMMANDS12 =
 	"INT STR FLT ";
 
 void Init(void) {
-	env.vars = malloc(sizeof(20 * sizeof(Var *)));
-	env.memsize = 20;
-	env.varcount = 0;
+	env = malloc(sizeof(Environment));
+	env->vars = malloc(sizeof(20 * sizeof(Var *)));
+	env->memsize = 20;
+	env->varcount = 0;
 
 	instructions[0] =  sint;
 	instructions[1] =  sflt;
@@ -40,10 +41,11 @@ void Init(void) {
 }
 
 void End(void) {
-	for (int i = 0; i < env.varcount; i++) {
-		free(env.vars[i]);
+	for (int i = 0; i < env->varcount; i++) {
+		free(env->vars[i]);
 	}
-	free(env.vars);
+	free(env->vars);
+	free(env);
 }
 
 int CountLines(FILE *src) {
@@ -140,7 +142,7 @@ Statement * Parse(char *line) {
 
 Arg * CreateArg(char *token) {
 	Arg * newarg;
-	
+
 	if (token[0] == '\'') {
 		newarg = CreateStringLiteral(token);
 		return newarg;
@@ -181,6 +183,7 @@ Arg * CreateStringLiteral(char *token) {
 	ret->var->label = "STR_LITERAL";
 	ret->var->type = _STR;
 	ret->var->val.STR = token;
+	ret->token = token;
 
 	return ret;
 }
@@ -212,6 +215,7 @@ Arg * CreateNumericLiteral(char *token) {
 		ret->var->type = _INT;
 		ret->var->val.INT = atoi(token);
 	}
+	ret->token = token;
 
 	return ret;
 }
@@ -225,47 +229,26 @@ Arg * CreateVarArg(char *token) {
 			Abort("Illegal character in variable name: ", token);
 		}
 	}
-	
-	ret = malloc(sizeof(Arg));
-	
+
 	if ((ret->var = Env(token)) != NULL) {
 		return ret;
 	}
 	ret = malloc(sizeof(Arg));
 	ret->isliteral = false;
+	ret->token = token;
 
 	return ret;
 }
 
 Var * Env(char *token) {
-	for (int i = 0; i < env.varcount; i++) {
-		if (strcmp(env.vars[i]->label, token)) {
-			return env.vars[i];
+	for (int i = 0; i < env->varcount; i++) {
+		if (strcmp(env->vars[i]->label, token)) {
+			return env->vars[i];
 		}
 	}
 	return NULL;
 }
-/*
-void Validate(const Statement * st) {
-	if (st->argcount == 0) {
-		Abort("Too few arguments supplied for: ", st->command);
-	}
-	if (!strstr(__COMMANDS2, st->command) && !strstr(__COMMANDS1, st->command)
-		&& !strstr(__COMMANDS12, st->command)) {
-		Abort("Unrecognized command: ", st->command);
-	}
-	if (strstr(__COMMANDS2, st->command) && st->argcount != 2) {
-		Abort("Expected two arguments for: ", st->command);
-	}
-	if (strstr(__COMMANDS1, st->command) && st->argcount != 1) {
-		Abort("Expected one argument for: ", st->command);
-	}
-	
-	if (st->args[0]->isliteral) {
-		Abort("Error: illegal literal first argument", "");
-	}
-}
-*/
+
 Statement * NewStatement(void) {
 	Statement *newst = malloc(sizeof(Statement));
 	newst->args = malloc(2 * sizeof(Arg *));

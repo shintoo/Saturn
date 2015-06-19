@@ -5,7 +5,7 @@
 #include "parse.h"
 #include "instructions.h"
 
-extern Environment env;
+extern Environment *env;
 
 void (*instructions[11])(Arg *dst, const Arg *src);
 
@@ -15,7 +15,7 @@ void Execute(const Statement *st) {
 
 void sint(Arg *dst, const Arg *src) {
 	dst->var = malloc(sizeof(Var));
-	dst->var->label = dst->label;
+	dst->var->label = dst->token;
 	dst->var->type = _INT;
 	if (src) {
 		if (src->var->type != _INT) {
@@ -25,11 +25,14 @@ void sint(Arg *dst, const Arg *src) {
 	} else {
 		dst->var->val.INT = 0;
 	}
+	
+	AddToEnv(dst->var);
+
 }
 
 void sflt(Arg *dst, const Arg *src) {
 	dst->var = malloc(sizeof(Var));
-	dst->var->label = dst->label;
+	dst->var->label = dst->token;
 	dst->var->type = _FLT;
 	if (src) {
 		if (src->var->type != _FLT) {
@@ -39,6 +42,9 @@ void sflt(Arg *dst, const Arg *src) {
 	} else {
 		dst->var->val.FLT = src->var->val.FLT;
 	}
+
+	AddToEnv(dst->var);
+
 }
 
 void sstr(Arg *dst, const Arg *src) {
@@ -57,13 +63,16 @@ void sstr(Arg *dst, const Arg *src) {
 		dst->var->val.STR = NULL;
 	}
 	dst->var->type = _STR;
+	dst->var->label = dst->token;
+	AddToEnv(dst->var);
+
 }
 
 void smov(Arg *dst, const Arg *src) {
 	if (dst->var->type != src->var->type) {
 		Abort("Error: mismatched types", "");
 	}
-	
+
 	switch (dst->var->type) {
 		case _INT: dst->var->val.INT = src->var->val.INT; break;
 		case _FLT: dst->var->val.FLT = src->var->val.FLT; break;
@@ -91,4 +100,13 @@ void sout(Arg *dst, const Arg *src) {
 		case _FLT: fprintf(dst->var->val.FIL, "%f", src->var->val.FLT); break;
 		case _STR: fprintf(dst->var->val.FIL, "%s", src->var->val.STR); break;
 	}
+}
+
+void AddToEnv(Var *v) {
+	if (env->varcount = env->memsize) {
+		env = realloc(env, env->memsize + 10);
+		env->memsize += 10;
+	}
+	env->vars[env->varcount] = v;
+	env->varcount++;
 }
