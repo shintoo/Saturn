@@ -6,13 +6,28 @@
 
 int __linecount = 0;
 
+Environment env;
+
 const char *__COMMANDS2  =
 	"MOV ADD SUB MUL DIV "
 	"OUT RIN ";
 const char *__COMMANDS1  =
 	"INC DEC ";
 const char *__COMMANDS12 =
-	"NEW ";
+	"INT STR FLT ";
+
+void Init(void) {
+	env.vars = malloc(sizeof(20 * sizeof(Var *)));
+	env.memsize = 20;
+	env.varcount = 0;
+}
+
+void End(void) {
+	for (int i = 0; i < env.varcount; i++) {
+		free(env.vars[i]);
+	}
+	free(env.vars);
+}
 
 int CountLines(FILE *src) {
 	char ch;
@@ -29,76 +44,180 @@ int CountLines(FILE *src) {
 	return ret;
 }
 
-char *GetLine(FILE *src) {
-	char line[32];
-	char *ret = malloc(32);
-	char *token;
+Statement * Parse(char *line) {
 	__linecount++;
 
-	fgets(line, 32, src);
+	Statement *ret = NewStatement();
+	char *token;
 	char *tab;
+	char *comma = ",";
+	char *nl = "\n";
+
 	while ((tab = strchr(line, '\t')) != NULL) {
 		*tab = ' ';
 	}
-	token = strtok(line, " ");
-	while (token != NULL) {
-		strcat(ret, token);
-		strcat(ret, " ");
-		token = strtok(NULL, " ");
-	}
-
-	return ret;
-}
-
-Statement * ProcessLine(const char *line) {
-	Statement *ret = NewStatement();
-
-	if ((ret->command = GetCommand(line)) == NULL) {
-		return NULL;
-	}
-	ret->argcount = CountArgs(line);
-
-	if ((ret->args[0] = GetArg(line, 1)) == NULL) {
-		Abort("No arguments provided for ", ret->command);
-	}
-
-	if (strstr(__COMMANDS1, ret->command)) {
-		if (ret->argcount != 1) {
-			Abort(ret->command, " expects one argument");
-		}
-	} else if (strstr(__COMMANDS2, ret->command)) {
-		if (ret->argcount != 2) {
-			Abort(ret->command, " expects two arguments");
-		}
-		ret->args[1] = GetArg(line, 2);
-	} else if (strstr(__COMMANDS12, ret->command)) {
-		if  (ret->argcount != 1 && ret->argcount != 2) {
-			Abort(ret->command, " expects one or two arguments");
-		}
-		if (ret->argcount == 2) {
-			ret->args[1] = GetArg(line, 2);
-		}
-	}
-
-	return ret;
-}
-
-int CountArgs(const char *line) {
-	char ch = line[0];
-	int i;
 	
-	for (i = 0; isspace(ch); i++) ch = line[i];
-	for (; !isspace(ch); i++) ch = line[i];
-	for (; isspace(ch); i++) {
-		ch = line[i];
-		if (ch == '\n') return 0;
+	token = strtok(line, " ");
+	if (!token) { printf("empty line"); return NULL; }
+	ToUpper(token);
+	ret->command = token;
+
+	token = strtok(NULL, " ");
+	if (!token) {                     // 0 arguments
+		ret->argcount = 0;
+		return ret;
 	}
-	for (; !isspace(ch); i++) ch = line[i];
-	for (; isspace(ch); i++) {
-		ch = line[i];
-		if (ch == '\n') return 1;
+
+	comma = strchr(token, ',');             // check if token exists as var
+	if (comma == NULL) {
+		Abort("Missing comma after argument: ", token);
 	}
-	return 2;
+	*comma = '\0';
+
+	ret->args[0] = CreateArg(token);
+
+	token = strtok(NULL, " ");
+	if (!token) {                    // 1 argument
+		ret->argcount = 1;
+		return ret;
+	}
+	
+	nl = strchr(token, '\n');
+	if (nl) {
+		*nl = '\0';
+	}
+
+	ret->argcount = 2;              // 2 arguments
+	ret->args[1] = CreateArg(token);
+
+	return ret;
+}
+
+Arg * CreateArg(char *token) {
+	Arg * newarg;
+	
+	if (token[0] == '\'') {
+		newarg = CreateStringLiteral(token);
+		return newarg;
+	}
+	if (isdigit(token[0])) {
+		newarg = CreateNumericLiteral(token);
+		return newarg;
+	}
+	if (strchr("abcdefghijklmnopqrstuvwxyz_", tolower(token[0])) == NULL) {
+		  Abort("Illegal character beginning argument: ", token);
+	}
+
+	newarg = CreateVarArg(token); // Adds to env
+
+	return newarg;
+}
+
+Arg * CreateStringLiteral(char *token) {
+	char *end;
+	Arg *ret;
+
+	if (token[strlen(token) - 1] != '\'') {
+		if (strchr(token + 1, '\'') == NULL) {
+			Abort("Missing terminating \' for: ", token);
+		}
+		Abort("\' must end string literal: ", token);
+	}
+	for (int i = 0; token[i] != '\0'; i++) {
+		token[i] = token[i + 1];
+	}
+
+	end = strchr(token, '\'');
+	*end = '\0';
+	
+	ret = malloc(sizeof(Arg));
+	ret->isliteral = true;
+	ret->type = _STR;
+	ret->val.STR = token;
+
+	return ret;
+}
+
+Arg * CreateNumericLiteral(char *token) {
+	bool flt = false;
+	Arg *ret;
+
+	for (int i = 0; token[i] != '\0'; i++) {
+		if (token[i] == '.') {
+			flt = true;
+			continue;
+		}
+		if (!isdigit(token[i])) {
+			Abort("Numeric literals may only contain digits and a decimal: ", token);
+		}
+	}
+
+	ret = malloc(sizeof(Arg));
+	ret->isliteral = true;
+	if (flt) {
+		ret->type = _FLT;
+		ret->val.FLT = atof(token);
+	} else {
+		ret->type = _INT;
+		ret->val.INT = atoi(token);
+	}
+
+	return ret;
+}
+
+Arg * CreateVarArg(char *token) {
+	Arg *ret;
+	int len = strlen(token);
+
+	for (int i = 0; i < len; i++) {
+		if (!isalnum(token[i]) && token[i] != '_') {
+			Abort("Illegal character in variable name: ", token);
+		}
+	}
+	
+	ret = malloc(sizeof(Arg));
+	
+	if ((ret->var = Env(token)) != NULL) {
+		return ret;
+	}
+	
+	ret->var = malloc(sizeof(Var));
+	ret->var->label = token;
+	
+	if (env.varcount == env.memsize) {
+		env.vars = realloc(env.vars, 10);
+		env.memsize += 10;
+	}
+	env.vars[env.varcount] = ret->var;
+	env.varcount++;
+
+	return ret;
+}
+
+Var * Env(char *token) {
+	for (int i = 0; i < env.varcount; i++) {
+		if (strcmp(env.vars[i]->label, token)) {
+			return env.vars[i];
+		}
+	}
+	return NULL;
+}
+
+void Validate(const Statement * st) {
+	if (st->argcount == 0) {
+		Abort("Too few arguments supplied for: ", st->command);
+	}
+	if (!strstr(__COMMANDS2, st->command) && !strstr(__COMMANDS1, st->command)
+		&& !strstr(__COMMANDS12, st->command)) {
+		Abort("Unrecognized command: ", st->command);
+	}
+	if (strstr(__COMMANDS2, st->command) && st->argcount != 2) {
+		Abort("Expected two arguments for: ", st->command);
+	}
+	if (strstr(__COMMANDS1, st->command) && st->argcount != 1) {
+		Abort("Expected one argument for: ", st->command);
+	}
+
 }
 
 Statement * NewStatement(void) {
@@ -109,158 +228,14 @@ Statement * NewStatement(void) {
 }
 
 void DeleteStatement(Statement *st) {
-	free(st->command);
 	for (int i = 0; i < st->argcount; i++) {
-		if (strstr(st->args[i]->var->label, "_LITERAL")) {
-			free(st->args[i]->var);
-			free(st->args[i]);
-		}
+		free(st->args[i]);
 	}
 	free(st);
 }
 
-char * GetCommand(const char *line) {
-	char prev = line[0];
-	char curr;
-	char *command = malloc(8);
-	int i = 1;
-	int j = 1;
-
-	while (isspace(prev)) {
-		if (prev == '\n')
-			return NULL;
-		prev = line[i++];
-	}
-
-	command[0] = prev;
-	curr = line[i];
-	
-	while (!isspace(curr)) {
-		prev = curr;
-		curr = line[i++];
-		command[j++] = curr;
-		if (j > 4) Abort("Error: Invalid instruction", "");
-	}
-
-	command[j] = '\0';
-	
-	for (int i = 0; i < j; i++)
-	    command[i] = toupper(command[i]);
-/*
-	if (strstr(__COMMANDS, command) == NULL)
-	    Abort("Error: Invalid instruction: ", command);
-*/
-	return command;
-}
-
-Arg * GetArg(const char *line, int index) {
-	Arg *newarg = malloc(sizeof(Arg));
-	newarg->statement = false;
-	char tok[32];
-	int i = 0;
-	char ch = line[i];
-	int j;
-	
-	/* Empty line, or reach first token (command) */
-	for (; isspace(ch); i++) {
-		ch = line[i];
-		if (ch == '\n') return NULL;
-	}
-	/* line[i] is now the first char of the command */
-
-	/* Skip the command */
-	for (; !isspace(ch); i++) {
-		ch = line[i];
-	}
-	--i;
-	/* line[i] is now the first whitespace after the command */
-	
-	/* Check for arguments */
-	for (; isspace(ch); i++) {
-		ch = line[i];
-		if (ch == '\n') {
-			return NULL;
-		}
-	}
-	--i;
-	/* line[i] is now the first char of the first arg */
-	
-	/* Skip args until reaching the desired arg */
-	if (index == 2) {
-		for (; ch != ',' && ch != '\n'; i++) ch = line[i];
-		if (ch == '\n')
-			Abort("Missing comma after ", GetArg(line, 1)->var->label);
-		/* line[i] is now the first whitespace after the arg */
-
-		for (; isspace(ch); i++) {
-			if (ch == '\n') return NULL;
-			ch = line[i];
-		}
-		i++;
-		/* line[i] is now the first char of the next arg */
-	}
-	/* line[i] is now the first char of the desired arg */
-
-	for (j = 0; !isspace(line[i]) && line[i] != ','; j++, ++i) {
-		tok[j] = line[i];
-	}
-	tok[j] = '\0';
-	/* tok is now the desired arg */
-
-	/*********** Begin processing token ***********/
-	if ((strchr("\"\'abcdefghijklmnopqrstuvwxyz_", tolower(tok[0])) == NULL)
-		&& !isdigit(tok[0])) {
-		Abort ("Invalid character begins variable name: ", "");
-	}
-
-	/* numeric literals */
-	if (isdigit(*tok)) {
-		/* Check validity of numeric literal */
-		for (i = 0; i < j; i++) {
-			if (!isdigit(tok[i]) && tok[i] != '.') {
-				Abort("Invalid token", "");
-			}
-		}
-		/* Create literal */
-		newarg->var = malloc(sizeof(Var));
-		/* Contains a '.' - float literal */
-		if (strchr(tok, '.')) {
-			newarg->var->label = "__FLT_LITERAL";
-			newarg->var->type = _FLT;
-			newarg->var->val.FLT = atof(tok);
-			return newarg; /* RETURN FLOAT LITERAL */
-		/* Contains no '.' - integer literal */
-		} else {
-			newarg->var->label = "__INT_LITERAL";
-			newarg->var->type = _INT;
-			newarg->var->val.INT = atoi(tok);
-			return newarg; /* RETURN INTEGER LITERAL */
-		}
-	}
-
-	/* character literals */
-	else if (tok[0] == '\'') {
-		if (tok[1] == '\0') Abort("Error: Missing closing \'", ""); 
-		if (tok[2] == '\'') {
-			newarg->var = malloc(sizeof(Var));
-			newarg->var->label = "__CHR_LITERAL";
-			newarg->var->type = _CHR;
-			newarg->var->val.CHR = tok[1];
-			return newarg; /* RETURN CHARACTER LITERAL */
-		} else Abort("Error: Character literals must be one character: ", tok);
-	}
-	
-	return NULL;
-/*
-	else {
-		Arg *temp;
-		if((temp = VarExists(tok)) 
-	}
-*/
-}
-
 void Abort(char *error, char *detail) {
-	printf("%d: %s: %s\n", __linecount, error, detail);
+	printf("%d: %s%s\n", __linecount, error, detail);
 	exit(EXIT_FAILURE);
 }
 
@@ -269,4 +244,12 @@ const char * TypeLabel(enum types type) {
 		"INT", "FLT", "STR", "CHR", "FIL"
 	};
 	return TYPELABELS[type];
+}
+
+void ToUpper(char *st) {
+	int len = strlen(st);
+
+	for (int i = 0; i < len; i++) {
+		st[i] = toupper(st[i]);
+	}
 }

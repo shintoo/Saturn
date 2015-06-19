@@ -1,11 +1,12 @@
 
+
  +----------------------------------------------------------------------------+
  | keyword    | description                     | example                     |
  +----------------------------------------------------------------------------+
  +----------------------------------------------------------------------------+
- | new        | Takes one or two arguments      | new foo                     |
- |            | Creates a variable; if a source | new bar, 10                 |
- |            | is provided, initializes the    |                             |
+ | int        | Takes one or two arguments      | int foo                     |
+ |            | Creates an integer variable;    | int bar, 10                 |
+ |            | optionally initializes the      |                             |
  |            | variable to that value.         |                             |
  +----------------------------------------------------------------------------+
  | mov        | Takes two arguments             | mov foo, 5    ; foo is  5   |

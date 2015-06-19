@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-enum types {_INT, _FLT, _STR, _CHR, _FIL };
+enum types {_INT, _FLT, _STR };
 enum tokentypes { _ARG, _STATEMENT };
 
 typedef union _val {
@@ -31,7 +31,6 @@ struct _arg;
  * ex: "INT M" or "ADD M, 1"
  */
 typedef struct _statement {
-	int linenum;
 	char *command;
 	int argcount;
 	struct _arg **args;
@@ -44,12 +43,37 @@ typedef struct _statement {
  * the only argument.
  */
 typedef struct _arg {
-	bool statement;
+	bool isliteral;
 	union {
-		Var *var;
-		Statement *st;
+		Var *var;            // Variable
+		struct {             // Literal
+			enum types type;
+			Val val;
+		};
 	};
 } Arg;
+
+typedef struct _env {
+	int varcount;
+	int memsize;
+	Var **vars;
+} Environment;
+
+/*********************************************************/
+/*                Environment Functions                  */
+/*********************************************************/
+
+/* Initialize the memory for the environment */
+void Init(void);
+
+/* Find if a variable is in the environment from
+ * it's label */
+ Var *Env(char *token);
+
+/* Delete the environment */
+void End(void);
+
+
 
 /*********************************************************/
 /*                   Var Functions                       */
@@ -94,21 +118,33 @@ int CountArgs(const char *line);
 /*                 Statement Functions                   */
 /*********************************************************/
 
+/* Parse a single line into an executable statement */
+Statement * Parse(char *line);
+
+/* Create an argument for a statement from a token */
+Arg * CreateArg(char *token);
+
+/* Create a string literal argument from a token */
+Arg * CreateStringLiteral(char *token);
+
+/* Create a numeric (int or float) literal argument 
+ * for a statement from a token */
+Arg * CreateNumericLiteral(char *token);
+
+/* Create a variable argument from a token, either
+ * fetching a pre-existing variable from the
+ * environment or create a new variable */
+Arg * CreateVarArg(char *token);
+
+/* Validate a statement, aborting interpretation
+ * upon detecting an invalid statement */
+void Validate(const Statement *st);
+
 /* Create a new statement */
 Statement * NewStatement(void);
 
 /* Delete a statement, but not it's Args */
 void DeleteStatement(Statement *st);
-
-/* Processes a single line into a Statement
- * with or without argument(s). Aborts on error.
- */
-Statement * ProcessLine(const char *line);
-
-/* Used in ProcessLine() to retrieve the command.
- * Aborts if invalid, returns NULL on blank lines.
- */
-char * GetCommand(const char *line);
 
 /* Execute a statement */
 void Execute(const Statement *st);
@@ -117,23 +153,24 @@ void Execute(const Statement *st);
 /*              Instruction Functions                    */
 /*********************************************************/
 
-void MOV(Arg *dst, const Arg *src);
+void smov(Arg *dst, const Arg *src);
 
-void ADD(Arg *dst, const Arg *src);
+void sadd(Arg *dst, const Arg *src);
 
-void MUL(Arg *dst, const Arg *src);
+void smul(Arg *dst, const Arg *src);
 
-void DIV(Arg *dst, const Arg *src);
+void sdiv(Arg *dst, const Arg *src);
 
-void INC(Arg *dst);
+void sinc(Arg *dst);
 
-void DEC(Arg *dst);
+void sdec(Arg *dst);
 
-void RIN(Arg *dst, const Arg *src);
+void srin(Arg *dst, const Arg *src);
 
-void OUT(Arg *dst, const Arg *src);
+void sout(Arg *dst, const Arg *src);
 
-void NEW(Arg *dst, const Arg *src);
+/* new instruction */
+void snew(Arg *dst, const Arg *src);
 
 /*********************************************************/
 /*                   Misc Functions                      */
@@ -152,5 +189,7 @@ char * GetLine(FILE *source);
 void Abort(char *error, char *detail);
 
 const char * TypeLabel(enum types type);
+
+void ToUpper(char *st);
 
 #endif
