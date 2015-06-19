@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "Saturn.h"
+
+#include "types.h"
+#include "parse.c"
 
 int __linecount = 0;
 
