@@ -71,6 +71,7 @@ Statement * Parse(char *line) {
 	char *tab;
 	char *comma = ",";
 	char *nl = "\n";
+	bool onearg = false;
 
 	while ((tab = strchr(line, '\t')) != NULL) {
 		*tab = ' ';
@@ -116,10 +117,13 @@ Statement * Parse(char *line) {
 	}
 
 	comma = strchr(token, ',');             // check if token exists as var
-	if (comma == NULL) {
-		Abort("Missing comma after argument: ", token);
+	if (!comma) {
+		onearg = true;
+		*strchr(token, '\n') = '\0';
 	}
-	*comma = '\0';
+	else {
+		*comma = '\0';
+	}
 
 	ret->args[0] = CreateArg(token);
 
@@ -127,6 +131,9 @@ Statement * Parse(char *line) {
 	if (!token) {                    // 1 argument
 		ret->argcount = 1;
 		return ret;
+	}
+	if (onearg) {
+		Abort("Missing comma after first argument", "");
 	}
 	
 	nl = strchr(token, '\n');
@@ -156,7 +163,6 @@ Arg * CreateArg(char *token) {
 	}
 
 	newarg = CreateVarArg(token);
-
 	return newarg;
 }
 
@@ -229,11 +235,11 @@ Arg * CreateVarArg(char *token) {
 			Abort("Illegal character in variable name: ", token);
 		}
 	}
-
+	
+	ret = malloc(sizeof(Arg));
 	if ((ret->var = Env(token)) != NULL) {
 		return ret;
 	}
-	ret = malloc(sizeof(Arg));
 	ret->isliteral = false;
 	ret->token = token;
 
@@ -243,6 +249,7 @@ Arg * CreateVarArg(char *token) {
 Var * Env(char *token) {
 	for (int i = 0; i < env->varcount; i++) {
 		if (strcmp(env->vars[i]->label, token)) {
+			printf("FOUND %s IN ENVIRONMENT AT %d\n", env->vars[i]->label, i);
 			return env->vars[i];
 		}
 	}

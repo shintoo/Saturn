@@ -103,10 +103,15 @@ void sout(Arg *dst, const Arg *src) {
 }
 
 void AddToEnv(Var *v) {
-	if (env->varcount = env->memsize) {
+	printf("ADDING %s TO ENVIRONMENT AT %d\n", v->label, env->varcount);
+	
+	if (env->varcount == env->memsize) {
+		printf("ADDING MEMORY TO ENVIRONMENT\n");
 		env = realloc(env, env->memsize + 10);
 		env->memsize += 10;
 	}
 	env->vars[env->varcount] = v;
+	printf("%s ADDED TO ENVIRONMENT AT %d\n", env->vars[env->varcount]->label,
+	       env->varcount);
 	env->varcount++;
 }

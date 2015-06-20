@@ -40,19 +40,18 @@ int main(int argc, char **argv) {
 			printf("<blank line>\n");
 			continue;
 		}
-		
-		/* Validate a statement - check args, command, etc */
+
+		/* Validate the statement */
 //		Validate(instruction);
-
-		/* This function is not part of the interpreter, just used
-		 * here for demonstration. */
-//		PrintStatement(instruction);
-
+		
+		/* Press enter to step through, one line at a time */
 		getchar();
+
 		printf("=-=-=-=-=-=-= EXECUTION =-=-=-=-=-=-=\n");
 		/* Execute the instruction */
 		Execute(instruction);
 		printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+		/* Print the statement after execution */
 		PrintStatement(instruction);
 
 		/* Delete the statement, free all memory used for it and for literals */
