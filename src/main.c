@@ -25,9 +25,7 @@ int main(int argc, char **argv) {
 	}
 
 	Init();
-
 	Statement *instruction;
-
 	for (int i = 0; i < linecount; i++) {
 		fgets(line, 32, src);
 		printf("%d: %s", i, line);
@@ -47,10 +45,10 @@ int main(int argc, char **argv) {
 		/* Press enter to step through, one line at a time */
 		getchar();
 
-		printf("=-=-=-=-=-=-= EXECUTION =-=-=-=-=-=-=\n");
+		putchar('\n');
 		/* Execute the instruction */
 		Execute(instruction);
-		printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+		putchar('\n');
 		/* Print the statement after execution */
 		PrintStatement(instruction);
 
@@ -58,11 +56,11 @@ int main(int argc, char **argv) {
 		DeleteStatement(instruction);
 
 	}
-	
+
+	fclose(src);
 	End();
 	return 0;
 }
-
 
 void PrintStatement(const Statement *st) {
 	printf("\tCommand: %d\n\t\tArguments:\n", st->command);

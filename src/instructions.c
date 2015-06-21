@@ -15,7 +15,8 @@ void Execute(const Statement *st) {
 
 void sint(Arg *dst, const Arg *src) {
 	dst->var = malloc(sizeof(Var));
-	dst->var->label = dst->token;
+	dst->var->label = malloc(strlen(dst->token));
+	strcpy(dst->var->label, dst->token);
 	dst->var->type = _INT;
 	if (src) {
 		if (src->var->type != _INT) {
@@ -32,7 +33,8 @@ void sint(Arg *dst, const Arg *src) {
 
 void sflt(Arg *dst, const Arg *src) {
 	dst->var = malloc(sizeof(Var));
-	dst->var->label = dst->token;
+	dst->var->label = malloc(strlen(dst->token));
+	strcpy(dst->var->label, dst->token);
 	dst->var->type = _FLT;
 	if (src) {
 		if (src->var->type != _FLT) {
@@ -63,19 +65,31 @@ void sstr(Arg *dst, const Arg *src) {
 		dst->var->val.STR = NULL;
 	}
 	dst->var->type = _STR;
-	dst->var->label = dst->token;
+	dst->var->label = malloc(strlen(dst->token));
+	strcpy(dst->var->label, dst->token);
+
 	AddToEnv(dst->var);
 
 }
 
 void smov(Arg *dst, const Arg *src) {
+	printf("[EXECUTE] Destination: %s, source: %s\n",
+	        dst->var->label, src->var->label);
+
 	if (dst->var->type != src->var->type) {
 		Abort("Error: mismatched types", "");
 	}
 
 	switch (dst->var->type) {
-		case _INT: dst->var->val.INT = src->var->val.INT; break;
-		case _FLT: dst->var->val.FLT = src->var->val.FLT; break;
+		case _INT:
+			dst->var->val.INT = src->var->val.INT; 
+			printf("[EXECUTE] Moved %d into variable \"%s\"\n",
+			        src->var->val.INT, dst->var->label);
+		break;
+		case _FLT:
+			dst->var->val.FLT = src->var->val.FLT; break;
+			printf("[EXECUTE] Moved %f into variable \"%s\"\n",
+			        src->var->val.FLT, dst->var->label);
 		case _STR:
 			if (dst->var->val.STR = NULL) {
 				dst->var->val.STR = malloc(strlen(src->var->val.STR));
@@ -86,6 +100,8 @@ void smov(Arg *dst, const Arg *src) {
 				);
 			}
 			strcpy(dst->var->val.STR, src->var->val.STR);
+			printf("[EXECUTE] Moved \"%s\" into variable \"%s\"\n",
+			        src->var->val.STR, dst->var->label);
 		break;
 	}
 }
@@ -103,15 +119,16 @@ void sout(Arg *dst, const Arg *src) {
 }
 
 void AddToEnv(Var *v) {
-	printf("ADDING %s TO ENVIRONMENT AT %d\n", v->label, env->varcount);
-	
+	printf("[EXECUTE] Adding %s to environment at %d\n", v->label, env->varcount);
+
 	if (env->varcount == env->memsize) {
-		printf("ADDING MEMORY TO ENVIRONMENT\n");
+		printf("[EXECUTE] Adding 10 memory blocks to environment\n");
 		env = realloc(env, env->memsize + 10);
 		env->memsize += 10;
 	}
-	env->vars[env->varcount] = v;
-	printf("%s ADDED TO ENVIRONMENT AT %d\n", env->vars[env->varcount]->label,
-	       env->varcount);
+	env->vars[env->varcount] = malloc(sizeof(Var));
+	*env->vars[env->varcount] = *v;
+	printf("[EXECUTE] %s added to environment at %d\n",
+	        env->vars[env->varcount]->label, env->varcount);
 	env->varcount++;
 }

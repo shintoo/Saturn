@@ -43,12 +43,7 @@ typedef struct _statement {
 	struct _arg **args;
 } Statement;
 
-/* Either a variable or a statement.
- * e.g.: in "ADD N, M", argument 1
- * is a Var. in "CND EQL N, M",
- * argument 1 is a statement, and
- * the only argument.
- */
+/* The argument to a statement */
 typedef struct _arg {
 	char *token;    // Used for creating variables
 	bool isliteral;

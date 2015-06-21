@@ -22,8 +22,8 @@ const char *__COMMANDS12 =
 
 void Init(void) {
 	env = malloc(sizeof(Environment));
-	env->vars = malloc(sizeof(20 * sizeof(Var *)));
-	env->memsize = 20;
+	env->vars = malloc(sizeof(10 * sizeof(Var *)));
+	env->memsize = 10;
 	env->varcount = 0;
 
 	instructions[0] =  sint;
@@ -227,6 +227,7 @@ Arg * CreateNumericLiteral(char *token) {
 }
 
 Arg * CreateVarArg(char *token) {
+	printf("[PARSE] Creating variable argument for \"%s\"\n", token);
 	Arg *ret;
 	int len = strlen(token);
 
@@ -237,9 +238,12 @@ Arg * CreateVarArg(char *token) {
 	}
 	
 	ret = malloc(sizeof(Arg));
+	printf("[PARSE] Searching environment for \"%s\"\n", token);
 	if ((ret->var = Env(token)) != NULL) {
+		printf("[PARSE] Found %s in environment\n", ret->var->label);
 		return ret;
 	}
+	printf("[PARSE] \"%s\" not found in environment\n", token);
 	ret->isliteral = false;
 	ret->token = token;
 
@@ -247,9 +251,12 @@ Arg * CreateVarArg(char *token) {
 }
 
 Var * Env(char *token) {
+	printf("[PARSE] Environment contains %d variables\n", env->varcount);
 	for (int i = 0; i < env->varcount; i++) {
-		if (strcmp(env->vars[i]->label, token)) {
-			printf("FOUND %s IN ENVIRONMENT AT %d\n", env->vars[i]->label, i);
+		printf("[PARSE] \t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
+		       env->vars[i]->label);
+		if (strcmp(env->vars[i]->label, token) == 0) {
+			printf("[PARSE] Found %s in environment at %d\n", env->vars[i]->label, i);
 			return env->vars[i];
 		}
 	}
