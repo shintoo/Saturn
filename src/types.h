@@ -28,9 +28,7 @@ typedef struct _var {
 	Val val;
 } Var;
 
-/* Allow for _arg union to be a member
- * of Statement structure
- */
+
 struct _arg;
 
 /* A single line consisting of an

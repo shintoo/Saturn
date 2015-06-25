@@ -10,15 +10,16 @@ extern Environment *env;
 void (*instructions[11])(Arg *dst, const Arg *src);
 
 void Execute(const Statement *st) {
-	instructions[st->command](st->args[0], st->args[1]);
+	instructions[st->command](st->args[0], st->argcount == 2 ? st->args[1] : NULL);
 }
 
 void sint(Arg *dst, const Arg *src) {
+	printf("[EXECUTE] Creating INT variable \"%s\"\n", dst->token);
 	dst->var = malloc(sizeof(Var));
 	dst->var->label = malloc(strlen(dst->token));
 	strcpy(dst->var->label, dst->token);
 	dst->var->type = _INT;
-	if (src) {
+	if (src != NULL) {
 		if (src->var->type != _INT) {
 			Abort("Mismatched type for initialization", "");
 		}
@@ -32,6 +33,7 @@ void sint(Arg *dst, const Arg *src) {
 }
 
 void sflt(Arg *dst, const Arg *src) {
+	printf("[EXECUTE] Creating FLT variable \"%s\"\n", dst->token);
 	dst->var = malloc(sizeof(Var));
 	dst->var->label = malloc(strlen(dst->token));
 	strcpy(dst->var->label, dst->token);
@@ -50,6 +52,7 @@ void sflt(Arg *dst, const Arg *src) {
 }
 
 void sstr(Arg *dst, const Arg *src) {
+	printf("[EXECUTE] Creating STR variable \"%s\"\n", dst->token);
 	if (src) {
 		if (src->var->type != _STR) {
 			Abort("Mismatched type for initialization", "");
@@ -107,6 +110,7 @@ void smov(Arg *dst, const Arg *src) {
 }
 
 void sout(Arg *dst, const Arg *src) {
+	printf("[EXECUTE] Writing variable \"%s\" to ...\n", src->var->label);
 	if (dst->var->type != _FIL) {
 		Abort("Error: first argument must be a FIL", "");
 	}
@@ -118,17 +122,34 @@ void sout(Arg *dst, const Arg *src) {
 	}
 }
 
+void sadd(Arg *dst, const Arg *src) {
+	printf("[EXECUTE] Adding \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
+	if (dst->var->type != src->var->type) {
+		Abort("Error: mismatched types for ADD", "");
+	}
+
+	switch(dst->var->type) {
+		case _INT: dst->var->val.INT += src->var->val.INT; break;
+		case _FLT: dst->var->val.FLT += src->var->val.FLT; break;
+		case _STR:
+			dst->var->val.STR = realloc(dst->var->val.STR, 
+				strlen(dst->var->val.STR) + strlen(dst->var->val.STR + 1));
+			strcat(dst->var->val.STR, src->var->val.STR);
+		break;
+	}
+}
+
 void AddToEnv(Var *v) {
-	printf("[EXECUTE] Adding %s to environment at %d\n", v->label, env->varcount);
+	printf("[ENVIRONMENT] Adding %s to environment at %d\n", v->label, env->varcount);
 
 	if (env->varcount == env->memsize) {
-		printf("[EXECUTE] Adding 10 memory blocks to environment\n");
+		printf("[ENVIRONMENT] Adding 10 memory blocks to environment\n");
 		env = realloc(env, env->memsize + 10);
 		env->memsize += 10;
 	}
 	env->vars[env->varcount] = malloc(sizeof(Var));
 	*env->vars[env->varcount] = *v;
-	printf("[EXECUTE] %s added to environment at %d\n",
+	printf("[ENVIRONMENT] %s added to environment at %d\n",
 	        env->vars[env->varcount]->label, env->varcount);
 	env->varcount++;
 }

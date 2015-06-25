@@ -6,15 +6,25 @@
  +----------------------------------------------------------------------------+
  | int        | Takes one or two arguments      | int foo                     |
  |            | Creates an integer variable;    | int bar, 10                 |
- |            | optionally initializes the      |                             |
- |            | variable to that value.         |                             |
- +----------------------------------------------------------------------------+
+ |            | initializes it if a value is    |                             |
+ |            | provided                        |                             |
+ +------------+---------------------------------+-----------------------------+
+ | flt        | Takes one or two arguments      | flt foop                    |
+ |            | Creates a floating-point        | flt barf, 10.21             |
+ |            | variable; initializes it if a   |                             |
+ |            | value is provided.              |                             |
+ +------------+---------------------------------+-----------------------------+
+ | str        | Takes one or two arguments      | str string                  |
+ |            | Creates a string variables;     | str hello, 'hello'          |
+ |            | initializes it if a value is    | str world, 'world'          |
+ |            | provided.                       |                             |
+ +------------+---------------------------------+-----------------------------+
  | mov        | Takes two arguments             | mov foo, 5    ; foo is  5   |
  |            | Copies the value of the source  |                             |
  |            | into the destination.           |                             |
  +----------------------------------------------------------------------------+
- | add        | Takes two arguments             | add foo, bar  ; foo is 15   |
- |            | Adds the source's value to the  |                             |
- |            | destination.                    |                             |
+ | add        | Takes two arguments             | add foo, bar                |
+ |            | Adds the source's value to the  | add hello, ' '              |
+ |            | destination.                    | add hello, world            |
  +----------------------------------------------------------------------------+
 

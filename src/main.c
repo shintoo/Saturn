@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < linecount; i++) {
 		fgets(line, 32, src);
 		printf("%d: %s", i, line);
+		getchar();
 
 		/* Parse line into a statement */
 		instruction = Parse(line);
@@ -48,7 +49,10 @@ int main(int argc, char **argv) {
 		putchar('\n');
 		/* Execute the instruction */
 		Execute(instruction);
+		getchar();
+
 		putchar('\n');
+
 		/* Print the statement after execution */
 		PrintStatement(instruction);
 
@@ -58,7 +62,7 @@ int main(int argc, char **argv) {
 	}
 
 	fclose(src);
-	End();
+//	End();
 	return 0;
 }
 

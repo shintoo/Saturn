@@ -21,6 +21,7 @@ const char *__COMMANDS12 =
 	"INT STR FLT ";
 
 void Init(void) {
+	printf("[ENVIRONMENT] Initializing Saturn environment\n");
 	env = malloc(sizeof(Environment));
 	env->vars = malloc(sizeof(10 * sizeof(Var *)));
 	env->memsize = 10;
@@ -29,7 +30,7 @@ void Init(void) {
 	instructions[0] =  sint;
 	instructions[1] =  sflt;
 	instructions[2] =  sstr;
-//	instructions[3] =  sadd;
+	instructions[3] =  sadd;
 //	instructions[4] =  ssub;
 //	instructions[5] =  smul;
 //	instructions[6] =  sdiv;
@@ -41,11 +42,14 @@ void Init(void) {
 }
 
 void End(void) {
+	printf("[ENVIRONMENT] Closing Saturn environment\n");
 	for (int i = 0; i < env->varcount; i++) {
 		free(env->vars[i]);
 	}
 	free(env->vars);
 	free(env);
+
+	exit(EXIT_SUCCESS);
 }
 
 int CountLines(FILE *src) {
@@ -109,6 +113,9 @@ Statement * Parse(char *line) {
 	} else if (strstr("OUT", token)) {
 		ret->command = OUT;
 	}
+	else if (strstr("END", token)) {
+		End();
+	}
 	
 	token = strtok(NULL, " ");
 	if (!token) {                     // 0 arguments
@@ -130,6 +137,7 @@ Statement * Parse(char *line) {
 	token = strtok(NULL, " ");
 	if (!token) {                    // 1 argument
 		ret->argcount = 1;
+		ret->args[1] = NULL;
 		return ret;
 	}
 	if (onearg) {
@@ -251,21 +259,26 @@ Arg * CreateVarArg(char *token) {
 }
 
 Var * Env(char *token) {
+	Var *ret = NULL;
+
 	printf("[PARSE] Environment contains %d variables\n", env->varcount);
 	for (int i = 0; i < env->varcount; i++) {
 		printf("[PARSE] \t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
 		       env->vars[i]->label);
 		if (strcmp(env->vars[i]->label, token) == 0) {
 			printf("[PARSE] Found %s in environment at %d\n", env->vars[i]->label, i);
-			return env->vars[i];
+			ret = env->vars[i];
 		}
 	}
-	return NULL;
+	
+	return ret;
 }
 
 Statement * NewStatement(void) {
 	Statement *newst = malloc(sizeof(Statement));
 	newst->args = malloc(2 * sizeof(Arg *));
+	newst->args[0] = NULL;
+	newst->args[1] = NULL;
 
 	return newst;
 }
@@ -274,6 +287,7 @@ void DeleteStatement(Statement *st) {
 	for (int i = 0; i < st->argcount; i++) {
 		free(st->args[i]);
 	}
+
 	free(st);
 }
 
