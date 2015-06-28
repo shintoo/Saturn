@@ -60,9 +60,6 @@ void sstr(Arg *dst, const Arg *src) {
 			Abort("Mismatched type for initialization", "");
 		}
 		dst->var = malloc(sizeof(Var));
-		if (dst->var->val.STR != NULL) {
-			free(dst->var->val.STR);
-		}
 		dst->var->val.STR = malloc(strlen(src->var->val.STR) + 1);
 		strcpy(dst->var->val.STR, src->var->val.STR);
 	} else {
@@ -119,8 +116,8 @@ void sout(Arg *dst, const Arg *src) {
 	}
 
 	switch(src->var->type) {
-		case _INT:
-		case _FLT: fprintf(dst->var->val.FIL, "%f", INT_OR_FLT(src)); break;
+		case _INT: fprintf(dst->var->val.FIL, "%d", src->var->val.INT); break;
+		case _FLT: fprintf(dst->var->val.FIL, "%f", src->var->val.FLT); break;
 		case _STR: fprintf(dst->var->val.FIL, "%s", src->var->val.STR); break;
 	}
 }
@@ -136,7 +133,7 @@ void sadd(Arg *dst, const Arg *src) {
 		case _FLT: dst->var->val.FLT += src->var->val.FLT; break;
 		case _STR:
 			dst->var->val.STR = realloc(dst->var->val.STR, 
-				strlen(dst->var->val.STR) + strlen(dst->var->val.STR + 1));
+				strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);
 			strcat(dst->var->val.STR, src->var->val.STR);
 		break;
 	}

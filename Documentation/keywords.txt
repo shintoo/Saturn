@@ -27,4 +27,7 @@
  |            | Adds the source's value to the  | add hello, ' '              |
  |            | destination.                    | add hello, world            |
  +----------------------------------------------------------------------------+
-
+ | out        | Takes two arguments             | out stdout, 'hello, world!' |
+ |            | Writes the second argument to   | out stdout, foo             |
+ |            | the file of the first argument  |                             |
+ +----------------------------------------------------------------------------+

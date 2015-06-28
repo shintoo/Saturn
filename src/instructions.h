@@ -5,6 +5,7 @@
 #define INT_OR_FLT(X) \
 	((X)->var->type == _INT ? (X)->var->val.INT : (X)->var->val.FLT)
 
+
 void AddToEnv(Var *v);
 
 /*********************************************************/

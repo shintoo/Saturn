@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 		}
 
 		/* Validate the statement */
-//		Validate(instruction);
+		Validate(instruction);
 		
 		/* Press enter to step through, one line at a time */
 		getchar();

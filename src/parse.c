@@ -25,7 +25,7 @@ void Init(void) {
 	env = malloc(sizeof(Environment));
 	env->vars = malloc(10 * sizeof(Var *));
 	env->memsize = 10;
-	env->varcount = 0;
+	env->varcount = 3;
 
 	instructions[0] =  sint;
 	instructions[1] =  sflt;
@@ -38,12 +38,29 @@ void Init(void) {
 //	instructions[8] =  sdec;
 	instructions[9] =  smov;
 //	instructions[10] = srin;
-	instructions[11] = sout; 
+	instructions[11] = sout;
+	
+	env->vars[0] = malloc(sizeof(Var));
+	env->vars[0]->label = "stdin";
+	env->vars[0]->type = _FIL;
+	env->vars[0]->val.FIL = stdin;
+
+	env->vars[1] = malloc(sizeof(Var));
+	env->vars[1]->label = "stdout";
+	env->vars[1]->type = _FIL;
+	env->vars[1]->val.FIL = stdout;
+
+	env->vars[2] = malloc(sizeof(Var));
+	env->vars[2]->label = "stderr";
+	env->vars[2]->type = _FIL;
+	env->vars[2]->val.FIL = stderr;
+
+
 }
 
 void End(void) {
 	printf("[ENVIRONMENT] Closing Saturn environment\n");
-	for (int i = 0; i < env->varcount; i++) {
+	for (int i = 3; i < env->varcount; i++) {
 		free(env->vars[i]);
 	}
 	free(env->vars);
@@ -283,6 +300,14 @@ Statement * NewStatement(void) {
 	return newst;
 }
 
+void Validate(const Statement *st) {
+	if (st->argcount > 0) {
+		if (st->args[0]->isliteral == true) {
+			Abort("First argument may not be a literal", "");
+		}
+	}
+}
+
 void DeleteStatement(Statement *st) {
 	for (int i = 0; i < st->argcount; i++) {
 		free(st->args[i]);
@@ -299,7 +324,7 @@ void Abort(char *error, char *detail) {
 
 const char * TypeLabel(enum types type) {
 	const char *TYPELABELS[] = {
-		"INT", "FLT", "STR", "CHR", "FIL"
+		"INT", "FLT", "STR", "FIL"
 	};
 	return TYPELABELS[type];
 }
