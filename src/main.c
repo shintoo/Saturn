@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 	}
 
 	fclose(src);
-//	End();
+	End();
 	return 0;
 }
 

@@ -23,7 +23,7 @@ const char *__COMMANDS12 =
 void Init(void) {
 	printf("[ENVIRONMENT] Initializing Saturn environment\n");
 	env = malloc(sizeof(Environment));
-	env->vars = malloc(sizeof(10 * sizeof(Var *)));
+	env->vars = malloc(10 * sizeof(Var *));
 	env->memsize = 10;
 	env->varcount = 0;
 

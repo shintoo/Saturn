@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 enum types {_INT, _FLT, _STR, _FIL };
-enum tokentypes { _ARG, _STATEMENT };
 
 enum COMMANDS {
 	INT, FLT, STR,
