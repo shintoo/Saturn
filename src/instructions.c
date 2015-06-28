@@ -78,7 +78,7 @@ void smov(Arg *dst, const Arg *src) {
 	printf("[EXECUTE] Destination: %s, source: %s\n",
 	        dst->var->label, src->var->label);
 	
-	if ((dst->var->type | src->var->type) <= 1 || dst->var->type+src->var->type == 4) {
+	if (src->var->type != dst->var->type) {
 		Abort("Illegal types for MOV", "");
 	}
 
@@ -110,7 +110,8 @@ void smov(Arg *dst, const Arg *src) {
 }
 
 void sout(Arg *dst, const Arg *src) {
-	printf("[EXECUTE] Writing variable \"%s\" to ...\n", src->var->label);
+	printf("[EXECUTE] Writing variable \"%s\" to file \"%s\"\n", 
+		src->var->label, dst->var->label);
 	if (dst->var->type != _FIL) {
 		Abort("Error: first argument must be a FIL", "");
 	}
@@ -122,6 +123,26 @@ void sout(Arg *dst, const Arg *src) {
 	}
 }
 
+void srin(Arg *dst, const Arg *src) {
+	printf("[EXECUTE] Reading into variable \"%s\" from file \"%s\"\n",
+		dst->var->label, src->var->label);
+	char str[32];
+	printf("INPUT: ");
+	fgets(str, 32, src->var->val.FIL);
+
+	switch(dst->var->type) {
+		case _INT: dst->var->val.INT = atoi(str); break;
+		case _FLT: dst->var->val.FLT = atof(str); break;
+		case _STR:
+			if (dst->var->val.STR != NULL) {
+				free(dst->var->val.STR);
+			}
+			dst->var->val.STR = malloc(32);
+			strcpy(dst->var->val.STR, str);
+		break;
+	}
+}
+
 void sadd(Arg *dst, const Arg *src) {
 	printf("[EXECUTE] Adding \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
 	if (dst->var->type != src->var->type) {
@@ -129,8 +150,8 @@ void sadd(Arg *dst, const Arg *src) {
 	}
 
 	switch(dst->var->type) {
-		case _INT: dst->var->val.INT += src->var->val.INT; break;
-		case _FLT: dst->var->val.FLT += src->var->val.FLT; break;
+		case _INT: dst->var->val.INT += INT_OR_FLT(src); break;
+		case _FLT: dst->var->val.FLT += INT_OR_FLT(src); break;
 		case _STR:
 			dst->var->val.STR = realloc(dst->var->val.STR, 
 				strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);

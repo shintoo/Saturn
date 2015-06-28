@@ -37,7 +37,7 @@ void Init(void) {
 //	instructions[7] =  sinc;
 //	instructions[8] =  sdec;
 	instructions[9] =  smov;
-//	instructions[10] = srin;
+	instructions[10] = srin;
 	instructions[11] = sout;
 	
 	env->vars[0] = malloc(sizeof(Var));

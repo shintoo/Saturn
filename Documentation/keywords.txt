@@ -31,3 +31,8 @@
  |            | Writes the second argument to   | out stdout, foo             |
  |            | the file of the first argument  |                             |
  +----------------------------------------------------------------------------+
+ | rin        | Takes two arguments             | rin bar, stdin              |
+ |            | Reads from the file stream of   | rin hello, stdin            |
+ |            | the second argument into the    |                             |
+ |            | variable of the first argument  |                             |
+ +----------------------------------------------------------------------------+
