@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 		putchar('\n');
 
 		/* Print the statement after execution */
-		PrintStatement(instruction);
+//		PrintStatement(instruction);
 
 		/* Delete the statement, free all memory used for it and for literals */
 		DeleteStatement(instruction);
