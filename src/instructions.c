@@ -186,6 +186,25 @@ void sadd(Arg *dst, const Arg *src) {
 	}
 }
 
+void ssub(Arg *dst, const Arg *src) {
+	if ((dst->var->type | src->var->type) > 1) {
+		Abort("May only subtract numeric values", "");
+	}
+#ifdef DEBUG
+	printf("[EXECUTE] Subtracting \"%s\" from \"%s\"\n",
+		src->var->label, dst->var->label);
+#endif
+	if (dst->var->type != src->var->type) {
+		Abort("Error: mismatched types for SUB", "");
+	}
+
+	switch(dst->var->type) {
+		case _INT: dst->var->val.INT -= INT_OR_FLT(src); break;
+		case _FLT: dst->var->val.FLT -= INT_OR_FLT(src); break;
+	}
+}
+
+
 void AddToEnv(Var *v) {
 #ifdef DEBUG
 	printf("[ENVIRONMENT] Adding %s to environment at %d\n", v->label, env->varcount);

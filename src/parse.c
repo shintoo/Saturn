@@ -34,7 +34,7 @@ void Init(void) {
 	instructions[1] =  sflt;
 	instructions[2] =  sstr;
 	instructions[3] =  sadd;
-//	instructions[4] =  ssub;
+	instructions[4] =  ssub;
 //	instructions[5] =  smul;
 //	instructions[6] =  sdiv;
 //	instructions[7] =  sinc;
@@ -117,7 +117,7 @@ Statement * Parse(char *line) {
 	}
 	
 	token = strtok(line, " ");
-	if (token[0] == '\n') {
+	if (token[0] == '\n' || token[0] == ';') {
 		return NULL;
 	}
 	ToUpper(token);
@@ -157,11 +157,19 @@ Statement * Parse(char *line) {
 		ret->argcount = 0;
 		return ret;
 	}
+	if (token[0] == ';') {
+		ret->argcount = 0;
+		return ret;
+	}
 
 	comma = strchr(token, ',');             // check if token exists as var
 	if (!comma) {
 		onearg = true;
-		*strchr(token, '\n') = '\0';
+		nl = strchr(token, '\n');
+		if (nl) {
+			*nl = '\0';
+		}
+		nl = NULL;
 	}
 	else {
 		*comma = '\0';
@@ -175,6 +183,12 @@ Statement * Parse(char *line) {
 		ret->args[1] = NULL;
 		return ret;
 	}
+	if (token[0] == ';') {
+		ret->argcount = 1;
+		ret->args[1] = NULL;
+		return ret;
+	}
+
 	if (onearg) {
 		Abort("Missing comma after first argument", "");
 	}

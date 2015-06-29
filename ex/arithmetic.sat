@@ -1,0 +1,48 @@
+#!/usr/bin/saturn
+
+out stdout, 'integers:'
+out stdout, newline
+int a
+int b
+int c, 0
+out stdout, 'a:_'
+rin a, stdin
+out stdout, 'b:_'
+rin b, stdin
+
+add c, a
+add c, b
+out stdout, 'a+b='
+out stdout, c
+out stdout, newline
+
+mov c, 0
+add c, a
+sub c, b
+out stdout, 'a-b='
+out stdout, c
+out stdout, newline
+
+out stdout, 'floats:'
+out stdout, newline
+flt fa,
+flt fb,
+flt fc, 0
+out stdout, 'fa:_'
+rin fa, stdin
+out stdout, 'fb:_'
+rin fb, stdin
+
+add fc, fa
+add fc, fb
+out stdout, 'fa+fb='
+out stdout, fc
+out stdout, newline
+
+mov fc, 0.0
+add fc, fa
+sub fc, fb
+out stdout, 'fa-fb='
+out stdout, fc
+out stdout, newline
+
