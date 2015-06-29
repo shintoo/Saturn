@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS= -std=c11
-SRC= src/main.c src/instructions.c src/parse.c
+CFLAGS= -std=c11 -g
+SRC= src/main.c src/parse.c src/instructions.c
 HDR= src/instructions.h src/parse.h
 PATH=/usr/bin
 

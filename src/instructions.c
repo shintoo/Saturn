@@ -5,6 +5,8 @@
 #include "parse.h"
 #include "instructions.h"
 
+
+
 extern Environment *env;
 
 void (*instructions[11])(Arg *dst, const Arg *src);
@@ -14,7 +16,9 @@ void Execute(const Statement *st) {
 }
 
 void sint(Arg *dst, const Arg *src) {
+#ifdef DEBUG
 	printf("[EXECUTE] Creating INT variable \"%s\"\n", dst->token);
+#endif
 	dst->var = malloc(sizeof(Var));
 	dst->var->label = malloc(strlen(dst->token) + 1);
 	strcpy(dst->var->label, dst->token);
@@ -34,7 +38,9 @@ void sint(Arg *dst, const Arg *src) {
 }
 
 void sflt(Arg *dst, const Arg *src) {
+#ifdef DEBUG
 	printf("[EXECUTE] Creating FLT variable \"%s\"\n", dst->token);
+#endif
 	dst->var = malloc(sizeof(Var));
 	dst->var->label = malloc(strlen(dst->token) + 1);
 	strcpy(dst->var->label, dst->token);
@@ -54,7 +60,9 @@ void sflt(Arg *dst, const Arg *src) {
 }
 
 void sstr(Arg *dst, const Arg *src) {
+#ifdef DEBUG
 	printf("[EXECUTE] Creating STR variable \"%s\"\n", dst->token);
+#endif
 	if (src) {
 		if (src->var->type != _STR) {
 			Abort("Mismatched type for initialization", "");
@@ -73,11 +81,16 @@ void sstr(Arg *dst, const Arg *src) {
 	AddToEnv(dst->var);
 
 }
+/*
+void sfil(Arg *dst, const Arg *src) {
+	
 
+*/
 void smov(Arg *dst, const Arg *src) {
+#ifdef DEBUG
 	printf("[EXECUTE] Destination: %s, source: %s\n",
 	        dst->var->label, src->var->label);
-	
+#endif
 	if (src->var->type != dst->var->type) {
 		Abort("Illegal types for MOV", "");
 	}
@@ -85,13 +98,17 @@ void smov(Arg *dst, const Arg *src) {
 	switch (dst->var->type) {
 		case _INT:
 			dst->var->val.INT = INT_OR_FLT(src); 
+#ifdef DEBUG
 			printf("[EXECUTE] Moved %d into variable \"%s\"\n",
 			        src->var->val.INT, dst->var->label);
+#endif
 		break;
 		case _FLT:
 			dst->var->val.FLT = INT_OR_FLT(src);
+#ifdef DEBUG
 			printf("[EXECUTE] Moved %f into variable \"%s\"\n",
 			        src->var->val.FLT, dst->var->label);
+#endif
 		break;
 		case _STR:
 			if (dst->var->val.STR = NULL) {
@@ -103,15 +120,19 @@ void smov(Arg *dst, const Arg *src) {
 				);
 			}
 			strcpy(dst->var->val.STR, src->var->val.STR);
+#ifdef DEBUG
 			printf("[EXECUTE] Moved \"%s\" into variable \"%s\"\n",
 			        src->var->val.STR, dst->var->label);
+#endif
 		break;
 	}
 }
 
 void sout(Arg *dst, const Arg *src) {
+#ifdef DEBUG
 	printf("[EXECUTE] Writing variable \"%s\" to file \"%s\"\n", 
 		src->var->label, dst->var->label);
+#endif
 	if (dst->var->type != _FIL) {
 		Abort("Error: first argument must be a FIL", "");
 	}
@@ -124,11 +145,14 @@ void sout(Arg *dst, const Arg *src) {
 }
 
 void srin(Arg *dst, const Arg *src) {
+#ifdef DEBUG
 	printf("[EXECUTE] Reading into variable \"%s\" from file \"%s\"\n",
 		dst->var->label, src->var->label);
-	char str[32];
 	printf("INPUT: ");
+#endif
+	char str[32];
 	fgets(str, 32, src->var->val.FIL);
+	*strchr(str, '\n') = '\0';
 
 	switch(dst->var->type) {
 		case _INT: dst->var->val.INT = atoi(str); break;
@@ -144,7 +168,9 @@ void srin(Arg *dst, const Arg *src) {
 }
 
 void sadd(Arg *dst, const Arg *src) {
+#ifdef DEBUG
 	printf("[EXECUTE] Adding \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
+#endif
 	if (dst->var->type != src->var->type) {
 		Abort("Error: mismatched types for ADD", "");
 	}
@@ -161,15 +187,18 @@ void sadd(Arg *dst, const Arg *src) {
 }
 
 void AddToEnv(Var *v) {
+#ifdef DEBUG
 	printf("[ENVIRONMENT] Adding %s to environment at %d\n", v->label, env->varcount);
-
+#endif
 	if (env->varcount == env->memsize) {
 		printf("[ENVIRONMENT] Adding 10 memory blocks to environment\n");
 		env = realloc(env, env->memsize + 10);
 		env->memsize += 10;
 	}
 	env->vars[env->varcount] = v;
+#ifdef DEBUG
 	printf("[ENVIRONMENT] %s added to environment at %d\n",
 	        env->vars[env->varcount]->label, env->varcount);
+#endif
 	env->varcount++;
 }

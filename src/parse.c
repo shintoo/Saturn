@@ -7,6 +7,7 @@
 #include "parse.h"
 #include "instructions.h"
 
+
 int __linecount = 0;
 extern void (*instructions[11])(Arg *, const Arg *);
 
@@ -21,11 +22,13 @@ const char *__COMMANDS12 =
 	"INT STR FLT ";
 
 void Init(void) {
+#ifdef DEBUG
 	printf("[ENVIRONMENT] Initializing Saturn environment\n");
+#endif
 	env = malloc(sizeof(Environment));
 	env->vars = malloc(10 * sizeof(Var *));
 	env->memsize = 10;
-	env->varcount = 3;
+	env->varcount = 4;
 
 	instructions[0] =  sint;
 	instructions[1] =  sflt;
@@ -55,12 +58,27 @@ void Init(void) {
 	env->vars[2]->type = _FIL;
 	env->vars[2]->val.FIL = stderr;
 
-
+	env->vars[3] = malloc(sizeof(Var));
+	env->vars[3]->label = "newline";
+	env->vars[3]->type = _STR;
+	env->vars[3]->val.STR = "\n";
 }
 
 void End(void) {
+#ifdef DEBUG
 	printf("[ENVIRONMENT] Closing Saturn environment\n");
-	for (int i = 3; i < env->varcount; i++) {
+#endif
+
+	for (int i = 0; i < 4; i++) {
+		free(env->vars[i]);
+	}
+	for (int i = 4; i < env->varcount; i++) {
+		if (env->vars[i]->type == _STR) {
+			free(env->vars[i]->val.STR);
+		}
+		if (env->vars[i]->type == _FIL) {
+			fclose(env->vars[i]->val.FIL);
+		}
 		free(env->vars[i]);
 	}
 	free(env->vars);
@@ -252,7 +270,9 @@ Arg * CreateNumericLiteral(char *token) {
 }
 
 Arg * CreateVarArg(char *token) {
+#ifdef DEBUG
 	printf("[PARSE] Creating variable argument for \"%s\"\n", token);
+#endif
 	Arg *ret;
 	int len = strlen(token);
 
@@ -263,12 +283,18 @@ Arg * CreateVarArg(char *token) {
 	}
 	
 	ret = malloc(sizeof(Arg));
+#ifdef DEBUG
 	printf("[PARSE] Searching environment for \"%s\"\n", token);
+#endif
 	if ((ret->var = Env(token)) != NULL) {
+#ifdef DEBUG
 		printf("[PARSE] Found %s in environment\n", ret->var->label);
+#endif
 		return ret;
 	}
+#ifdef DEBUG
 	printf("[PARSE] \"%s\" not found in environment\n", token);
+#endif
 	ret->isliteral = false;
 	ret->token = token;
 
@@ -277,13 +303,18 @@ Arg * CreateVarArg(char *token) {
 
 Var * Env(char *token) {
 	Var *ret = NULL;
-
+#ifdef DEBUG
 	printf("[PARSE] Environment contains %d variables\n", env->varcount);
+#endif
 	for (int i = 0; i < env->varcount; i++) {
+#ifdef DEBUG
 		printf("[PARSE] \t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
 		       env->vars[i]->label);
+#endif
 		if (strcmp(env->vars[i]->label, token) == 0) {
+#ifdef DEBUG
 			printf("[PARSE] Found %s in environment at %d\n", env->vars[i]->label, i);
+#endif
 			ret = env->vars[i];
 		}
 	}
