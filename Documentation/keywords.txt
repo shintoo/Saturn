@@ -1,16 +1,18 @@
 
-
  +----------------------------------------------------------------------------+
  | keyword    | description                     | example                     |
  +----------------------------------------------------------------------------+
+
+ +--------------+
+ | Declarations |
  +----------------------------------------------------------------------------+
  | int        | Takes one or two arguments      | int foo                     |
  |            | Creates an integer variable;    | int bar, 10                 |
  |            | initializes it if a value is    |                             |
  |            | provided                        |                             |
  +------------+---------------------------------+-----------------------------+
- | flt        | Takes one or two arguments      | flt foop                    |
- |            | Creates a floating-point        | flt barf, 10.21             |
+ | flt        | Takes one or two arguments      | flt baz                     |
+ |            | Creates a floating-point        | flt quux, 10.21             |
  |            | variable; initializes it if a   |                             |
  |            | value is provided.              |                             |
  +------------+---------------------------------+-----------------------------+
@@ -23,9 +25,40 @@
  |            | Copies the value of the source  |                             |
  |            | into the destination.           |                             |
  +----------------------------------------------------------------------------+
+
+ +------------+
+ | Operations |
+ +----------------------------------------------------------------------------+
  | add        | Takes two arguments             | add foo, bar                |
- |            | Adds the source's value to the  | add hello, ' '              |
- |            | destination.                    | add hello, world            |
+ |            | Adds the source's value to the  | add hello, world            |
+ |            | destination.                    |                             |
+ +----------------------------------------------------------------------------+
+ | sub        | Takes two arguments             | sub foo, 12                 |
+ |            | Subtracts the source's value    | sub quux, 0.5               |
+ |            | from the destination's value.   |                             |
+ |            | Both must be an int or flt.     |                             |
+ +----------------------------------------------------------------------------+
+ | mul        | Takes two arguments             | mul foo, 5                  |
+ |            | Multiplies the destination's    | mul quux, foo               |
+ |            | value by the source's value.    |                             |
+ |            | Both must be int or flt.        |                             |
+ +----------------------------------------------------------------------------+
+ | div        | Takes two arguments             | div foo, 6                  |
+ |            | Divides the destination's value | div bar, foo                |
+ |            | by the source's value. Both     |                             |
+ |            | must be int or flt.             |                             |
+ +----------------------------------------------------------------------------+
+ | inc        | Takes one argument              | inc foo                     |
+ |            | Increments the first argument's |                             |
+ |            | value. Must be int or flt.      |                             |
+ +----------------------------------------------------------------------------+
+ | dec        | Takes one argument              | dec bar                     |
+ |            | Decrements the first argument's |                             |
+ |            | value. Must be int or flt.      |                             |
+ +----------------------------------------------------------------------------+
+
+ +-----+
+ | I/O |
  +----------------------------------------------------------------------------+
  | out        | Takes two arguments             | out stdout, 'hello, world!' |
  |            | Writes the second argument to   | out stdout, foo             |

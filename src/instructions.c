@@ -91,7 +91,7 @@ void smov(Arg *dst, const Arg *src) {
 	printf("[EXECUTE] Destination: %s, source: %s\n",
 	        dst->var->label, src->var->label);
 #endif
-	if (src->var->type != dst->var->type) {
+	if ((src->var->type | dst->var->type) > 1 || src->var->type + dst->var->type == 4) {
 		Abort("Illegal types for MOV", "");
 	}
 
@@ -150,6 +150,9 @@ void srin(Arg *dst, const Arg *src) {
 		dst->var->label, src->var->label);
 	printf("INPUT: ");
 #endif
+	if (dst->var->isconst) {
+		Abort("Error: constant variable: ", dst->var->label);
+	}
 	char str[32];
 	fgets(str, 32, src->var->val.FIL);
 	*strchr(str, '\n') = '\0';
@@ -171,39 +174,119 @@ void sadd(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Adding \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
 #endif
-	if (dst->var->type != src->var->type) {
+	if ((dst->var->type |= src->var->type) > 1) {
 		Abort("Error: mismatched types for ADD", "");
 	}
+	if (dst->var->isconst) {
+		Abort("Error: constant variable: ", dst->var->label);
+	}
 
-	switch(dst->var->type) {
-		case _INT: dst->var->val.INT += INT_OR_FLT(src); break;
-		case _FLT: dst->var->val.FLT += INT_OR_FLT(src); break;
-		case _STR:
-			dst->var->val.STR = realloc(dst->var->val.STR, 
-				strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);
-			strcat(dst->var->val.STR, src->var->val.STR);
-		break;
+	if (dst->var->type == _STR) {
+		dst->var->val.STR = realloc(dst->var->val.STR, 
+			strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);
+		strcat(dst->var->val.STR, src->var->val.STR);
+	} else {
+		ARITHMETIC(dst, +=, src);
 	}
 }
 
 void ssub(Arg *dst, const Arg *src) {
-	if ((dst->var->type | src->var->type) > 1) {
-		Abort("May only subtract numeric values", "");
-	}
 #ifdef DEBUG
 	printf("[EXECUTE] Subtracting \"%s\" from \"%s\"\n",
 		src->var->label, dst->var->label);
 #endif
-	if (dst->var->type != src->var->type) {
-		Abort("Error: mismatched types for SUB", "");
+
+	if ((dst->var->type | src->var->type) > 1) {
+		Abort("May only subtract numeric values", "");
 	}
 
-	switch(dst->var->type) {
-		case _INT: dst->var->val.INT -= INT_OR_FLT(src); break;
-		case _FLT: dst->var->val.FLT -= INT_OR_FLT(src); break;
+	if (dst->var->isconst) {
+		Abort("Error: constant variable: ", dst->var->label);
+	}
+
+	ARITHMETIC(dst, -=, src);
+
+}
+
+
+void smul(Arg *dst, const Arg *src) {
+#ifdef DEBUG
+	printf("[EXECUTE] Multiplying \"%s\" by \"%s\"\n",
+		dst->var->label, src->var->label);
+#endif
+
+	if ((dst->var->type | src->var->type) > 1) {
+		Abort("May only multiply numeric values", "");
+	}
+
+	if (dst->var->isconst) {
+		Abort("Error: constant variable: ", dst->var->label);
+	}
+
+	if (dst->var->type == _STR) {
+		dst->var->val.STR = realloc(dst->var->val.STR, 
+			strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);
+		strcat(dst->var->val.STR, src->var->val.STR);
+	} else {
+		ARITHMETIC(dst, *=, src);
 	}
 }
 
+void sdiv(Arg *dst, const Arg *src) {
+#ifdef DEBUG
+	printf("[EXECUTE] Dividing \"%s\" by \"%s\"\n",
+		dst->var->label, src->var->label);
+#endif
+
+	if ((dst->var->type | src->var->type) > 1) {
+		Abort("May only divide numeric values", "");
+	}
+
+	if (dst->var->isconst) {
+		Abort("Error: constant variable: ", dst->var->label);
+	}
+
+	if (dst->var->type == _STR) {
+		dst->var->val.STR = realloc(dst->var->val.STR, 
+			strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);
+		strcat(dst->var->val.STR, src->var->val.STR);
+	} else {
+		if (INT_OR_FLT(src) == 0) {
+			Abort("Dividing by 0: ", src->var->label);
+		}
+		ARITHMETIC(dst, /=, src);
+	}
+}
+
+void sinc(Arg *dst, const Arg *src) {
+	if (src != NULL) {
+		Abort("INC takes only one argument", "");
+	}
+
+	if (dst->var->type == _STR) {
+		Abort("INC takes only FLT or INT variables", "");
+	}
+
+	switch (dst->var->type) {
+		case _INT: dst->var->val.INT++; break;
+		case _FLT: dst->var->val.FLT++; break;
+	}
+}
+
+void sdec(Arg *dst, const Arg *src) {
+	if (src != NULL) {
+		Abort("DEC takes only one argument", "");
+	}
+
+	if (dst->var->type == _STR) {
+		Abort("DEC takes only FLT or INT variables", "");
+	}
+
+	switch (dst->var->type) {
+		case _INT: dst->var->val.INT--; break;
+		case _FLT: dst->var->val.FLT--; break;
+	}
+}
 
 void AddToEnv(Var *v) {
 #ifdef DEBUG

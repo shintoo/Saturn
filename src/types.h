@@ -23,6 +23,7 @@ typedef union _val {
 /* the variable */
 typedef struct _var {
 	char *label;
+	bool isconst;
 	enum types type;
 	Val val;
 } Var;

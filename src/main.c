@@ -8,10 +8,6 @@
 
 //#define DEBUG
 
-extern int __linecount;
-
-void PrintStatement(const Statement *st);
-
 int main(int argc, char **argv) {
 	FILE *src;
 	char line[32];
@@ -28,7 +24,7 @@ int main(int argc, char **argv) {
 
 	Init();
 	Statement *instruction;
-	for (int i = 1; i < linecount; i++) {
+	for (int i = 0; i < linecount; i++) {
 		fgets(line, 32, src);
 		if (line[0] == '#') {
 			continue;
@@ -74,24 +70,5 @@ int main(int argc, char **argv) {
 	fclose(src);
 	End();
 	return 0;
-}
-
-void PrintStatement(const Statement *st) {
-	printf("\tCommand: %d\n\t\tArguments:\n", st->command);
-	for (int i = 0; i < st->argcount; i++) {
-		printf("\t\t\t%s", TypeLabel(st->args[i]->var->type));
-		if (st->args[i]->isliteral) {
-			printf(" Literal\n");
-		} else {
-			printf(" Variable\n");
-		}
-		printf("\t\t\tLabel: %s\n\t\t\tValue: ", st->args[i]->var->label);
-		switch (st->args[i]->var->type) {
-			case _INT: printf("%d\n", st->args[i]->var->val.INT); break;
-			case _FLT: printf("%f\n", st->args[i]->var->val.FLT); break;
-			case _STR: printf("%s\n", st->args[i]->var->val.STR); break;
-		}
-		putchar('\n');
-	}
 }
 

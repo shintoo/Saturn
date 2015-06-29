@@ -35,10 +35,10 @@ void Init(void) {
 	instructions[2] =  sstr;
 	instructions[3] =  sadd;
 	instructions[4] =  ssub;
-//	instructions[5] =  smul;
-//	instructions[6] =  sdiv;
-//	instructions[7] =  sinc;
-//	instructions[8] =  sdec;
+	instructions[5] =  smul;
+	instructions[6] =  sdiv;
+	instructions[7] =  sinc;
+	instructions[8] =  sdec;
 	instructions[9] =  smov;
 	instructions[10] = srin;
 	instructions[11] = sout;
