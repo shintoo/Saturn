@@ -1,10 +1,10 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
+//#define DEBUG
+
 #define OUT_STDOUT_NEWLINE(X) \
-	(X)->command == OUT ? (X)->args[1]->var->type == _STR ? (X)->args[1]->var->val.STR[0] == '\n' ? 1 : 0 : 0 : 0
-
-
+	(X)->command == OUT ? (X)->args[1]->var->type == _STR ? (X)->args[1]->var->val.STR[0] == '\n' ? 1 : 0 : 0 : 1
 
 #define INT_OR_FLT(X) \
 	((X)->var->type == _INT ? (X)->var->val.INT : (X)->var->val.FLT)

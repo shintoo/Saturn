@@ -6,7 +6,6 @@
 #include "instructions.h"
 #include "util.h"
 
-
 extern Environment *env;
 
 void (*instructions[11])(Arg *dst, const Arg *src);
@@ -19,6 +18,10 @@ void sint(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Creating INT variable \"%s\"\n", dst->token);
 #endif
+	if (Env(dst->token)) {
+		Abort("Error: multiple declaration of ", dst->token);
+	}
+
 	dst->var = malloc(sizeof(Var));
 	dst->var->label = malloc(strlen(dst->token) + 1);
 	strcpy(dst->var->label, dst->token);

@@ -7,7 +7,6 @@
 #include "instructions.h"
 #include "util.h"
 
-//#define DEBUG
 #define VERSION 0.1
 
 void Help(void);
@@ -52,7 +51,6 @@ int main(int argc, char **argv) {
 		}
 #ifdef DEBUG
 		printf("%d: %s", i, line);
-		getchar();
 #endif
 		/* Parse line into a statement */
 		instruction = Parse(line);
@@ -67,17 +65,9 @@ int main(int argc, char **argv) {
 
 		/* Validate the statement */
 		Validate(instruction);
-#ifdef DEBUG
-		/* Press enter to step through, one line at a time */
-		getchar();
-		putchar('\n');
-#endif
+
 		/* Execute the instruction */
 		Execute(instruction);
-#ifdef DEBUG
-		getchar();
-		putchar('\n');
-#endif
 
 		/* Append a newline to all commands unless printing a newline */
 		if (interactive) {
