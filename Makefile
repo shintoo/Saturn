@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -std=c11 -g
 SRC= src/main.c src/parse.c src/instructions.c
-HDR= src/instructions.h src/parse.h
+HDR= src/instructions.h src/parse.h src/util.h
 PATH=/usr/bin
 
 all: Saturn

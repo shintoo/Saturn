@@ -5,27 +5,48 @@
 #include "types.h"
 #include "parse.h"
 #include "instructions.h"
+#include "util.h"
 
 //#define DEBUG
+#define VERSION 0.1
+
+void Help(void);
 
 int main(int argc, char **argv) {
 	FILE *src;
-	char line[32];
+	char line[81];
 	int linecount;
+	bool interactive = false;
 
 	if (argc != 1) {
 		src = fopen(argv[1], "r");
 		linecount = CountLines(src);
 	}
 	else {
-		puts("saturn: fatal error: no input files\ninterpretation terminated.");
-		exit(EXIT_FAILURE);
+		src = stdin;
+		linecount = -1;
+		interactive = true;
 	}
 
+	if (interactive) {
+		printf("Saturn 0.1\nEnter \"help\" for more information.\n");
+	}
 	Init();
 	Statement *instruction;
-	for (int i = 0; i < linecount; i++) {
-		fgets(line, 32, src);
+	for (int i = 0; i != linecount; i++) {
+		if (interactive) {
+			printf("saturn> ");
+		}
+		fgets(line, 80, src);
+		if (interactive) {
+			if (strncmp(line, "help", 4) == 0) {
+				Help();
+				continue;
+			}
+			if (strncmp(line, "quit", 4) == 0) {
+				break;
+			}
+		}
 		if (line[0] == '#') {
 			continue;
 		}
@@ -49,26 +70,42 @@ int main(int argc, char **argv) {
 #ifdef DEBUG
 		/* Press enter to step through, one line at a time */
 		getchar();
-
 		putchar('\n');
 #endif
 		/* Execute the instruction */
 		Execute(instruction);
 #ifdef DEBUG
 		getchar();
-
 		putchar('\n');
-
-		/* Print the statement after execution */
-//		PrintStatement(instruction);
 #endif
+
+		/* Append a newline to all commands unless printing a newline */
+		if (interactive) {
+			if (!(OUT_STDOUT_NEWLINE(instruction))) {
+				putchar('\n');
+			}
+		}
+
 		/* Delete the statement, free all memory used for it and for literals */
 		DeleteStatement(instruction);
 
 	}
 
-	fclose(src);
+	if (argc != 1) {
+		fclose(src);
+	}
 	End();
 	return 0;
 }
 
+void Help(void) {
+	printf("\nWelcome to Saturn version %.1f!\n\nEnter a keyword, type, or"
+		" topic for more information.\n", VERSION);
+	char input[32] = { ' '};
+
+	while (strncmp(input, "quit", 4) != 0) {
+		printf("help> ");
+		fgets(input, 32, stdin);
+	}
+
+}

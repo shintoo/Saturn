@@ -1,50 +1,61 @@
 #!/usr/bin/saturn
 
-out stdout, newline
+; arithmetic.sat
+; Demonstration of each of the arithmetic
+; Operators on a flt variable.
+; All operations are the same for int.
+
+
+; create the
+; two variables
+; and read in
+; values for them
+;
 flt a
 flt b
-flt c, 0.0
+flt c, 0.0              ; will hold results
 out stdout, 'a:_'
 rin a, stdin
 out stdout, 'b:_'
 rin b, stdin
 
-add c, a
+; addition
+mov c, a
 add c, b
 out stdout, 'a+b='
 out stdout, c
 out stdout, newline
 
-mov c, 0.0
-add c, a
+; subtraction
+mov c, a	            ; reset c each time
 sub c, b
 out stdout, 'a-b='
 out stdout, c
 out stdout, newline
 
-mov c, 0.0
-add c, a
+; multiplication
+mov c, a
 mul c, b
 out stdout, 'a*b='
 out stdout, c
 out stdout, newline
 
-mov c, 0.0
-add c, a
+; division
+mov c, a
 div c, b
 out stdout, 'a/b='
 out stdout, c
 out stdout, newline
 
-mov c, 0.0
-add c, a
+; increment
+mov c, a
 inc c
 out stdout, 'a+1='
 out stdout, c
 out stdout, newline
 
-mov c, 0.0
-add c, a
+; decrement
+mov c, a
 dec c
 out stdout, 'a-1='
 out stdout, c

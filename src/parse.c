@@ -6,7 +6,7 @@
 #include "types.h"
 #include "parse.h"
 #include "instructions.h"
-
+#include "util.h"
 
 int __linecount = 0;
 extern void (*instructions[11])(Arg *, const Arg *);

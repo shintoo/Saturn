@@ -4,7 +4,7 @@
 #include "types.h"
 #include "parse.h"
 #include "instructions.h"
-
+#include "util.h"
 
 
 extern Environment *env;
@@ -72,7 +72,8 @@ void sstr(Arg *dst, const Arg *src) {
 		strcpy(dst->var->val.STR, src->var->val.STR);
 	} else {
 		dst->var = malloc(sizeof(Var));
-		dst->var->val.STR = NULL;
+		dst->var->val.STR = malloc(1);
+		strcpy(dst->var->val.STR, "\0");
 	}
 	dst->var->type = _STR;
 	dst->var->label = malloc(strlen(dst->token) + 1);
@@ -174,7 +175,7 @@ void sadd(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Adding \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
 #endif
-	if ((dst->var->type |= src->var->type) > 1) {
+	if ((dst->var->type |= src->var->type) > 1 && src->var->type + dst->var->type != 4) {
 		Abort("Error: mismatched types for ADD", "");
 	}
 	if (dst->var->isconst) {
