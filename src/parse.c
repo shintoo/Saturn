@@ -111,6 +111,11 @@ Statement * Parse(char *line) {
 	char *comma = ",";
 	char *nl = "\n";
 	bool onearg = false;
+	char *commands[] = {
+		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV",
+		"INC", "DEC", "MOV", "RIN", "OUT"
+	};
+	int temp;
 
 	while ((tab = strchr(line, '\t')) != NULL) {
 		*tab = ' ';
@@ -121,36 +126,13 @@ Statement * Parse(char *line) {
 		return NULL;
 	}
 	ToUpper(token);
-	
-	/* This looks stupid here, but makes sense later */
-	if (strstr("INT", token)) {
-		ret->command = INT;
-	} else if (strstr("FLT", token)) {
-		ret->command = FLT;
-	} else if (strstr("STR", token)) {
-		ret->command = STR;
-	} else if (strstr("ADD", token)) {
-		ret->command = ADD;
-	} else if (strstr("SUB", token)) {
-		ret->command = SUB;
-	} else if (strstr("MUL", token)) {
-		ret->command = MUL;
-	} else if (strstr("DIV", token)) {
-		ret->command = DIV;
-	} else if (strstr("INC", token)) {
-		ret->command = INC;
-	} else if (strstr("DEC", token)) {
-		ret->command = DEC;
-	} else if (strstr("MOV", token)) {
-		ret->command = MOV;
-	} else if (strstr("RIN", token)) {
-		ret->command = RIN;
-	} else if (strstr("OUT", token)) {
-		ret->command = OUT;
-	} else {
-		Abort("Error: invalid keyword: ", token);
+
+	/* Check the COMMANDS enum in types.h */
+	ret->command = arraystr(commands, 12, token);
+	if (ret->command == -1) {
+		Abort("Error: unknown keyword: ", token);
 	}
-	
+
 	token = strtok(NULL, " ");
 	if (!token) {                     // 0 arguments
 		ret->argcount = 0;

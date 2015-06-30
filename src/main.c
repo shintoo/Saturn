@@ -7,10 +7,6 @@
 #include "instructions.h"
 #include "util.h"
 
-#define VERSION 0.1
-
-void Help(void);
-
 int main(int argc, char **argv) {
 	FILE *src;
 	char line[81];
@@ -29,7 +25,8 @@ int main(int argc, char **argv) {
 	}
 
 	if (interactive) {
-		printf("Saturn 0.1\nEnter \"help\" for more information.\n");
+		printf("Saturn 0.1\nEnter \'help\' for more information.\n"
+			"Enter 'quit' to exit.\n");
 	}
 	Init();
 	Statement *instruction;
@@ -93,16 +90,4 @@ int main(int argc, char **argv) {
 	}
 	End();
 	return 0;
-}
-
-void Help(void) {
-	printf("\nWelcome to Saturn version %.1f!\n\nEnter a keyword, type, or"
-		" topic for more information.\n", VERSION);
-	char input[32] = { ' '};
-
-	while (strncmp(input, "quit", 4) != 0) {
-		printf("help> ");
-		fgets(input, 32, stdin);
-	}
-
 }
