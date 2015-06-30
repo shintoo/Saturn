@@ -178,7 +178,7 @@ void sadd(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Adding \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
 #endif
-	if ((dst->var->type |= src->var->type) > 1 && src->var->type + dst->var->type != 4) {
+	if ((dst->var->type | src->var->type) > 1 && src->var->type + dst->var->type != 4) {
 		Abort("Error: mismatched types for ADD", "");
 	}
 	if (dst->var->isconst) {

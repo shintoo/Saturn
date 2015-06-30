@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
 	char line[81];
 	int linecount;
 	bool interactive = false;
+	char *comment = NULL;
 
 	if (argc != 1) {
 		src = fopen(argv[1], "r");
@@ -37,6 +38,12 @@ int main(int argc, char **argv) {
 			printf("saturn> ");
 		}
 		fgets(line, 80, src);
+		
+		comment = strchr(line, ';');
+		if (comment) {
+			*comment = '\n';
+		}
+		
 		if (interactive) {
 			if (strncmp(line, "help", 4) == 0) {
 				Help();

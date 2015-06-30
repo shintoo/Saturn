@@ -27,7 +27,7 @@ out stdout, c
 out stdout, newline
 
 ; subtraction
-mov c, a	            ; reset c each time
+mov c, a                ; reset c each time
 sub c, b
 out stdout, 'a-b='
 out stdout, c

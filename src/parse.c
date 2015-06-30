@@ -147,9 +147,8 @@ Statement * Parse(char *line) {
 		ret->command = RIN;
 	} else if (strstr("OUT", token)) {
 		ret->command = OUT;
-	}
-	else if (strstr("END", token)) {
-		End();
+	} else {
+		Abort("Error: invalid keyword: ", token);
 	}
 	
 	token = strtok(NULL, " ");
