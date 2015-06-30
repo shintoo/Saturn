@@ -21,8 +21,8 @@ Basics
   Every line in Saturn consists of one of two structures:
 
       <keyword> <destination>
-	  ; or
-	  <keyword> <destination>, <source>
+      ; or
+      <keyword> <destination>, <source>
 
   A comma must follow the destination if a source is provided. Depending
   on whay command is use, the source is in some way 'applied' to the
@@ -93,11 +93,11 @@ Basics
    the same exact way:
 
        int num1
-	   flt num2
-	   str string
-	   rin num1, stdin
-	   rin num2, stdin
-	   rin string, stdin
+       flt num2
+       str string
+       rin num1, stdin
+       rin num2, stdin
+       rin string, stdin
 
 Pre-Release Woes
 
