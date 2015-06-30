@@ -8,13 +8,13 @@
 
 extern Environment *env;
 
-void (*instructions[11])(Arg *dst, const Arg *src);
+void (*instructions[13])(Arg *dst, const Arg *src);
 
 void Execute(const Statement *st) {
 	instructions[st->command](st->args[0], st->argcount == 2 ? st->args[1] : NULL);
 }
 
-void sint(Arg *dst, const Arg *src) {
+void saturn_int(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Creating INT variable \"%s\"\n", dst->token);
 #endif
@@ -40,7 +40,7 @@ void sint(Arg *dst, const Arg *src) {
 
 }
 
-void sflt(Arg *dst, const Arg *src) {
+void saturn_flt(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Creating FLT variable \"%s\"\n", dst->token);
 #endif
@@ -62,7 +62,7 @@ void sflt(Arg *dst, const Arg *src) {
 
 }
 
-void sstr(Arg *dst, const Arg *src) {
+void saturn_str(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Creating STR variable \"%s\"\n", dst->token);
 #endif
@@ -90,7 +90,7 @@ void sfil(Arg *dst, const Arg *src) {
 	
 
 */
-void smov(Arg *dst, const Arg *src) {
+void saturn_mov(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Destination: %s, source: %s\n",
 	        dst->var->label, src->var->label);
@@ -132,7 +132,7 @@ void smov(Arg *dst, const Arg *src) {
 	}
 }
 
-void sout(Arg *dst, const Arg *src) {
+void saturn_out(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Writing variable \"%s\" to file \"%s\"\n", 
 		src->var->label, dst->var->label);
@@ -148,7 +148,7 @@ void sout(Arg *dst, const Arg *src) {
 	}
 }
 
-void srin(Arg *dst, const Arg *src) {
+void saturn_rin(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Reading into variable \"%s\" from file \"%s\"\n",
 		dst->var->label, src->var->label);
@@ -174,27 +174,21 @@ void srin(Arg *dst, const Arg *src) {
 	}
 }
 
-void sadd(Arg *dst, const Arg *src) {
+void saturn_add(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Adding \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
 #endif
-	if ((dst->var->type | src->var->type) > 1 && src->var->type + dst->var->type != 4) {
+	if ((dst->var->type | src->var->type) > 1) {
 		Abort("Error: mismatched types for ADD", "");
 	}
 	if (dst->var->isconst) {
 		Abort("Error: constant variable: ", dst->var->label);
 	}
 
-	if (dst->var->type == _STR) {
-		dst->var->val.STR = realloc(dst->var->val.STR, 
-			strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);
-		strcat(dst->var->val.STR, src->var->val.STR);
-	} else {
-		ARITHMETIC(dst, +=, src);
-	}
+	ARITHMETIC(dst, +=, src);
 }
 
-void ssub(Arg *dst, const Arg *src) {
+void saturn_sub(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Subtracting \"%s\" from \"%s\"\n",
 		src->var->label, dst->var->label);
@@ -213,7 +207,7 @@ void ssub(Arg *dst, const Arg *src) {
 }
 
 
-void smul(Arg *dst, const Arg *src) {
+void saturn_mul(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Multiplying \"%s\" by \"%s\"\n",
 		dst->var->label, src->var->label);
@@ -236,7 +230,7 @@ void smul(Arg *dst, const Arg *src) {
 	}
 }
 
-void sdiv(Arg *dst, const Arg *src) {
+void saturn_div(Arg *dst, const Arg *src) {
 #ifdef DEBUG
 	printf("[EXECUTE] Dividing \"%s\" by \"%s\"\n",
 		dst->var->label, src->var->label);
@@ -262,7 +256,7 @@ void sdiv(Arg *dst, const Arg *src) {
 	}
 }
 
-void sinc(Arg *dst, const Arg *src) {
+void saturn_inc(Arg *dst, const Arg *src) {
 	if (src != NULL) {
 		Abort("INC takes only one argument", "");
 	}
@@ -277,7 +271,7 @@ void sinc(Arg *dst, const Arg *src) {
 	}
 }
 
-void sdec(Arg *dst, const Arg *src) {
+void saturn_dec(Arg *dst, const Arg *src) {
 	if (src != NULL) {
 		Abort("DEC takes only one argument", "");
 	}
@@ -291,6 +285,23 @@ void sdec(Arg *dst, const Arg *src) {
 		case _FLT: dst->var->val.FLT--; break;
 	}
 }
+
+void saturn_cat(Arg *dst, const Arg *src) {
+#ifdef DEBUG
+	printf("[EXECUTE] Concatenating \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
+#endif
+	if (src->var->type + dst->var->type != 4) {
+		Abort("Error: mismatched types for CAT", "");
+	}
+	if (dst->var->isconst) {
+		Abort("Error: constant variable: ", dst->var->label);
+	}
+
+	dst->var->val.STR = realloc(dst->var->val.STR, 
+		strlen(dst->var->val.STR) + strlen(dst->var->val.STR) + 1);
+	strcat(dst->var->val.STR, src->var->val.STR);
+}
+
 
 void AddToEnv(Var *v) {
 #ifdef DEBUG

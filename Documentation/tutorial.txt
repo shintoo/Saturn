@@ -1,6 +1,22 @@
+Setting Up
+
+  After installing Saturn, you can use the interpreter on your source files
+  in two different ways, as per usual. You can enter
+
+      saturn sourcefile.sat
+
+  to run sorucefile.sat, or you can include a shebang and path to the
+  interpreter. By default, this is set to /usr/bin, so you may add the line
+
+      #!/usr/bin/saturn
+
+  to the beginning of your source file, and then execute the program with
+
+      ./sourcefile.sat
+
 Basics
 
-Comments
+ Comments
 
   Only single-line comments are supported; they begin with the semicolon
   character ';' and end at a newline.
@@ -16,52 +32,28 @@ Comments
       out stdout, '\n'
       out stdout, dbl
 
-Declarations
+ Declarations
 
   To declare a variable, you specify the type and label, and optionally,
   an initial value:
 
-      int far                   ; Declares an integer
+      int baz                   ; Declares an integer
       flt foo, 10.21            ; Initialize float foo to 10.21
       str bar, 'Hello'          ; Initialize string bar to 'Hello'
 
-Assignment, and More
+ Assignment, and More
 
   Declared variables can be manipulataed with some instructions:
 
+      mov foo, 0.6              ; Assigns the value 0.6 to foo
+      mov bar, 'Saturn'         ; Assigns the value 'Saturn' to bar
+      mov baz, 10               ; Assigns the value 10 to baz
 
-Control Flow
+      add foo, 10               ; Add 10 to foo
+      cat bar, 'v0.1'           ; Concatenate 'v0.1' to 'Saturn
+      add baz, 2                ; Add 2 to baz
 
-  With Saturn, labels can be used to set locations. Then, the `jmp`
-  instruction can be used to jump to that location.
+  The commands 'sub', 'mul', and 'div' can be used just as 'add', to subtract,
+  multiply, and divide. Also, there are two commands 'inc' and 'dec', for
+  increment and decrement:
 
-            int count           ; Always initialized to 0
-            ; An infinite loop
-      loop: inc count
-            out stdout, count
-            out stdout, '\n'
-            jmp loop
-
-  In the Saturn environment, conditional jumps are used to execute
-  certain collections of statements depending on a condition. This
-  condition is set by the previous statement. Here, `cmp` is used,
-  which sets the condition to true if the arguments are equal, or
-  to false if they are not.
-
-               int n, 8
-               int m, 10
-               cmp n, m
-               jqe nequalsm            ; if n == m, print 'n == m'
-               cmp n, m
-               jne nisnotm             ; if n != m, print 'n != m'
-
-         nism: out stdout, n
-               out stdout, ' == '
-               out stdout, m
-               jmp end
-
-      nisnotm: out stdout, n
-               out stdout, ' != '
-               out stdout, m
-
-          end: out stdout, '\n'

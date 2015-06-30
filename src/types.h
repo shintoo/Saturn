@@ -9,7 +9,7 @@ enum COMMANDS {
 	INT, FLT, STR,
 	ADD, SUB, MUL, DIV,
 	INC, DEC,
-	MOV, RIN, OUT
+	MOV, CAT, RIN, OUT
 };
 
 typedef union _val {

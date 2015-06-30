@@ -20,18 +20,18 @@
  |            | Creates a string variables;     | str hello, 'hello'          |
  |            | initializes it if a value is    | str world, 'world'          |
  |            | provided.                       |                             |
+ +----------------------------------------------------------------------------+
+ 
+ +------------+
+ | Operations |
  +------------+---------------------------------+-----------------------------+
  | mov        | Takes two arguments             | mov foo, 5    ; foo is  5   |
  |            | Copies the value of the source  |                             |
  |            | into the destination.           |                             |
  +----------------------------------------------------------------------------+
-
- +------------+
- | Operations |
- +----------------------------------------------------------------------------+
  | add        | Takes two arguments             | add foo, bar                |
- |            | Adds the source's value to the  | add hello, world            |
- |            | destination.                    |                             |
+ |            | Adds the source's value to the  | add quux, foo               |
+ |            | destination. Both must be int   |                             |
  +----------------------------------------------------------------------------+
  | sub        | Takes two arguments             | sub foo, 12                 |
  |            | Subtracts the source's value    | sub quux, 0.5               |
@@ -55,6 +55,11 @@
  | dec        | Takes one argument              | dec bar                     |
  |            | Decrements the first argument's |                             |
  |            | value. Must be int or flt.      |                             |
+ +----------------------------------------------------------------------------+
+ | cat        | Takes two arguments             | cat hello, world            |
+ |            | Concatenates the second         | cat hello,'!'               |
+ |            | argument's string onto the      |                             |
+ |            | first's. Both bust be str.      |                             |
  +----------------------------------------------------------------------------+
 
  +-----+

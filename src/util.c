@@ -18,7 +18,8 @@ void DisplayTopic(int topic) {
 		"this is the dialogue for add", "this is the dialogue for mul",
 		"this is the dialogue for sub", "this is the dialogue for div",
 		"this is the dialogue for rin", "this is the dialogue for out",
-		"this is the dialogue for dec", "this is the dialogue for dec"
+		"this is the dialogue for dec", "this is the dialogue for dec",
+		"this is the dialogue for cat"
 	};
 
 	puts(dialogues[topic]);
@@ -29,7 +30,7 @@ void Help(void) {
 	char input[32] = { ' '};
 	char *topics[] = {
 		"int", "flt", "str", "mov", "add", "mul", "sub",
-		"div", "rin", "out", "inc", "dec",
+		"div", "rin", "out", "inc", "dec", "cat"
 	};
 	int topic;
 
@@ -41,7 +42,7 @@ void Help(void) {
 			break;
 		}
 		if (strncmp(input, "list", 4) == 0) {
-			for (int i = 0; i < 12; i++) {
+			for (int i = 0; i < 13; i++) {
 				if (i > 0 && i % 3 == 0) {
 					putchar('\n');
 				}
@@ -50,7 +51,7 @@ void Help(void) {
 			putchar('\n');
 			continue;
 		}
-		topic = arraystr(topics, 12, input);
+		topic = arraystr(topics, 13, input);
 		if (topic == -1) {
 			puts("Invalid option, for a list of options, enter 'list'");
 			continue;

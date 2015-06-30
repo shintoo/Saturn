@@ -14,7 +14,7 @@ extern void (*instructions[11])(Arg *, const Arg *);
 Environment *env;
 
 const char *__COMMANDS2  =
-	"MOV ADD SUB MUL DIV "
+	"MOV CAT ADD SUB MUL DIV "
 	"OUT RIN ";
 const char *__COMMANDS1  =
 	"INC DEC ";
@@ -30,19 +30,20 @@ void Init(void) {
 	env->memsize = 10;
 	env->varcount = 4;
 
-	instructions[0] =  sint;
-	instructions[1] =  sflt;
-	instructions[2] =  sstr;
-	instructions[3] =  sadd;
-	instructions[4] =  ssub;
-	instructions[5] =  smul;
-	instructions[6] =  sdiv;
-	instructions[7] =  sinc;
-	instructions[8] =  sdec;
-	instructions[9] =  smov;
-	instructions[10] = srin;
-	instructions[11] = sout;
-	
+	instructions[0] =  saturn_int;
+	instructions[1] =  saturn_flt;
+	instructions[2] =  saturn_str;
+	instructions[3] =  saturn_add;
+	instructions[4] =  saturn_sub;
+	instructions[5] =  saturn_mul;
+	instructions[6] =  saturn_div;
+	instructions[7] =  saturn_inc;
+	instructions[8] =  saturn_dec;
+	instructions[9] =  saturn_mov;
+	instructions[10] = saturn_cat;
+	instructions[11] = saturn_rin;
+	instructions[12] = saturn_out;
+
 	env->vars[0] = malloc(sizeof(Var));
 	env->vars[0]->label = "stdin";
 	env->vars[0]->type = _FIL;
@@ -113,7 +114,7 @@ Statement * Parse(char *line) {
 	bool onearg = false;
 	char *commands[] = {
 		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV",
-		"INC", "DEC", "MOV", "RIN", "OUT"
+		"INC", "DEC", "MOV", "CAT", "RIN", "OUT"
 	};
 	int temp;
 
@@ -128,7 +129,7 @@ Statement * Parse(char *line) {
 	ToUpper(token);
 
 	/* Check the COMMANDS enum in types.h */
-	ret->command = arraystr(commands, 12, token);
+	ret->command = arraystr(commands, 13, token);
 	if (ret->command == -1) {
 		Abort("Error: unknown keyword: ", token);
 	}
