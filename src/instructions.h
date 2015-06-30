@@ -2,15 +2,6 @@
 #define _INSTRUCTIONS_H_
 #include "types.h"
 
-#define INT_OR_FLT(X) \
-	((X)->var->type == _INT ? (X)->var->val.INT : (X)->var->val.FLT)
-
-#define ARITHMETIC(DST, OP, SRC) \
-	switch ((DST)->var->type) { \
-		case _INT: (DST)->var->val.INT OP INT_OR_FLT(SRC); break; \
-		case _FLT: (DST)->var->val.FLT OP INT_OR_FLT(SRC); break; \
-	}
-
 void AddToEnv(Var *v);
 
 /*********************************************************/
