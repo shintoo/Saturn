@@ -25,7 +25,7 @@ Basics
       <keyword> <destination>, <source>
 
   A comma must follow the destination if a source is provided. Depending
-  on whay command is use, the source is in some way 'applied' to the
+  on what command is used, the source is in some way 'applied' to the
   destination.
 
  Comments
