@@ -5,8 +5,8 @@
                             ,###===+++++++++++++++o:    ":::::
                             ##===++++++++++++++++oo- ...:::"
                             #==++++++++++++++....::::"""
-                        ..,:=+++++++....::::""""--'
-                     .::"""  "....::::""""ooooo----'
+                        ..,:=++++++++....::::""""--'
+                     .::"""  "....::::""""oooo----'
                     ::::...:::""""++++oooo------'
                       """""         '------'
 
@@ -17,20 +17,19 @@
 What is Saturn?
 
     Saturn is a general purpose, high-level interpreted programming language
-    intending to provide robust features while maintaining extreme simplicity. 
+    intending to maintain extreme simplicity. 
 
 What's Saturn like?
 
   Syntactically, it is heavily inspired by x86 Assembly. Semantically, it is
-  somewhat high level. For example, working with variables is similar for all
-  types:
+  somewhat high level. Here's a peek:
 
-      int myint, 6
-      add myint, 4
-      str mystr, 'Hello'
-      add mystr, 'World!'
-      out stdout, mystr
-      out stdout, myint
+      int exampleint
+	  rin exampleint, stdin
+	  out stdout, exampleint
+	  out stdout, '+10='
+	  add exampleint, 10
+	  out stdout, exampleint
 
 How do I install Saturn?
 
@@ -41,4 +40,5 @@ How do I install Saturn?
       make
       sudo make install
 
-More information can be found in the Documentation directory.
+More information can be found in the Documentation/ directory, and an example
+can be found in the ex/ directory.

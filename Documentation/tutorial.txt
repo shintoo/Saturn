@@ -16,6 +16,18 @@ Setting Up
 
 Basics
 
+ Syntax
+
+  Every line in Saturn consists of one of two structures:
+
+      <keyword> <destination>
+	  ; or
+	  <keyword> <destination>, <source>
+
+  A comma must follow the destination if a source is provided. Depending
+  on whay command is use, the source is in some way 'applied' to the
+  destination.
+
  Comments
 
   Only single-line comments are supported; they begin with the semicolon
@@ -29,7 +41,7 @@ Basics
       mov dbl, orig       ; Copy orig into dbl
       mul dbl, 2          ; Do the doubling
       out stdout, orig    ; Output
-      out stdout, '\n'
+      out stdout, newline
       out stdout, dbl
 
  Declarations
@@ -57,3 +69,48 @@ Basics
   multiply, and divide. Also, there are two commands 'inc' and 'dec', for
   increment and decrement:
 
+      inc foo                   ; Adds 1 to foo, same as 'add foo, 1'
+      dec foo                   ; Subtracts 1 from foo, same as 'sub foo, 1'
+
+  With the 'cat' keyword, you can concatenate one string onto another:
+
+      str one, 'one...'
+      str two, 'two...'
+      cat one, two
+      cat one, 'three!'         ; one is now 'one...two...three!'
+
+ Input and Output
+
+  The two keywords 'rin' for 'read input' and 'out' for 'output' are used for
+  interacting with file streams. stdin, stdout, and stderr are provided, and
+  can be used like so;
+
+      str input
+      rin input, stdin
+      out stdout, input
+
+   The two keywords 'rin' and 'out' can be used with variables of any type im
+   the same exact way:
+
+       int num1
+	   flt num2
+	   str string
+	   rin num1, stdin
+	   rin num2, stdin
+	   rin string, stdin
+
+Pre-Release Woes
+
+ As Saturn is still in it's very early stages of development, some features
+ that you would expect in any progrmming language are not yet available.
+  
+  The most troublesome in this version is the inability to include whitespace
+  in strings. This is due to how the interpreter parses syntax. This lack of
+  a necessary feature is being worked on at this time.
+  
+  Another feature missing is the ability to concatenate ints and flts to
+  strings. This will be added very shortly.
+
+  The behemoth of a feature that is control structures is also not yet
+  implemented, but is also the next step for Saturn, and will be top priority
+  upon the inclusion of the previously mentioned missing features.
