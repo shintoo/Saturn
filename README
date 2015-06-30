@@ -25,11 +25,11 @@ What's Saturn like?
   somewhat high level. Here's a peek:
 
       int exampleint
-	  rin exampleint, stdin
-	  out stdout, exampleint
-	  out stdout, '+10='
-	  add exampleint, 10
-	  out stdout, exampleint
+      rin exampleint, stdin
+      out stdout, exampleint
+      out stdout, '+10='
+      add exampleint, 10
+      out stdout, exampleint
 
 How do I install Saturn?
 
