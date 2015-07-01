@@ -167,7 +167,7 @@ void saturn_rin(Arg *dst, const Arg *src) {
 	}
 }
 
-/* Check out util.j */
+/* Check out util.h */
 MAKE_ARITHMETIC_FUNCTION(add, +=);
 
 MAKE_ARITHMETIC_FUNCTION(sub, -=);
