@@ -1,4 +1,6 @@
 Setting Up
+ 
+ From a file
 
   After installing Saturn, you can use the interpreter on your source files
   in two different ways, as per usual. You can enter
@@ -13,6 +15,14 @@ Setting Up
   to the beginning of your source file, and then execute the program with
 
       ./sourcefile.sat
+
+ Interactive
+
+  Saturn provides an interactive programming environment, allowing you to enter
+  lines one at a time and see the results immediately. To enter interactive
+  mode, simply run saturn with no command line arguments. A prompt will appear,
+  in which you can enter Saturn code. You can enter 'help' for assistance with
+  various topics, and 'quit' to exit Saturn.
 
 Basics
 
