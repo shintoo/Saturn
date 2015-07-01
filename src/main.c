@@ -53,17 +53,13 @@ int main(int argc, char **argv) {
 		if (line[0] == '#') {
 			continue;
 		}
-#ifdef DEBUG
-		printf("%d: %s", i, line);
-#endif
+		DEBUGMSG("%d: %s", i, line);
 		/* Parse line into a statement */
 		instruction = Parse(line);
 
 		/* Skip empty lines */
-		if (instruction == NULL) {
-#ifdef DEBUG
-			printf("<blank line>\n");
-#endif
+		if (instruction == NULL) {G
+			DEBUGMSG("<blank line>\n");
 			continue;
 		}
 

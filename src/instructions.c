@@ -7,6 +7,7 @@
 #include "util.h"
 
 extern Environment *env;
+extern int __linecount;
 
 void (*instructions[13])(Arg *dst, const Arg *src);
 
@@ -15,11 +16,10 @@ void Execute(const Statement *st) {
 }
 
 void saturn_int(Arg *dst, const Arg *src) {
-#ifdef DEBUG
-	printf("[EXECUTE] Creating INT variable \"%s\"\n", dst->token);
-#endif
+	DEBUGMSG("[EXECUTE] Creating INT variable \"%s\"\n", dst->token);
+
 	if (Env(dst->token)) {
-		Abort("Error: multiple declaration of ", dst->token);
+		ABORT("Error: multiple declaration of %s", dst->token);
 	}
 
 	dst->var = malloc(sizeof(Var));
@@ -27,9 +27,9 @@ void saturn_int(Arg *dst, const Arg *src) {
 	strcpy(dst->var->label, dst->token);
 	dst->var->type = _INT;
 	dst->var->isconst = false;
-	if (src != NULL) {
+	if (src) {
 		if (src->var->type != _INT) {
-			Abort("Mismatched type for initialization", "");
+			ABORT("Mismatched type for initialization");
 		}
 		ARGVAL(dst, INT) = src->var->type == _FLT ? ARGVAL(src, FLT)
 			: ARGVAL(src, INT);
@@ -41,9 +41,8 @@ void saturn_int(Arg *dst, const Arg *src) {
 }
 
 void saturn_flt(Arg *dst, const Arg *src) {
-#ifdef DEBUG
-	printf("[EXECUTE] Creating FLT variable \"%s\"\n", dst->token);
-#endif
+	DEBUGMSG("[EXECUTE] Creating FLT variable \"%s\"\n", dst->token);
+
 	dst->var = malloc(sizeof(Var));
 	dst->var->label = malloc(strlen(dst->token) + 1);
 	strcpy(dst->var->label, dst->token);
@@ -51,7 +50,7 @@ void saturn_flt(Arg *dst, const Arg *src) {
 	dst->var->isconst = false;
 	if (src) {
 		if (src->var->type != _FLT && src->var->type != _INT) {
-			Abort("Mismatched type for initialization", "");
+			ABORT("Mismatched type for initialization");
 		}
 		ARGVAL(dst, FLT) = src->var->type == _FLT ? ARGVAL(src, FLT)
 			: ARGVAL(src, INT);
@@ -63,12 +62,11 @@ void saturn_flt(Arg *dst, const Arg *src) {
 }
 
 void saturn_str(Arg *dst, const Arg *src) {
-#ifdef DEBUG
-	printf("[EXECUTE] Creating STR variable \"%s\"\n", dst->token);
-#endif
+	DEBUGMSG("[EXECUTE] Creating STR variable \"%s\"\n", dst->token);
+
 	if (src) {
 		if (src->var->type != _STR) {
-			Abort("Mismatched type for initialization", "");
+			ABORT("Mismatched type for initialization");
 		}
 		dst->var = malloc(sizeof(Var));
 		ARGVAL(dst, STR) = malloc(strlen(src->var->val.STR) + 1);
@@ -91,28 +89,27 @@ void sfil(Arg *dst, const Arg *src) {
 
 */
 void saturn_mov(Arg *dst, const Arg *src) {
-#ifdef DEBUG
-	printf("[EXECUTE] Destination: %s, source: %s\n",
+	DEBUGMSG("[EXECUTE] Destination: %s, source: %s\n",
 	        dst->var->label, src->var->label);
-#endif
-	if ((src->var->type | dst->var->type) > 1 || src->var->type + dst->var->type == 4) {
-		Abort("Illegal types for MOV", "");
+
+	if ((src->var->type | dst->var->type) > 1 ||
+			src->var->type + dst->var->type == 4) {
+		ABORT("Illegal types for MOV: have %s and %s", TypeLabel(dst->var->type),
+			TypeLabel(src->var->type));
 	}
 
 	switch (dst->var->type) {
 		case _INT:
 			ARGVAL(dst, INT) = INT_OR_FLT(src); 
-#ifdef DEBUG
-			printf("[EXECUTE] Moved %d into variable \"%s\"\n",
+			DEBUGMSG("[EXECUTE] Moved %d into variable \"%s\"\n",
 			        src->var->val.INT, dst->var->label);
-#endif
+
 		break;
 		case _FLT:
 			ARGVAL(dst, FLT) = INT_OR_FLT(src);
-#ifdef DEBUG
-			printf("[EXECUTE] Moved %f into variable \"%s\"\n",
+			DEBUGMSG("[EXECUTE] Moved %f into variable \"%s\"\n",
 			        src->var->val.FLT, dst->var->label);
-#endif
+
 		break;
 		case _STR:
 			if (ARGVAL(dst, STR) = NULL) {
@@ -124,21 +121,19 @@ void saturn_mov(Arg *dst, const Arg *src) {
 				);
 			}
 			strcpy(ARGVAL(dst, STR), ARGVAL(src, STR));
-#ifdef DEBUG
-			printf("[EXECUTE] Moved \"%s\" into variable \"%s\"\n",
+			DEBUGMSG("[EXECUTE] Moved \"%s\" into variable \"%s\"\n",
 			        ARGVAL(src, STR), dst->var->label);
-#endif
+
 		break;
 	}
 }
 
 void saturn_out(Arg *dst, const Arg *src) {
-#ifdef DEBUG
-	printf("[EXECUTE] Writing variable \"%s\" to file \"%s\"\n", 
+	DEBUGMSG("[EXECUTE] Writing variable \"%s\" to file \"%s\"\n", 
 		src->var->label, dst->var->label);
-#endif
+
 	if (dst->var->type != _FIL) {
-		Abort("Error: first argument must be a FIL", "");
+		ABORT("Error: first argument must be a FIL");
 	}
 
 	switch(src->var->type) {
@@ -149,13 +144,11 @@ void saturn_out(Arg *dst, const Arg *src) {
 }
 
 void saturn_rin(Arg *dst, const Arg *src) {
-#ifdef DEBUG
-	printf("[EXECUTE] Reading into variable \"%s\" from file \"%s\"\n",
+	DEBUGMSG("[EXECUTE] Reading into variable \"%s\" from file \"%s\"\n",
 		dst->var->label, src->var->label);
-	printf("INPUT: ");
-#endif
+	DEBUGMSG("INPUT: ");
 	if (dst->var->isconst) {
-		Abort("Error: constant variable: ", dst->var->label);
+		ABORT("Error: constant variable: %s", dst->var->label);
 	}
 	char str[32];
 	fgets(str, 32, ARGVAL(src, FIL));
@@ -174,21 +167,22 @@ void saturn_rin(Arg *dst, const Arg *src) {
 	}
 }
 
-MAKE_ARITHMETIC_FUNCTION(add, +=)
+/* Check out util.j */
+MAKE_ARITHMETIC_FUNCTION(add, +=);
 
-MAKE_ARITHMETIC_FUNCTION(sub, -=)
+MAKE_ARITHMETIC_FUNCTION(sub, -=);
 
-MAKE_ARITHMETIC_FUNCTION(mul, *=)
+MAKE_ARITHMETIC_FUNCTION(mul, *=);
 
-MAKE_ARITHMETIC_FUNCTION(div, /=)
+MAKE_ARITHMETIC_FUNCTION(div, /=);
 
 void saturn_inc(Arg *dst, const Arg *src) {
 	if (src != NULL) {
-		Abort("INC takes only one argument", "");
+		ABORT("INC takes only one argument");
 	}
 
 	if (dst->var->type == _STR) {
-		Abort("INC takes only FLT or INT variables", "");
+		ABORT("INC takes only FLT or INT variables");
 	}
 
 	switch (dst->var->type) {
@@ -199,11 +193,11 @@ void saturn_inc(Arg *dst, const Arg *src) {
 
 void saturn_dec(Arg *dst, const Arg *src) {
 	if (src != NULL) {
-		Abort("DEC takes only one argument", "");
+		ABORT("DEC takes only one argument");
 	}
 
 	if (dst->var->type == _STR) {
-		Abort("DEC takes only FLT or INT variables", "");
+		ABORT("DEC takes only FLT or INT variables");
 	}
 
 	switch (dst->var->type) {
@@ -213,14 +207,13 @@ void saturn_dec(Arg *dst, const Arg *src) {
 }
 
 void saturn_cat(Arg *dst, const Arg *src) {
-#ifdef DEBUG
-	printf("[EXECUTE] Concatenating \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
-#endif
+	DEBUGMSG("[EXECUTE] Concatenating \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
+
 	if (src->var->type != _STR) {
-		Abort("Error: First argument must be STR", "");
+		ABORT("Error: First argument must be STR");
 	}
 	if (dst->var->isconst) {
-		Abort("Error: constant variable: ", dst->var->label);
+		ABORT("Error: constant variable: %s", dst->var->label);
 	}
 /*
 	switch(src->var->type) {
@@ -237,18 +230,16 @@ void saturn_cat(Arg *dst, const Arg *src) {
 
 
 void AddToEnv(Var *v) {
-#ifdef DEBUG
-	printf("[ENVIRONMENT] Adding %s to environment at %d\n", v->label, env->varcount);
-#endif
+	DEBUGMSG("[ENVIRONMENT] Adding %s to environment at %d\n", v->label, env->varcount);
+
 	if (env->varcount == env->memsize) {
-		printf("[ENVIRONMENT] Adding 10 memory blocks to environment\n");
+		DEBUGMSG("[ENVIRONMENT] Adding 10 memory blocks to environment\n");
 		env = realloc(env, env->memsize + 10);
 		env->memsize += 10;
 	}
 	env->vars[env->varcount] = v;
-#ifdef DEBUG
-	printf("[ENVIRONMENT] %s added to environment at %d\n",
+	DEBUGMSG("[ENVIRONMENT] %s added to environment at %d\n",
 	        env->vars[env->varcount]->label, env->varcount);
-#endif
+
 	env->varcount++;
 }

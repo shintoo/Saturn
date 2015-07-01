@@ -22,9 +22,8 @@ const char *__COMMANDS12 =
 	"INT STR FLT ";
 
 void Init(void) {
-#ifdef DEBUG
-	printf("[ENVIRONMENT] Initializing Saturn environment\n");
-#endif
+	DEBUGMSG("[ENVIRONMENT] Initializing Saturn environment\n");
+
 	env = malloc(sizeof(Environment));
 	env->vars = malloc(10 * sizeof(Var *));
 	env->memsize = 10;
@@ -66,9 +65,7 @@ void Init(void) {
 }
 
 void End(void) {
-#ifdef DEBUG
-	printf("[ENVIRONMENT] Closing Saturn environment\n");
-#endif
+	DEBUGMSG("[ENVIRONMENT] Closing Saturn environment\n");
 
 	for (int i = 0; i < 4; i++) {
 		free(env->vars[i]);
@@ -131,7 +128,7 @@ Statement * Parse(char *line) {
 	/* Check the COMMANDS enum in types.h */
 	ret->command = arraystr(commands, 13, token);
 	if (ret->command == -1) {
-		Abort("Error: unknown keyword: ", token);
+		ABORT("Error: unknown keyword: %s", token);
 	}
 
 	token = strtok(NULL, " ");
@@ -172,7 +169,7 @@ Statement * Parse(char *line) {
 	}
 
 	if (onearg) {
-		Abort("Missing comma after first argument", "");
+		ABORT("Missing comma after first argument");
 	}
 	
 	nl = strchr(token, '\n');
@@ -198,7 +195,7 @@ Arg * CreateArg(char *token) {
 		return newarg;
 	}
 	if (strchr("abcdefghijklmnopqrstuvwxyz_", tolower(token[0])) == NULL) {
-		  Abort("Illegal character beginning argument: ", token);
+		  ABORT("Illegal character beginning argument: %s", token);
 	}
 
 	newarg = CreateVarArg(token);
@@ -211,9 +208,9 @@ Arg * CreateStringLiteral(char *token) {
 
 	if (token[strlen(token) - 1] != '\'') {
 		if (strchr(token + 1, '\'') == NULL) {
-			Abort("Missing terminating \' for: ", token);
+			ABORT("Missing terminating \' for %s", token);
 		}
-		Abort("\' must end string literal: ", token);
+		ABORT("\' must end string literal: %s", token);
 	}
 	for (int i = 0; token[i] != '\0'; i++) {
 		token[i] = token[i + 1];
@@ -243,7 +240,7 @@ Arg * CreateNumericLiteral(char *token) {
 			continue;
 		}
 		if (!isdigit(token[i])) {
-			Abort("Numeric literals may only contain digits and a decimal: ",
+			ABORT("Numeric literals may only contain digits and a decimal: %s",
 			       token);
 		}
 	}
@@ -266,31 +263,25 @@ Arg * CreateNumericLiteral(char *token) {
 }
 
 Arg * CreateVarArg(char *token) {
-#ifdef DEBUG
-	printf("[PARSE] Creating variable argument for \"%s\"\n", token);
-#endif
+	DEBUGMSG("[PARSE] Creating variable argument for \"%s\"\n", token);
 	Arg *ret;
 	int len = strlen(token);
 
 	for (int i = 0; i < len; i++) {
 		if (!isalnum(token[i]) && token[i] != '_') {
-			Abort("Illegal character in variable name: ", token);
+			ABORT("Illegal character in variable name: %s", token);
 		}
 	}
 	
 	ret = malloc(sizeof(Arg));
-#ifdef DEBUG
-	printf("[PARSE] Searching environment for \"%s\"\n", token);
-#endif
+
+	DEBUGMSG("[PARSE] Searching environment for \"%s\"\n", token);
 	if ((ret->var = Env(token)) != NULL) {
-#ifdef DEBUG
-		printf("[PARSE] Found %s in environment\n", ret->var->label);
-#endif
+		DEBUGMSG("[PARSE] Found %s in environment\n", ret->var->label);
 		return ret;
 	}
-#ifdef DEBUG
-	printf("[PARSE] \"%s\" not found in environment\n", token);
-#endif
+	DEBUGMSG("[PARSE] \"%s\" not found in environment\n", token);
+
 	ret->isliteral = false;
 	ret->token = token;
 	return ret;
@@ -298,18 +289,14 @@ Arg * CreateVarArg(char *token) {
 
 Var * Env(char *token) {
 	Var *ret = NULL;
-#ifdef DEBUG
-	printf("[PARSE] Environment contains %d variables\n", env->varcount);
-#endif
+
+	DEBUGMSG("[PARSE] Environment contains %d variables\n", env->varcount);
 	for (int i = 0; i < env->varcount; i++) {
-#ifdef DEBUG
-		printf("[PARSE] \t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
+		DEBUGMSG("[PARSE] \t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
 		       env->vars[i]->label);
-#endif
+
 		if (strcmp(env->vars[i]->label, token) == 0) {
-#ifdef DEBUG
-			printf("[PARSE] Found %s in environment at %d\n", env->vars[i]->label, i);
-#endif
+			DEBUGMSG("[PARSE] Found %s in environment at %d\n", env->vars[i]->label, i);
 			ret = env->vars[i];
 		}
 	}
@@ -329,7 +316,7 @@ Statement * NewStatement(void) {
 void Validate(const Statement *st) {
 	if (st->argcount > 0) {
 		if (st->args[0]->isliteral == true) {
-			Abort("First argument may not be a literal", "");
+			ABORT("First argument may not be a literal: %s", st->args[0]->var->label);
 		}
 	}
 }
@@ -340,12 +327,6 @@ void DeleteStatement(Statement *st) {
 	}
 
 	free(st);
-}
-
-void Abort(char *error, char *detail) {
-	printf("%d: %s%s\n", __linecount, error, detail);
-	End();
-	exit(EXIT_FAILURE);
 }
 
 const char * TypeLabel(enum types type) {

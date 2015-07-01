@@ -3,6 +3,7 @@
 #include "types.h"
 #include "util.h"
 
+// fix this mess
 inline bool out_stdout(Statement *st) {
 	if (st->command == OUT) {
 		if (st->args[1]->var->type == _STR) {

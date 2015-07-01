@@ -19,14 +19,27 @@
 #define MAKE_ARITHMETIC_FUNCTION(NAME, OP) \
 void saturn_##NAME(Arg *dst, const Arg *src) { \
 	if ((dst->var->type | src->var->type) > 1) { \
-		printf("May only %s numeric values\n", #NAME); \
-		Abort("", ""); \
+		ABORT("May only %s numeric values\n", #NAME); \
 	} \
 	if (dst->var->isconst) { \
-		Abort("Error: constant variable: ", dst->var->label); \
+		ABORT("Error: constant variable: %s", dst->var->label); \
 	} \
 	ARITHMETIC(dst, OP, src); \
 }
+
+#define ABORT(...) \
+	printf("%d:", __linecount); \
+	printf(__VA_ARGS__); \
+	putchar('\n'); \
+	End(); \
+	exit(EXIT_FAILURE);
+
+#ifdef DEBUG
+#define DEBUGMSG(...) \
+	printf(...);
+#else
+#define DEBUGMSG(...)
+#endif
 
 bool out_stdout(Statement *st);
 
