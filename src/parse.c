@@ -293,7 +293,6 @@ Arg * CreateVarArg(char *token) {
 #endif
 	ret->isliteral = false;
 	ret->token = token;
-
 	return ret;
 }
 

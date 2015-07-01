@@ -1,6 +1,25 @@
 #include <stdio.h>
 #include <string.h>
+#include "types.h"
 #include "util.h"
+
+inline bool out_stdout(Statement *st) {
+	if (st->command == OUT) {
+		if (st->args[1]->var->type == _STR) {
+			if (st->args[1]->var->val.STR[0] == '\n') {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return true;
+		}
+	} else {
+		return false;
+	}
+}
+
+//int numlen(
 
 int arraystr(char **arr, int nmemb, char *str) {
 	for (int i = 0; i < nmemb; i++) {

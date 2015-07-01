@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 
 		/* Append a newline to all commands unless printing a newline */
 		if (interactive) {
-			if (!(OUT_STDOUT_NEWLINE(instruction))) {
+			if (out_stdout(instruction)) {
 				putchar('\n');
 			}
 		}
