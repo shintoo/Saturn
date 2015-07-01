@@ -36,7 +36,7 @@ void saturn_##NAME(Arg *dst, const Arg *src) { \
 
 #ifdef DEBUG
 #define DEBUGMSG(...) \
-	printf(...);
+	fprintf(stderr, ...);
 #else
 #define DEBUGMSG(...)
 #endif
