@@ -3,14 +3,19 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-enum types {_INT, _FLT, _STR, _FIL };
+enum types {_INT, _FLT, _STR, _FIL, _LABEL };
 
 enum COMMANDS {
 	INT, FLT, STR,
-	ADD, SUB, MUL, DIV,
+	ADD, SUB, MUL, DIV, MOD,
 	INC, DEC,
 	MOV, CAT, RIN, OUT
 };
+
+typedef struct _label {
+	char *string;
+	fpos_t loc;
+} Label;
 
 typedef union _val {
 	int INT;
@@ -28,8 +33,16 @@ typedef struct _var {
 	Val val;
 } Var;
 
-
-struct _arg;
+/* The argument to a statement */
+typedef struct _arg {
+	char *token;    // Used for creating variables
+	bool isliteral;
+	bool islabel;
+	union {
+		Var *var;
+		Label label;
+	};
+} Arg;
 
 /* A single line consisting of an
  * command and it's arguments(s);
@@ -41,13 +54,8 @@ typedef struct _statement {
 	struct _arg **args;
 } Statement;
 
-/* The argument to a statement */
-typedef struct _arg {
-	char *token;    // Used for creating variables
-	bool isliteral;
-	Var *var;
-} Arg;
-
+/* Holds the list of variables declared with
+ * int, flt, or str */
 typedef struct _env {
 	int varcount;
 	int memsize;

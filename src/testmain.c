@@ -7,18 +7,17 @@
 #include "instructions.h"
 #include "util.h"
 
-extern int __linecount;
-
 int main(int argc, char **argv) {
 	FILE *src;
 	char line[81];
-	int linecount;
+	int end;
 	bool interactive = false;
 	char *comment = NULL;
 
 	if (argc != 1) {
 		src = fopen(argv[1], "r");
 		linecount = CountLines(src);
+		ProcessLabels(src);
 	}
 	else {
 		src = stdin;
@@ -35,15 +34,12 @@ int main(int argc, char **argv) {
 	for (int i = 0; i != linecount; i++) {
 		if (interactive) {
 			printf("saturn> ");
+			fgets(line, 80, stdin);
+			replace(line, ';', '\n');
+		} else {
+			line = getline(src);
 		}
-		fgets(line, 80, src);
-		__linecount++;
 
-		comment = strchr(line, ';');
-		if (comment) {
-			*comment = '\n';
-		}
-		
 		if (interactive) {
 			if (strncmp(line, "help", 4) == 0) {
 				Help();
@@ -57,6 +53,7 @@ int main(int argc, char **argv) {
 			continue;
 		}
 		DEBUGMSG("%d: %s", i, line);
+
 		/* Parse line into a statement */
 		instruction = Parse(line);
 
@@ -67,7 +64,7 @@ int main(int argc, char **argv) {
 		}
 
 		/* Validate the statement */
-//		Validate(instruction);
+		Validate(instruction);
 
 		/* Execute the instruction */
 		Execute(instruction);
@@ -84,7 +81,7 @@ int main(int argc, char **argv) {
 
 	}
 
-	if (argc != 1) {
+	if (!interactive) {
 		fclose(src);
 	}
 	End();

@@ -47,6 +47,14 @@ out stdout, 'a/b='
 out stdout, c
 out stdout, newline
 
+; modulus
+int ib, b
+int ic, a
+mod ic, ib
+out stdout, 'a%b='
+out stdout, ic
+out stdout, newline
+
 ; increment
 mov c, a
 inc c

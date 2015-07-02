@@ -1,53 +1,49 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
+#include "types.h"
 
 //#define DEBUG
 #define VERSION 0.1
 
+/* Cleaner access to an argument's value */
 #define ARGVAL(ARG, TYPE) \
 	(ARG)->var->val.TYPE
 
+/* Grab numeric value of an argument, must be
+ * known to be numeric */
 #define INT_OR_FLT(X) \
 	((X)->var->type == _INT ? (X)->var->val.INT : (X)->var->val.FLT)
 
-#define ARITHMETIC(DST, OP, SRC) \
-	switch ((DST)->var->type) { \
-		case _INT: (DST)->var->val.INT OP INT_OR_FLT(SRC); break; \
-		case _FLT: (DST)->var->val.FLT OP INT_OR_FLT(SRC); break; \
-	}
-
-#define MAKE_ARITHMETIC_FUNCTION(NAME, OP) \
-void saturn_##NAME(Arg *dst, const Arg *src) { \
-	if ((dst->var->type | src->var->type) > 1) { \
-		ABORT("May only %s numeric values\n", #NAME); \
-	} \
-	if (dst->var->isconst) { \
-		ABORT("Error: constant variable: %s", dst->var->label); \
-	} \
-	ARITHMETIC(dst, OP, src); \
-}
-
-#define ABORT(...) \
-	printf("%d:", __linecount); \
-	printf(__VA_ARGS__); \
-	putchar('\n'); \
-	End(); \
-	exit(EXIT_FAILURE);
+/* Get the hell outta there */
+#define ABORT(...) do {\
+		printf("%d:", __linecount); \
+		printf(__VA_ARGS__); \
+		putchar('\n'); \
+		End(); \
+		exit(EXIT_FAILURE); \
+	} while (0)
 
 #ifdef DEBUG
-#define DEBUGMSG(...) \
-	fprintf(stderr, ...);
+#define DEBUGMSG(...) fprintf(stderr, __VA_ARGS__);
 #else
 #define DEBUGMSG(...)
 #endif
 
-bool out_stdout(Statement *st);
+/* if st is a command that prints to stdout;
+ * Used only in interactive mode so that the prompt
+ * doesn't have empty newlines etc */
+bool out_stdout(const Statement *st);
 
+/* Only for interactive mode, if 'help' is entered, this
+ * is called; creates a new help prompt for topics */
 void Help(void);
 
+/* Used in Help() to show information the user asked for */
 void DisplayTopic(int topic);
 
+/* Find the index o a string in an array of strings */
 int arraystr(char **arr, int nmemb, char *str);
 
-#endif
+bool replace(char *str, char old, char new);
 
+#endif

@@ -3,21 +3,14 @@
 #include "types.h"
 #include "util.h"
 
-// fix this mess
-inline bool out_stdout(Statement *st) {
+inline bool out_stdout(const Statement *st) {
 	if (st->command == OUT) {
 		if (st->args[1]->var->type == _STR) {
-			if (st->args[1]->var->val.STR[0] == '\n') {
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			return true;
+			return st->args[1]->var->val.STR[0] != '\n';
 		}
-	} else {
-		return false;
+		return true;
 	}
+	return false;
 }
 
 //int numlen(
@@ -78,4 +71,18 @@ void Help(void) {
 		}
 		DisplayTopic(topic);
 		}
+}
+
+bool replace(char *str, char old, char new) {
+	int len = strlen(str);
+	bool found = false;
+
+	for (int i = 0; i < len; i++) {
+		if(str[i] == old) {
+			found = true;
+			str[i] = new;
+		}
+	}
+
+	return found;
 }

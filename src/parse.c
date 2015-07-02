@@ -8,13 +8,16 @@
 #include "instructions.h"
 #include "util.h"
 
+#define __instruction_count 14
+
 int __linecount = 0;
-extern void (*instructions[11])(Arg *, const Arg *);
+extern void (*instructions[__instruction_count])(Arg *, const Arg *);
+extern int __instruction_location;
 
 Environment *env;
 
 const char *__COMMANDS2  =
-	"MOV CAT ADD SUB MUL DIV "
+	"MOV CAT ADD SUB MUL DIV MOD"
 	"OUT RIN ";
 const char *__COMMANDS1  =
 	"INC DEC ";
@@ -32,16 +35,21 @@ void Init(void) {
 	instructions[0] =  saturn_int;
 	instructions[1] =  saturn_flt;
 	instructions[2] =  saturn_str;
+
 	instructions[3] =  saturn_add;
 	instructions[4] =  saturn_sub;
 	instructions[5] =  saturn_mul;
 	instructions[6] =  saturn_div;
-	instructions[7] =  saturn_inc;
-	instructions[8] =  saturn_dec;
-	instructions[9] =  saturn_mov;
-	instructions[10] = saturn_cat;
-	instructions[11] = saturn_rin;
-	instructions[12] = saturn_out;
+	instructions[7] =  saturn_mod;
+
+	instructions[8] =  saturn_inc;
+	instructions[9] =  saturn_dec;
+
+	instructions[10] =  saturn_mov;
+	instructions[11] = saturn_cat;
+
+	instructions[12] = saturn_rin;
+	instructions[13] = saturn_out;
 
 	env->vars[0] = malloc(sizeof(Var));
 	env->vars[0]->label = "stdin";
@@ -100,9 +108,16 @@ int CountLines(FILE *src) {
 	return ret;
 }
 
-Statement * Parse(char *line) {
-	__linecount++;
+char * getline(FILE *src) {
+	char *ret = malloc(81);
+	fgets(ret, 80, src);
+	replace(ret, ';', '\n');
+	__instruction_location++;
 
+	return ret;
+}
+
+Statement * Parse(char *line) {
 	Statement *ret = NewStatement();
 	char *token;
 	char *tab;
@@ -110,7 +125,7 @@ Statement * Parse(char *line) {
 	char *nl = "\n";
 	bool onearg = false;
 	char *commands[] = {
-		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV",
+		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV", "MOD",
 		"INC", "DEC", "MOV", "CAT", "RIN", "OUT"
 	};
 	int temp;
@@ -126,7 +141,7 @@ Statement * Parse(char *line) {
 	ToUpper(token);
 
 	/* Check the COMMANDS enum in types.h */
-	ret->command = arraystr(commands, 13, token);
+	ret->command = arraystr(commands, __instruction_count, token);
 	if (ret->command == -1) {
 		ABORT("Error: unknown keyword: %s", token);
 	}
@@ -294,9 +309,9 @@ Var * Env(char *token) {
 	for (int i = 0; i < env->varcount; i++) {
 		DEBUGMSG("[PARSE] \t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
 		       env->vars[i]->label);
-
 		if (strcmp(env->vars[i]->label, token) == 0) {
-			DEBUGMSG("[PARSE] Found %s in environment at %d\n", env->vars[i]->label, i);
+			DEBUGMSG("[PARSE] Found %s in environment at %d\n",
+				env->vars[i]->label, i);
 			ret = env->vars[i];
 		}
 	}
@@ -315,7 +330,8 @@ Statement * NewStatement(void) {
 
 void Validate(const Statement *st) {
 	if (st->argcount > 0) {
-		if (st->args[0]->isliteral == true) {
+		if (st->args[0]->isliteral == true && st->command != OUT) {
+			/* st->command can be OUT, allowing stdout to be a dst */
 			ABORT("First argument may not be a literal: %s", st->args[0]->var->label);
 		}
 	}

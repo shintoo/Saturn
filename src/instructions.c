@@ -6,10 +6,14 @@
 #include "instructions.h"
 #include "util.h"
 
+#define __instruction_count  14
+
 extern Environment *env;
 extern int __linecount;
 
-void (*instructions[13])(Arg *dst, const Arg *src);
+int __instruction_location = 0;
+
+void (*instructions[__instruction_count])(Arg *dst, const Arg *src);
 
 void Execute(const Statement *st) {
 	instructions[st->command](st->args[0], st->argcount == 2 ? st->args[1] : NULL);
@@ -28,11 +32,10 @@ void saturn_int(Arg *dst, const Arg *src) {
 	dst->var->type = _INT;
 	dst->var->isconst = false;
 	if (src) {
-		if (src->var->type != _INT) {
+		if (src->var->type > 1) {
 			ABORT("Mismatched type for initialization");
 		}
-		ARGVAL(dst, INT) = src->var->type == _FLT ? ARGVAL(src, FLT)
-			: ARGVAL(src, INT);
+		ARGVAL(dst, INT) = INT_OR_FLT(src);
 	} else {
 		ARGVAL(dst, INT) = 0;
 	}
@@ -176,6 +179,20 @@ MAKE_ARITHMETIC_FUNCTION(mul, *=);
 
 MAKE_ARITHMETIC_FUNCTION(div, /=);
 
+/* Must be explicitly defined because MAKE_ARITHMETIC_FUNCTION() allows
+ * for float types 
+ */
+void saturn_mod(Arg *dst, const Arg *src) {
+	if (dst->var->type | src->var->type != 0) {
+		ABORT("Error: MOD may only take INT types");
+	}
+	if (dst->var->isconst) {
+		ABORT("Error: constant variable: %s", dst->var->label);
+	}
+
+	dst->var->val.INT %= src->var->val.INT;
+
+}
 void saturn_inc(Arg *dst, const Arg *src) {
 	if (src != NULL) {
 		ABORT("INC takes only one argument");
@@ -207,7 +224,8 @@ void saturn_dec(Arg *dst, const Arg *src) {
 }
 
 void saturn_cat(Arg *dst, const Arg *src) {
-	DEBUGMSG("[EXECUTE] Concatenating \"%s\" to \"%s\"\n", src->var->label, dst->var->label);
+	DEBUGMSG("[EXECUTE] Concatenating \"%s\" to \"%s\"\n",
+		src->var->label, dst->var->label);
 
 	if (src->var->type != _STR) {
 		ABORT("Error: First argument must be STR");
@@ -219,7 +237,6 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	switch(src->var->type) {
 		case _INT: 
 */
-//	if (sizeof(dst->var->val.STR) 
 	if (sizeof(ARGVAL(dst, STR))
 		< sizeof(ARGVAL(dst, STR)) + strlen(ARGVAL(src, STR))) {
 		dst->var->val.STR = realloc(ARGVAL(dst, STR), 
@@ -227,10 +244,24 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	}
 	strcat(ARGVAL(dst, STR), ARGVAL(src, STR));
 }
+/*
+void saturn_jmp(Arg *dst, const Arg *src) {
+	if (src) {
+		ABORT("Error: JMP may only take one argument");
+	}
+	if (!dst->islabel) {
+		ABORT("JMP can only be used with labels");
+	}
+	char ch;
+	__instruction_location = 0;
 
+	for (int i = 0; i < dst->label.instr, i++) {
+		ch = fgetc(
+*/
 
 void AddToEnv(Var *v) {
-	DEBUGMSG("[ENVIRONMENT] Adding %s to environment at %d\n", v->label, env->varcount);
+	DEBUGMSG("[ENVIRONMENT] Adding %s to environment at %d\n",
+		v->label, env->varcount);
 
 	if (env->varcount == env->memsize) {
 		DEBUGMSG("[ENVIRONMENT] Adding 10 memory blocks to environment\n");
