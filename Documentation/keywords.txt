@@ -48,6 +48,11 @@
  |            | by the source's value. Both     |                             |
  |            | must be int or flt.             |                             |
  +----------------------------------------------------------------------------+
+ | mod        | Takes two arguments             | mod foo, 2                  |
+ |            | Takes the modulus of two int    | mod bar, foo                |
+ |            | arguments and assigns it to the | ; bar is bar modulus foo    |
+ |            | first.                          |                             |
+ +----------------------------------------------------------------------------+
  | inc        | Takes one argument              | inc foo                     |
  |            | Increments the first argument's |                             |
  |            | value. Must be int or flt.      |                             |
@@ -65,7 +70,7 @@
  +-----+
  | I/O |
  +----------------------------------------------------------------------------+
- | out        | Takes two arguments             | out stdout, 'hello, world!' |
+ | out        | Takes two arguments             | out stdout, 'string'        |
  |            | Writes the second argument to   | out stdout, foo             |
  |            | the file of the first argument  |                             |
  +----------------------------------------------------------------------------+
