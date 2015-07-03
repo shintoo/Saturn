@@ -47,10 +47,10 @@ Basics
       ; and the number doubled
       int orig
       int dbl
-      rin orig, stdin     ; Read in from stdin an integer into orig
-      mov dbl, orig       ; Copy orig into dbl
-      mul dbl, 2          ; Do the doubling
-      out stdout, orig    ; Output
+      rin orig, stdin           ; Read into orig an integer from stdin
+      mov dbl, orig             ; Copy orig into dbl
+      mul dbl, 2                ; Double the number
+      out stdout, orig          ; Output
       out stdout, newline
       out stdout, dbl
 
@@ -76,7 +76,13 @@ Basics
       add baz, 2                ; Add 2 to baz
 
   The commands 'sub', 'mul', and 'div' can be used just as 'add', to subtract,
-  multiply, and divide. Also, there are two commands 'inc' and 'dec', for
+  multiply, and divide integers and floats. The 'mod' command can be used only
+  on integers, assigning the modulus of the two arguments to the first:
+  
+      int a, 10
+	  mod a, 3                  ; a is now 10 % 3, or 1
+  
+  Also, there are two commands 'inc' and 'dec', for
   increment and decrement:
 
       inc foo                   ; Adds 1 to foo, same as 'add foo, 1'
