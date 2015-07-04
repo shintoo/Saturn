@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (interactive) {
-		printf("Saturn 0.1\nEnter \'help\' for more information.\n"
+		printf("Saturn v0.1.2\nEnter \'help\' for more information.\n"
 			"Enter 'quit' to exit.\n");
 	}
 	Init();
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 		}
 
 		/* Validate the statement */
-//		Validate(instruction);
+		Validate(instruction);
 
 		/* Execute the instruction */
 		Execute(instruction);

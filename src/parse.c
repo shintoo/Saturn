@@ -120,6 +120,8 @@ char * getline(FILE *src) {
 Statement * Parse(char *line) {
 	Statement *ret = NewStatement();
 	char *token;
+	char *strlit = NULL; /* */
+	char *extra; /* for string literals */
 	char *tab;
 	char *comma = ",";
 	char *nl = "\n";
@@ -148,10 +150,6 @@ Statement * Parse(char *line) {
 
 	token = strtok(NULL, " ");
 	if (!token) {                     // 0 arguments
-		ret->argcount = 0;
-		return ret;
-	}
-	if (token[0] == ';') {
 		ret->argcount = 0;
 		return ret;
 	}
@@ -193,8 +191,29 @@ Statement * Parse(char *line) {
 	}
 
 	ret->argcount = 2;              // 2 arguments
-	ret->args[1] = CreateArg(token);
 
+	/* string literals must be handled differently - tokens are seperated
+	 * by spaces, and a string may contain spaces, so the whole line
+	 * must be used for string literals
+	 */
+	if (token[0] == '\'') {
+		DEBUGMSG("[PARSE] %d: String literal with spaces\n", __LINE__);
+		strlit = malloc(80);
+		strlit[0] = '\0';
+		strncat(strlit, token, 31);
+		while ((extra = strtok(NULL, " ")) != NULL) {
+			replace(extra, '\n', '\0');
+			DEBUGMSG("[PARSE] Appending %s to string\n", extra);
+//			printf("extra: %s\n", extra);
+			strcat(strlit, " ");
+			strcat(strlit, extra);
+		}
+	}
+	if (strlit) {
+		ret->args[1] = CreateArg(strlit);
+	} else {
+		ret->args[1] = CreateArg(token);
+	}
 	return ret;
 }
 
@@ -220,6 +239,7 @@ Arg * CreateArg(char *token) {
 Arg * CreateStringLiteral(char *token) {
 	char *end;
 	Arg *ret;
+	DEBUGMSG("[PARSE] %d: token: \"%s\"\n", __LINE__, token);
 
 	if (token[strlen(token) - 1] != '\'') {
 		if (strchr(token + 1, '\'') == NULL) {
@@ -329,17 +349,19 @@ Statement * NewStatement(void) {
 }
 
 void Validate(const Statement *st) {
-	if (st->argcount > 0) {
-		if (st->args[0]->isliteral == true && st->command != OUT) {
-			/* st->command can be OUT, allowing stdout to be a dst */
+/*	if (st->argcount > 0) {
+		if (st->args[0]->isliteral) {
 			ABORT("First argument may not be a literal: %s", st->args[0]->var->label);
 		}
 	}
-}
+*/}
 
 void DeleteStatement(Statement *st) {
 	for (int i = 0; i < st->argcount; i++) {
-		free(st->args[i]);
+/*		if (st->args[i]->var->type == _STR && st->args[i]->isliteral) {
+			free(ARGVAL(st->args[i], STR));
+		}
+*/		free(st->args[i]);
 	}
 
 	free(st);

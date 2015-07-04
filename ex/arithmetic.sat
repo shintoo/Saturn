@@ -14,36 +14,36 @@
 flt a
 flt b
 flt c, 0.0              ; will hold results
-out stdout, 'a:_'
+out stdout, 'Value for a: '
 rin a, stdin
-out stdout, 'b:_'
+out stdout, 'Value for b: '
 rin b, stdin
 
 ; addition
 mov c, a
 add c, b
-out stdout, 'a+b='
+out stdout, 'a + b = '
 out stdout, c
 out stdout, newline
 
 ; subtraction
 mov c, a                ; reset c each time
 sub c, b
-out stdout, 'a-b='
+out stdout, 'a - b = '
 out stdout, c
 out stdout, newline
 
 ; multiplication
 mov c, a
 mul c, b
-out stdout, 'a*b='
+out stdout, 'a * b = '
 out stdout, c
 out stdout, newline
 
 ; division
 mov c, a
 div c, b
-out stdout, 'a/b='
+out stdout, 'a / b = '
 out stdout, c
 out stdout, newline
 
@@ -51,20 +51,20 @@ out stdout, newline
 int ib, b
 int ic, a
 mod ic, ib
-out stdout, 'a%b='
+out stdout, 'a % b = '
 out stdout, ic
 out stdout, newline
 
 ; increment
 mov c, a
 inc c
-out stdout, 'a+1='
+out stdout, 'a + 1 = '
 out stdout, c
 out stdout, newline
 
 ; decrement
 mov c, a
 dec c
-out stdout, 'a-1='
+out stdout, 'a - 1 = '
 out stdout, c
 out stdout, newline

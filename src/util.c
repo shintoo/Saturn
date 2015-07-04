@@ -38,7 +38,7 @@ void DisplayTopic(int topic) {
 	puts(dialogues[topic]);
 }
 void Help(void) {
-	printf("\nWelcome to Saturn version %.1f!\n\nEnter a keyword, type, or"
+	printf("\nWelcome to Saturn version %s!\n\nEnter a keyword, type, or"
 		" topic for more information.\nEnter 'quit' to return to Saturn.\n", VERSION);
 	char input[32] = { ' '};
 	char *topics[] = {

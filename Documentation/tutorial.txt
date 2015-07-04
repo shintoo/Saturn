@@ -117,14 +117,10 @@ Basics
 
 Pre-Release Woes
 
- As Saturn is still in it's very early stages of development, some features
+ As Saturn is still in its very early stages of development, some features
  that you would expect in any progrmming language are not yet available.
-  
-  The most troublesome in this version is the inability to include whitespace
-  in strings. This is due to how the interpreter parses syntax. This lack of
-  a necessary feature is being worked on at this time.
-  
-  Another feature missing is the ability to concatenate ints and flts to
+ 
+  One feature missing is the ability to concatenate ints and flts to
   strings. This will be added very shortly.
 
   The behemoth of a feature that is control structures is also not yet

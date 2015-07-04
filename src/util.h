@@ -3,7 +3,7 @@
 #include "types.h"
 
 //#define DEBUG
-#define VERSION 0.1
+#define VERSION "0.1.2"
 
 /* Cleaner access to an argument's value */
 #define ARGVAL(ARG, TYPE) \
