@@ -1,0 +1,21 @@
+#!/usr/bin/saturn
+
+; files.sat - demonstrate output to files
+; This program prints some variables and some
+; literals to a file called output.txt
+
+int a, 10
+flt b, 16.89
+str s, 'this is a test'
+
+fil output, 'output.txt'
+opn output, 'w'
+
+out output, a
+out output, newline
+out output, b
+out output, newline
+out output, s
+out output, newline
+
+cls output
