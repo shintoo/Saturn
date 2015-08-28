@@ -17,11 +17,16 @@
  |            | value is provided.              |                             |
  +------------+---------------------------------+-----------------------------+
  | str        | Takes one or two arguments      | str string                  |
- |            | Creates a string variables;     | str hello, 'hello'          |
+ |            | Creates a string variable;      | str hello, 'hello'          |
  |            | initializes it if a value is    | str world, 'world'          |
  |            | provided.                       |                             |
- +----------------------------------------------------------------------------+
- 
+ +----------------------------------------------+-----------------------------+
+ | fil        | Takes two arguments             | fil output, 'prj/output.txt'|
+ |            | Creates a file variable, using  | fle data, 'data'            |
+ |            | the second argument as the path |                             |
+ |            | to the file.                    |                             |
+ +------------+---------------------------------+-----------------------------+
+
  +------------+
  | Operations |
  +------------+---------------------------------+-----------------------------+
@@ -66,6 +71,12 @@
  |            | argument's string onto the      |                             |
  |            | first's. Both bust be str.      |                             |
  +----------------------------------------------------------------------------+
+ | opn        | Takes two arguments             | opn output, 'w'             |
+ |            | Opens the alread declared file  | opn data, 'wb'              |
+ |            | for IO, using the second        |                             |
+ |            | argument as the mode. 'rwba+'   |                             |
+ |            | are all supported.              |                             |
+ +------------+---------------------------------+-----------------------------+
 
  +-----+
  | I/O |

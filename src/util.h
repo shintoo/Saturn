@@ -3,7 +3,7 @@
 #include "types.h"
 
 //#define DEBUG
-#define VERSION "0.1.2"
+#define VERSION "0.1.3"
 
 /* Cleaner access to an argument's value */
 #define ARGVAL(ARG, TYPE) \
@@ -28,11 +28,6 @@
 #else
 #define DEBUGMSG(...)
 #endif
-
-/* if st is a command that prints to stdout;
- * Used only in interactive mode so that the prompt
- * doesn't have empty newlines etc */
-bool out_stdout(const Statement *st);
 
 /* Only for interactive mode, if 'help' is entered, this
  * is called; creates a new help prompt for topics */

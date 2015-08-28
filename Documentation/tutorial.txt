@@ -115,6 +115,30 @@ Basics
        rin num2, stdin
        rin string, stdin
 
+
+ File IO
+
+  The two keywords 'fil' and 'opn' are used for dealing with user-declared files.
+  'fil' declares a file variable, which is used for input and output.
+  However, the file must first be opened for input and output. This is done
+  using the 'opn' keyword. The 'opn' keyword takes as its second argument the
+  mode for how the file wll be handled: 'r' for read, 'w' for write, 'b' for
+  binary IO, and 'a' for appending:
+
+      int a, 10
+      fil output, 'output.txt'
+      opn output, 'w'
+      out output, a
+
+  This will result in 10 being printed to the file output.txt. When finished
+  reading and writing to and from a file, it is wise to close the file. This
+  is done using the 'cls' keyword:
+
+      cls output
+
+  This will ensure the data will be written and cut off access to the file.
+  A closed file can always be opened again.
+
 Pre-Release Woes
 
  As Saturn is still in its very early stages of development, some features

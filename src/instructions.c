@@ -15,10 +15,12 @@ int __instruction_location = 0;
 
 void (*instructions[__instruction_count])(Arg *dst, const Arg *src);
 
+/* Call the appropriate function indicated by the command member of the statement */
 void Execute(const Statement *st) {
 	instructions[st->command](st->args[0], st->argcount == 2 ? st->args[1] : NULL);
 }
 
+/* Declares an integer variable */
 void saturn_int(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Creating INT variable \"%s\"\n", dst->token);
 
@@ -43,6 +45,7 @@ void saturn_int(Arg *dst, const Arg *src) {
 	AddToEnv(dst->var);
 }
 
+/* Declares a float variable */
 void saturn_flt(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Creating FLT variable \"%s\"\n", dst->token);
 
@@ -64,6 +67,7 @@ void saturn_flt(Arg *dst, const Arg *src) {
 	AddToEnv(dst->var);
 }
 
+/* Declares a string variable */
 void saturn_str(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Creating STR variable \"%s\"\n", dst->token);
 
@@ -86,11 +90,8 @@ void saturn_str(Arg *dst, const Arg *src) {
 	AddToEnv(dst->var);
 
 }
-/*
-void sfil(Arg *dst, const Arg *src) {
-	
 
-*/
+/* Assigns the value of the second argument to the first */
 void saturn_mov(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Destination: %s, source: %s\n",
 	        dst->var->label, src->var->label);
@@ -131,6 +132,7 @@ void saturn_mov(Arg *dst, const Arg *src) {
 	}
 }
 
+/* Prints the second argument to the stream that is the first argument */
 void saturn_out(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Writing variable \"%s\" to file \"%s\"\n", 
 		src->var->label, dst->var->label);
@@ -150,6 +152,7 @@ void saturn_out(Arg *dst, const Arg *src) {
 	}
 }
 
+/* Reads a value into the first argument from the stream that is the second */
 void saturn_rin(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Reading into variable \"%s\" from file \"%s\"\n",
 		dst->var->label, src->var->label);
@@ -197,6 +200,8 @@ void saturn_mod(Arg *dst, const Arg *src) {
 	dst->var->val.INT %= src->var->val.INT;
 
 }
+
+/* Increments the argument by 1 */
 void saturn_inc(Arg *dst, const Arg *src) {
 	if (src != NULL) {
 		ABORT("INC takes only one argument");
@@ -212,6 +217,7 @@ void saturn_inc(Arg *dst, const Arg *src) {
 	}
 }
 
+/* Decrements the argument by 1 */
 void saturn_dec(Arg *dst, const Arg *src) {
 	if (src != NULL) {
 		ABORT("DEC takes only one argument");
@@ -227,6 +233,7 @@ void saturn_dec(Arg *dst, const Arg *src) {
 	}
 }
 
+/* Concatenates the second argument onto the first, which is a string */
 void saturn_cat(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Concatenating \"%s\" to \"%s\"\n",
 		src->var->label, dst->var->label);
@@ -273,6 +280,7 @@ void saturn_jmp(Arg *dst, const Arg *src) {
 		ch = fgetc(
 */
 
+/* Declares a file variable */
 void saturn_fil(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Creating FIL variable \"%s\"\n", dst->token);
 
@@ -294,6 +302,7 @@ void saturn_fil(Arg *dst, const Arg *src) {
 	
 }
 
+/* Opens a stream from a file variable */
 void saturn_opn(Arg *dst, const Arg *src) {
 	DEBUGMSG("[EXECUTE] Opening FIL variable \"%s\"\n", dst->token);
 
@@ -321,6 +330,11 @@ void saturn_cls(Arg *dst, const Arg *src) {
 
 	fclose(dst->var->val.FIL.pntr);
 	dst->var->val.FIL.isopen = false;
+}
+
+void saturn_cmp(Arg *dst, const Arg *src) {
+
+
 }
 
 void AddToEnv(Var *v) {

@@ -21,15 +21,18 @@ void saturn_##NAME(Arg *dst, const Arg *src) { \
 }
 
 
-
+/* AddToEnv
+ * Adds a variable to the environment
+ * This function is called when a declaration
+ * statement is executed, adding the label of
+ * the variable to the environment for use
+ * in later statements
+ */
 void AddToEnv(Var *v);
 
 /*********************************************************/
 /*              Instruction Functions                    */
 /*********************************************************/
-
-// CHANGE ALL FUNCTIONS TO SATURN_X
-
 
 void saturn_mov(Arg *dst, const Arg *src);
 

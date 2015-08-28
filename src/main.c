@@ -15,6 +15,8 @@ int main(int argc, char **argv) {
 	int linecount;
 	bool interactive = false;
 	char *comment = NULL;
+	int envflags; // rename later
+
 
 	if (argc != 1) {
 		src = fopen(argv[1], "r");

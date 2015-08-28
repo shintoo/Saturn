@@ -79,8 +79,6 @@ void Init(void) {
 	env->vars[3]->val.FIL.isopen = true;
 }
 
-
-
 void End(void) {
 	DEBUGMSG("[ENVIRONMENT] Closing Saturn environment\n");
 
@@ -377,7 +375,7 @@ void DeleteStatement(Statement *st) {
 	}
 
 	free(st);
-}
+}	
 
 const char * TypeLabel(enum types type) {
 	const char *TYPELABELS[] = {
