@@ -72,13 +72,6 @@ int main(int argc, char **argv) {
 		/* Execute the instruction */
 		Execute(instruction);
 
-		/* Append a newline to all commands unless printing a newline */
-		if (interactive) {
-			if (out_stdout(instruction)) {
-				putchar('\n');
-			}
-		}
-
 		/* Delete the statement, free all memory used for it and for literals */
 		DeleteStatement(instruction);
 

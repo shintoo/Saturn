@@ -49,6 +49,12 @@ void saturn_rin(Arg *dst, const Arg *src);
 
 void saturn_out(Arg *dst, const Arg *src);
 
+void saturn_fil(Arg *dst, const Arg *src);
+
+void saturn_opn(Arg *dst, const Arg *src);
+
+void saturn_cls(Arg *dst, const Arg *src);
+
 /* declaration instructions *
  * if src is null, the var  *
  * is not initialized       */

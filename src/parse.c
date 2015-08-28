@@ -8,7 +8,7 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count 14
+#define __instruction_count 17
 
 int __linecount = 0;
 extern void (*instructions[__instruction_count])(Arg *, const Arg *);
@@ -18,7 +18,7 @@ Environment *env;
 
 const char *__COMMANDS2  =
 	"MOV CAT ADD SUB MUL DIV MOD"
-	"OUT RIN ";
+	"OUT RIN FIL OPN CLS";
 const char *__COMMANDS1  =
 	"INC DEC ";
 const char *__COMMANDS12 =
@@ -50,27 +50,36 @@ void Init(void) {
 
 	instructions[12] = saturn_rin;
 	instructions[13] = saturn_out;
+	instructions[14] = saturn_fil;
+	instructions[15] = saturn_opn;
+	instructions[16] = saturn_cls;
 
 	env->vars[0] = malloc(sizeof(Var));
 	env->vars[0]->label = "stdin";
 	env->vars[0]->type = _FIL;
-	env->vars[0]->val.FIL = stdin;
+	env->vars[0]->val.FIL.pntr = stdin;
+	env->vars[0]->val.FIL.isopen = true;
 
 	env->vars[1] = malloc(sizeof(Var));
 	env->vars[1]->label = "stdout";
 	env->vars[1]->type = _FIL;
-	env->vars[1]->val.FIL = stdout;
+	env->vars[1]->val.FIL.pntr = stdout;
+	env->vars[1]->val.FIL.isopen = true;
 
 	env->vars[2] = malloc(sizeof(Var));
 	env->vars[2]->label = "stderr";
 	env->vars[2]->type = _FIL;
-	env->vars[2]->val.FIL = stderr;
+	env->vars[2]->val.FIL.pntr = stderr;
+	env->vars[2]->val.FIL.isopen = true;
 
 	env->vars[3] = malloc(sizeof(Var));
 	env->vars[3]->label = "newline";
 	env->vars[3]->type = _STR;
 	env->vars[3]->val.STR = "\n";
+	env->vars[3]->val.FIL.isopen = true;
 }
+
+
 
 void End(void) {
 	DEBUGMSG("[ENVIRONMENT] Closing Saturn environment\n");
@@ -83,7 +92,9 @@ void End(void) {
 			free(env->vars[i]->val.STR);
 		}
 		if (env->vars[i]->type == _FIL) {
-			fclose(env->vars[i]->val.FIL);
+			if (env->vars[i]->val.FIL.isopen) {
+				fclose(env->vars[i]->val.FIL.pntr);
+			}
 		}
 		free(env->vars[i]);
 	}
@@ -128,7 +139,8 @@ Statement * Parse(char *line) {
 	bool onearg = false;
 	char *commands[] = {
 		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV", "MOD",
-		"INC", "DEC", "MOV", "CAT", "RIN", "OUT"
+		"INC", "DEC", "MOV", "CAT", "RIN", "OUT", "FIL", "OPN",
+		"CLS"
 	};
 	int temp;
 
@@ -145,7 +157,7 @@ Statement * Parse(char *line) {
 	/* Check the COMMANDS enum in types.h */
 	ret->command = arraystr(commands, __instruction_count, token);
 	if (ret->command == -1) {
-		ABORT("Error: unknown keyword: %s", token);
+		ABORT("Error: fuck unknown keyword: %s", token);
 	}
 
 	token = strtok(NULL, " ");

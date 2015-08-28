@@ -6,7 +6,7 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count  14
+#define __instruction_count  17
 
 extern Environment *env;
 extern int __linecount;
@@ -139,10 +139,14 @@ void saturn_out(Arg *dst, const Arg *src) {
 		ABORT("Error: first argument must be a FIL");
 	}
 
+	if (dst->var->val.FIL.isopen == false) {
+		ABORT("Error: file not opened for IO\n");
+	}
+
 	switch(src->var->type) {
-		case _INT: fprintf(ARGVAL(dst, FIL), "%d", ARGVAL(src, INT)); break;
-		case _FLT: fprintf(ARGVAL(dst, FIL), "%f", ARGVAL(src, FLT)); break;
-		case _STR: fprintf(ARGVAL(dst, FIL), "%s", ARGVAL(src, STR)); break;
+		case _INT: fprintf(ARGVAL(dst, FIL.pntr), "%d", ARGVAL(src, INT)); break;
+		case _FLT: fprintf(ARGVAL(dst, FIL.pntr), "%g", ARGVAL(src, FLT)); break;
+		case _STR: fprintf(ARGVAL(dst, FIL.pntr), "%s", ARGVAL(src, STR)); break;
 	}
 }
 
@@ -154,7 +158,7 @@ void saturn_rin(Arg *dst, const Arg *src) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
 	char str[32];
-	fgets(str, 32, ARGVAL(src, FIL));
+	fgets(str, 32, ARGVAL(src, FIL.pntr));
 	*strchr(str, '\n') = '\0';
 
 	switch(dst->var->type) {
@@ -269,6 +273,56 @@ void saturn_jmp(Arg *dst, const Arg *src) {
 		ch = fgetc(
 */
 
+void saturn_fil(Arg *dst, const Arg *src) {
+	DEBUGMSG("[EXECUTE] Creating FIL variable \"%s\"\n", dst->token);
+
+	if (Env(dst->token)) {
+		ABORT("Error: multiple declaration\n");
+	}
+
+	dst->var = malloc(sizeof(Var));
+	dst->var->type = _FIL;
+	dst->var->label = malloc(strlen(dst->token) + 1);
+	strcpy(dst->var->label, dst->token);
+	dst->var->isconst = false;
+	dst->var->val.FIL.isopen = false;
+
+	DEBUGMSG("[EXECUTE] Path to file: \"%s\"\n", src->token);
+	dst->var->val.FIL.path = src->var->val.STR;
+
+	AddToEnv(dst->var);
+	
+}
+
+void saturn_opn(Arg *dst, const Arg *src) {
+	DEBUGMSG("[EXECUTE] Opening FIL variable \"%s\"\n", dst->token);
+
+/*	if (dst->var->type != _FIL || src->var->type != _STR) {
+		ABORT("Error: Incorrect types for fil\n");
+	}
+*/
+	dst->var->val.FIL.mode = src->var->val.STR;
+	dst->var->val.FIL.pntr = fopen(dst->var->val.FIL.path, dst->var->val.FIL.mode);
+	dst->var->val.FIL.isopen = true;
+
+
+}
+
+void saturn_cls(Arg *dst, const Arg *src) {
+	DEBUGMSG("[EXECUTE] Closing FIL variable\n");
+
+	if (dst->var->type != _FIL) {
+		ABORT("You can only cls files\n");
+	}
+
+	if (dst->var->val.FIL.isopen == false) {
+		fprintf(stderr, "File not yet opened\n");
+	}
+
+	fclose(dst->var->val.FIL.pntr);
+	dst->var->val.FIL.isopen = false;
+}
+
 void AddToEnv(Var *v) {
 	DEBUGMSG("[ENVIRONMENT] Adding %s to environment at %d\n",
 		v->label, env->varcount);
@@ -284,3 +338,4 @@ void AddToEnv(Var *v) {
 
 	env->varcount++;
 }
+

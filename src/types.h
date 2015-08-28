@@ -9,7 +9,7 @@ enum COMMANDS {
 	INT, FLT, STR,
 	ADD, SUB, MUL, DIV, MOD,
 	INC, DEC,
-	MOV, CAT, RIN, OUT
+	MOV, CAT, RIN, OUT, FIL, OPN, CLS
 };
 
 typedef struct _label {
@@ -17,12 +17,19 @@ typedef struct _label {
 	fpos_t loc;
 } Label;
 
+struct _file {
+	FILE *pntr;
+	char *path;
+	char *mode;
+	bool isopen;
+};
+
 typedef union _val {
 	int INT;
 	float FLT;
 	char CHR;
 	char *STR;
-	FILE *FIL;
+	struct _file FIL;
 } Val;
 
 /* the variable */
