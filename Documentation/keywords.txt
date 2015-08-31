@@ -20,7 +20,7 @@
  |            | Creates a string variable;      | str hello, 'hello'          |
  |            | initializes it if a value is    | str world, 'world'          |
  |            | provided.                       |                             |
- +----------------------------------------------+-----------------------------+
+ +------------+---------------------------------+-----------------------------+
  | fil        | Takes two arguments             | fil output, 'prj/output.txt'|
  |            | Creates a file variable, using  | fle data, 'data'            |
  |            | the second argument as the path |                             |
@@ -33,60 +33,67 @@
  | mov        | Takes two arguments             | mov foo, 5    ; foo is  5   |
  |            | Copies the value of the source  |                             |
  |            | into the destination.           |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
  | add        | Takes two arguments             | add foo, bar                |
  |            | Adds the source's value to the  | add quux, foo               |
  |            | destination. Both must be int   |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
  | sub        | Takes two arguments             | sub foo, 12                 |
  |            | Subtracts the source's value    | sub quux, 0.5               |
  |            | from the destination's value.   |                             |
  |            | Both must be an int or flt.     |                             |
- +----------------------------------------------------------------------------+
+ +------------_---------------------------------+-----------------------------+
  | mul        | Takes two arguments             | mul foo, 5                  |
  |            | Multiplies the destination's    | mul quux, foo               |
  |            | value by the source's value.    |                             |
  |            | Both must be int or flt.        |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
  | div        | Takes two arguments             | div foo, 6                  |
  |            | Divides the destination's value | div bar, foo                |
  |            | by the source's value. Both     |                             |
  |            | must be int or flt.             |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
  | mod        | Takes two arguments             | mod foo, 2                  |
  |            | Takes the modulus of two int    | mod bar, foo                |
  |            | arguments and assigns it to the | ; bar is bar modulus foo    |
  |            | first.                          |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
  | inc        | Takes one argument              | inc foo                     |
  |            | Increments the first argument's |                             |
  |            | value. Must be int or flt.      |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
  | dec        | Takes one argument              | dec bar                     |
  |            | Decrements the first argument's |                             |
  |            | value. Must be int or flt.      |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
  | cat        | Takes two arguments             | cat hello, world            |
  |            | Concatenates the second         | cat hello,'!'               |
  |            | argument's string onto the      |                             |
  |            | first's. Both bust be str.      |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
+ | jmp        | Takes one argument (label)      | jmp print_a                 |
+ |            | Shifts the flow of execution to | printa:                     |
+ |            | the label.                      | out stdout, a               |
+ +------------+---------------------------------+-----------------------------+
+ +-----+
+ | I/O |
+ +------------+---------------------------------+-----------------------------+
+ | out        | Takes two arguments             | out stdout, 'string'        |
+ |            | Writes the second argument to   | out stdout, foo             |
+ |            | the file of the first argument  |                             |
+ +------------+---------------------------------+-----------------------------+
+ | rin        | Takes two arguments             | rin bar, stdin              |
+ |            | Reads from the file stream of   | rin hello, stdin            |
+ |            | the second argument into the    |                             |
+ |            | variable of the first argument  |                             |
+ +------------+---------------------------------+-----------------------------+
  | opn        | Takes two arguments             | opn output, 'w'             |
  |            | Opens the alread declared file  | opn data, 'wb'              |
  |            | for IO, using the second        |                             |
  |            | argument as the mode. 'rwba+'   |                             |
  |            | are all supported.              |                             |
  +------------+---------------------------------+-----------------------------+
-
- +-----+
- | I/O |
- +----------------------------------------------------------------------------+
- | out        | Takes two arguments             | out stdout, 'string'        |
- |            | Writes the second argument to   | out stdout, foo             |
- |            | the file of the first argument  |                             |
- +----------------------------------------------------------------------------+
- | rin        | Takes two arguments             | rin bar, stdin              |
- |            | Reads from the file stream of   | rin hello, stdin            |
- |            | the second argument into the    |                             |
- |            | variable of the first argument  |                             |
+ | cls        | Takes one argument              | cls output                  |
+ |            | Closes the file that was        | cls data                    |
+ |            | previously used for IO.         |                             |
  +----------------------------------------------------------------------------+

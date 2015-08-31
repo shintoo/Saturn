@@ -8,22 +8,23 @@
 #include "util.h"
 
 extern int __linecount;
+FILE *src_file;
 
 int main(int argc, char **argv) {
-	FILE *src;
 	char line[81];
 	int linecount;
 	bool interactive = false;
 	char *comment = NULL;
 	int envflags; // rename later
-
+//	Label *labels;
 
 	if (argc != 1) {
-		src = fopen(argv[1], "r");
-		linecount = CountLines(src);
+		src_file = fopen(argv[1], "r");
+		linecount = CountLines(src_file);
+//		labels = ScrapeForLabels(src);
 	}
 	else {
-		src = stdin;
+		src_file = stdin;
 		linecount = -1;
 		interactive = true;
 	}
@@ -34,18 +35,22 @@ int main(int argc, char **argv) {
 	}
 	Init();
 	Statement *instruction;
-	for (int i = 0; i != linecount; i++) {
+	for (int i = 0; !feof(src_file); i++) {
 		if (interactive) {
 			printf("saturn> ");
 		}
-		fgets(line, 80, src);
+		fgets(line, 80, src_file);
+		if (feof(src_file)) {
+			break;
+		}
+
 		__linecount++;
 
 		comment = strchr(line, ';');
 		if (comment) {
 			*comment = '\n';
 		}
-		
+
 		if (interactive) {
 			if (strncmp(line, "help", 4) == 0) {
 				Help();
@@ -62,9 +67,9 @@ int main(int argc, char **argv) {
 		/* Parse line into a statement */
 		instruction = Parse(line);
 
-		/* Skip empty lines */
+		/* Skip empty lines and labels*/
 		if (instruction == NULL) {
-			DEBUGMSG("<blank line>\n");
+			DEBUGMSG("<blank line or label>\n");
 			continue;
 		}
 
@@ -80,7 +85,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (argc != 1) {
-		fclose(src);
+		fclose(src_file);
 	}
 	End();
 	return 0;

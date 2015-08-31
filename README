@@ -5,7 +5,7 @@
                             ,###===+++++++++++++++o:    ":::::
                             ##===++++++++++++++++oo- ...:::"
                             #==++++++++++++++....::::"""
-                        ..,:=++++++++....::::""""--'
+                        ..,:=+++++++++...::::""""--'
                      .::"""  "....::::""""oooo----'
                     ::::...:::""""++++oooo------'
                       """""         '------'
@@ -24,13 +24,13 @@ What's Saturn like?
   Syntactically, it is heavily inspired by x86 Assembly. Semantically, it is
   somewhat high level. Here's a peek:
 
-      int exampleint
-      rin exampleint, stdin
-      out stdout, exampleint
-      out stdout, '+ 10 ='
-      add exampleint, 10
-      out stdout, exampleint
-	  out stdout, newline
+      int num
+      rin num, stdin
+      out stdout, num
+      out stdout, '+ 10 = '
+      add num, 10
+      out stdout, num
+      out stdout, newline
 
 How do I install Saturn?
 

@@ -18,6 +18,12 @@ Var *Env(char *token);
 /* Delete the environment */
 void End(void);
 
+/* Scrape for labels */
+Label * ScrapeForLabels(FILE *src);
+
+/* find a label, returns 1 if found, 0 if not */
+int FindLabel(const char *label, fpos_t *loc);
+
 /*********************************************************/
 /*                      Arg Functions                    */
 /*********************************************************/

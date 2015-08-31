@@ -14,7 +14,7 @@ enum COMMANDS {
 
 typedef struct _label {
 	char *string;
-	fpos_t loc;
+	fpos_t *loc;
 } Label;
 
 struct _file {

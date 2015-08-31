@@ -139,6 +139,59 @@ Basics
   This will ensure the data will be written and cut off access to the file.
   A closed file can always be opened again.
 
+ Labels
+
+  A label can be created with an unbroken name followed by a colon and newline.
+  Labels can then be jumped to using the 'jmp' keyword:
+
+      int a, 10
+      out stdout, a
+      jmp add5
+      sub a, 5
+      add5:
+      add a, 5
+      out stdout, a
+  
+  Here, the program executes as such: declare 'a' as an integer of 10, print
+  it, add 5 to a, then print it. It never subtracts 5 from a, because it was
+  skipped by the 'jmp add5' line, which moved the flow to the 'add5:' label.
+  Typically, programs have labels for each of their sections for
+  organization.
+
+      main:
+          fil output, 'data.txt'
+          opn output, 'w'
+          jmp get_input
+          input_got:
+          jmp print_out
+          print_done:
+          cls output
+          jmp end
+     
+      get_input:
+          int a
+          out stdout, 'Enter an integer: '
+          rin a, stdin
+          jmp input_got
+
+      print_out:
+          out output, 'The number entered: '
+          out output, a
+          out output, newline
+          jmp print_done
+
+      end:
+          out stdout, 'Done!'
+          out stdout, newline
+
+  It is common for programs with jumps and labels to have an 'end' label. If
+  this example did not have 'jmp end' and the 'end' label, then all of the
+  code, from 'int a', the first line of get_input, to 'jmp print', the last
+  line of print_out, would be executed more than once. In fact, this program
+  would enter an endless loop! This is because code after a label is not
+  ignored if it's not jumped to. So, when using jumps and labels, it is always
+  a good idea to have an 'end' label.
+
 Pre-Release Woes
 
  As Saturn is still in its very early stages of development, some features

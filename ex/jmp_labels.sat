@@ -1,0 +1,31 @@
+#!/usr/bin/saturn
+; label_example.sat - Demonstrating labels.
+; This program takes a very roundabout path to
+; read an integer from the user and print it to
+; a file - for the sake of demonstrating jumps.
+
+main:
+    fil output, 'data.txt'
+    opn output, 'w'
+    jmp get_input
+    input_got:
+    jmp print_out
+    print_done:
+    cls output
+    jmp end
+   
+get_input:
+    int a
+    out stdout, 'Enter an integer: '
+    rin a, stdin
+    jmp input_got
+
+print_out:
+    out output, 'The number entered: '
+    out output, a
+    out output, newline
+    jmp print_done
+
+end:
+    out stdout, 'Done!'
+    out stdout, newline

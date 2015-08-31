@@ -8,24 +8,24 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count 17
+#define __instruction_count 18
 
 int __linecount = 0;
 extern void (*instructions[__instruction_count])(Arg *, const Arg *);
 extern int __instruction_location;
-
+extern FILE *src_file;
 Environment *env;
 
 const char *__COMMANDS2  =
 	"MOV CAT ADD SUB MUL DIV MOD"
 	"OUT RIN FIL OPN CLS";
 const char *__COMMANDS1  =
-	"INC DEC ";
+	"INC DEC JMP";
 const char *__COMMANDS12 =
 	"INT STR FLT ";
 
 void Init(void) {
-	DEBUGMSG("[ENVIRONMENT] Initializing Saturn environment\n");
+	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Initializing Saturn environment\n");
 
 	env = malloc(sizeof(Environment));
 	env->vars = malloc(10 * sizeof(Var *));
@@ -54,6 +54,8 @@ void Init(void) {
 	instructions[15] = saturn_opn;
 	instructions[16] = saturn_cls;
 
+	instructions[17] = saturn_jmp;
+
 	env->vars[0] = malloc(sizeof(Var));
 	env->vars[0]->label = "stdin";
 	env->vars[0]->type = _FIL;
@@ -61,9 +63,9 @@ void Init(void) {
 	env->vars[0]->val.FIL.isopen = true;
 
 	env->vars[1] = malloc(sizeof(Var));
-	env->vars[1]->label = "stdout";
-	env->vars[1]->type = _FIL;
 	env->vars[1]->val.FIL.pntr = stdout;
+	env->vars[1]->type = _FIL;
+	env->vars[1]->label = "stdout";
 	env->vars[1]->val.FIL.isopen = true;
 
 	env->vars[2] = malloc(sizeof(Var));
@@ -78,9 +80,50 @@ void Init(void) {
 	env->vars[3]->val.STR = "\n";
 	env->vars[3]->val.FIL.isopen = true;
 }
+/*
+Label * ScrapeForLabels(FILE *src) {
+	DEBUGMSG("[ PARSE ] Scraping for labels\n");
+	char ch;
+	int i = 0;
+	fpos_t *last_newline = NULL;
+	fpos_t *label_loc = NULL;
+	char *label_name;
+	Label *labels = malloc(3 * sizeof(Label));
+	int labels_size = 3;
+	int label_count = 0;
+	int line_count = 0;
 
+	for (ch = fgetc(src); !feof(src); ch = fgetc(src)) {
+		if (ch == '\n') {
+			line_count++;
+			fgetpos(src, last_newline);
+		}
+		if (ch == ':') {
+			DEBUGMSG("[ PARSE ] Found label at %d\n", line_count);
+			fsetpos(src, last_newline);
+			labels[label_count].string = malloc(16);
+			ch = fgetc(src);
+			while (ch != ':') {
+				if (!(isspace(ch))) {
+					labels[label_count].string[i++] = ch;
+				}
+			}
+			labels[label_count].string[i] = '\0';
+			DEBUGMSG("[ PARSE ] Label \"%s\" created\n", labels[label_count].string);
+			label_count++;
+			if (label_count % 3 == 0) {
+				labels_size += 3;
+				labels = realloc(labels, 3 * sizeof(Label));
+			}
+			ch = fgetc(src); // the ':'
+		}
+	}
+
+	return labels;
+}
+*/
 void End(void) {
-	DEBUGMSG("[ENVIRONMENT] Closing Saturn environment\n");
+	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Closing Saturn environment\n");
 
 	for (int i = 0; i < 4; i++) {
 		free(env->vars[i]);
@@ -101,25 +144,23 @@ void End(void) {
 
 	exit(EXIT_SUCCESS);
 }
-
-int CountLines(FILE *src) {
+int CountLines(FILE *src_file) {
 	char ch;
 	int ret = 0;
-
 	do {
-		ch = fgetc(src);
+		ch = fgetc(src_file);
 		if (ch == '\n') {
 			ret++;
 		}
-	} while (!feof(src));
+	} while (!feof(src_file));
 
-	rewind(src);
+	rewind(src_file);
 	return ret;
 }
 
-char * getline(FILE *src) {
+char * getline(FILE *src_file) {
 	char *ret = malloc(81);
-	fgets(ret, 80, src);
+	fgets(ret, 80, src_file);
 	replace(ret, ';', '\n');
 	__instruction_location++;
 
@@ -127,6 +168,10 @@ char * getline(FILE *src) {
 }
 
 Statement * Parse(char *line) {
+	if (strchr(line, ':') && !strchr(line, '\'')) {
+		return NULL;
+	}
+
 	Statement *ret = NewStatement();
 	char *token;
 	char *strlit = NULL; /* */
@@ -138,7 +183,7 @@ Statement * Parse(char *line) {
 	char *commands[] = {
 		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV", "MOD",
 		"INC", "DEC", "MOV", "CAT", "RIN", "OUT", "FIL", "OPN",
-		"CLS"
+		"CLS", "JMP"
 	};
 	int temp;
 
@@ -154,8 +199,9 @@ Statement * Parse(char *line) {
 
 	/* Check the COMMANDS enum in types.h */
 	ret->command = arraystr(commands, __instruction_count, token);
+
 	if (ret->command == -1) {
-		ABORT("Error: fuck unknown keyword: %s", token);
+		ABORT("Error: unknown keyword: %s", token);
 	}
 
 	token = strtok(NULL, " ");
@@ -207,13 +253,14 @@ Statement * Parse(char *line) {
 	 * must be used for string literals
 	 */
 	if (token[0] == '\'') {
-		DEBUGMSG("[PARSE] %d: String literal with spaces\n", __LINE__);
+		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] %d: String literal with spaces\n",
+		    __LINE__);
 		strlit = malloc(80);
 		strlit[0] = '\0';
 		strncat(strlit, token, 31);
 		while ((extra = strtok(NULL, " ")) != NULL) {
 			replace(extra, '\n', '\0');
-			DEBUGMSG("[PARSE] Appending %s to string\n", extra);
+			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Appending %s to string\n", extra);
 //			printf("extra: %s\n", extra);
 			strcat(strlit, " ");
 			strcat(strlit, extra);
@@ -249,7 +296,7 @@ Arg * CreateArg(char *token) {
 Arg * CreateStringLiteral(char *token) {
 	char *end;
 	Arg *ret;
-	DEBUGMSG("[PARSE] %d: token: \"%s\"\n", __LINE__, token);
+	DEBUGMSG("[ " _MAGENTA "PARSE " _RESET "] %d: token: \"%s\"\n", __LINE__, token);
 
 	if (token[strlen(token) - 1] != '\'') {
 		if (strchr(token + 1, '\'') == NULL) {
@@ -308,7 +355,8 @@ Arg * CreateNumericLiteral(char *token) {
 }
 
 Arg * CreateVarArg(char *token) {
-	DEBUGMSG("[PARSE] Creating variable argument for \"%s\"\n", token);
+	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Creating variable argument for \"%s\"\n",
+	    token);
 	Arg *ret;
 	int len = strlen(token);
 
@@ -320,12 +368,13 @@ Arg * CreateVarArg(char *token) {
 	
 	ret = malloc(sizeof(Arg));
 
-	DEBUGMSG("[PARSE] Searching environment for \"%s\"\n", token);
+	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Searching environment for \"%s\"\n", token);
 	if ((ret->var = Env(token)) != NULL) {
-		DEBUGMSG("[PARSE] Found %s in environment\n", ret->var->label);
+		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found %s in environment\n",
+		    ret->var->label);
 		return ret;
 	}
-	DEBUGMSG("[PARSE] \"%s\" not found in environment\n", token);
+	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] \"%s\" not found in environment\n", token);
 
 	ret->isliteral = false;
 	ret->token = token;
@@ -335,12 +384,14 @@ Arg * CreateVarArg(char *token) {
 Var * Env(char *token) {
 	Var *ret = NULL;
 
-	DEBUGMSG("[PARSE] Environment contains %d variables\n", env->varcount);
+	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Environment contains %d variables\n",
+	    env->varcount);
 	for (int i = 0; i < env->varcount; i++) {
-		DEBUGMSG("[PARSE] \t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
+		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] \t%s variable: \"%s\"\n",
+		    TypeLabel(env->vars[i]->type),
 		       env->vars[i]->label);
 		if (strcmp(env->vars[i]->label, token) == 0) {
-			DEBUGMSG("[PARSE] Found %s in environment at %d\n",
+			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found %s in environment at %d\n",
 				env->vars[i]->label, i);
 			ret = env->vars[i];
 		}
@@ -391,3 +442,53 @@ void ToUpper(char *st) {
 		st[i] = toupper(st[i]);
 	}
 }
+
+int FindLabel(const char *label, fpos_t *loc) {
+	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Searching for \"%s\"\n", label);
+	char str[80];
+	rewind(src_file);
+
+	while (!feof(src_file)) {
+		fgets(str, 80, src_file);
+		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ]\t%s\n", str);
+		if (strstr(str, label)) {
+			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found label in FindLabel\n");
+			fgetpos(src_file, loc);
+			return 1;
+		}
+	}
+	ABORT("Label not found: \"%s\"\n", label);
+
+}
+
+/*
+int match(const char *label) {
+	char c;
+	int i;
+	for (i = 0; label[i] != '\0'; i++) {
+		c = fgetc(src);
+		if (feof(src) || c != label[i])
+			return 0;
+	}
+	return 1;
+}
+
+int FindLabel(const char *label, fpos_t *loc) {
+	if(label[0] == '\0') {
+		fgetpos(src, loc);
+		return 1;
+	}
+	char c;
+	for(c = fgetc(src); !feof(src); c = fgetc(src)) {
+		if(c == label[0]) {
+			if(loc != NULL) {
+				fgetpos(src, loc);
+			}
+			if(match(label + 1) == 1) {
+				return 1;
+			}
+		}
+    }
+    return 0;
+}
+*/
