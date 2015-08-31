@@ -7,24 +7,24 @@
 main:
     fil output, 'data.txt'
     opn output, 'w'
-    jmp get_input
-    input_got:
-    jmp print_out
-    print_done:
+    jmp input
+    _input:
+    jmp print
+    _print:
     cls output
     jmp end
    
-get_input:
+input:
     int a
     out stdout, 'Enter an integer: '
     rin a, stdin
-    jmp input_got
+    jmp _input
 
-print_out:
+print:
     out output, 'The number entered: '
     out output, a
     out output, newline
-    jmp print_done
+    jmp _print
 
 end:
     out stdout, 'Done!'

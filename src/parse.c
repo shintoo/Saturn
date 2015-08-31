@@ -405,17 +405,24 @@ void ToUpper(char *st) {
 int FindLabel(const char *label, fpos_t *loc) {
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Searching for \"%s\"\n", label);
 	char str[80];
+	char *lab;
+	char ch;
 	rewind(src_file);
 
 	while (!feof(src_file)) {
 		fgets(str, 80, src_file);
+		for (int i = 0; i < strlen(str); i++) {
+			if (!isspace(str[i])) {
+				lab = str + i;
+				break;
+			}
+		}
 		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ]\t%s\n", str);
-		if (strstr(str, label)) {
+		if (strstr(lab, label) && lab[0] == label[0]) {
 			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found label in FindLabel\n");
 			fgetpos(src_file, loc);
 			return 1;
 		}
 	}
 	ABORT("Label not found: \"%s\"\n", label);
-
 }
