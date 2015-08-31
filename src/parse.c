@@ -80,48 +80,7 @@ void Init(void) {
 	env->vars[3]->val.STR = "\n";
 	env->vars[3]->val.FIL.isopen = true;
 }
-/*
-Label * ScrapeForLabels(FILE *src) {
-	DEBUGMSG("[ PARSE ] Scraping for labels\n");
-	char ch;
-	int i = 0;
-	fpos_t *last_newline = NULL;
-	fpos_t *label_loc = NULL;
-	char *label_name;
-	Label *labels = malloc(3 * sizeof(Label));
-	int labels_size = 3;
-	int label_count = 0;
-	int line_count = 0;
 
-	for (ch = fgetc(src); !feof(src); ch = fgetc(src)) {
-		if (ch == '\n') {
-			line_count++;
-			fgetpos(src, last_newline);
-		}
-		if (ch == ':') {
-			DEBUGMSG("[ PARSE ] Found label at %d\n", line_count);
-			fsetpos(src, last_newline);
-			labels[label_count].string = malloc(16);
-			ch = fgetc(src);
-			while (ch != ':') {
-				if (!(isspace(ch))) {
-					labels[label_count].string[i++] = ch;
-				}
-			}
-			labels[label_count].string[i] = '\0';
-			DEBUGMSG("[ PARSE ] Label \"%s\" created\n", labels[label_count].string);
-			label_count++;
-			if (label_count % 3 == 0) {
-				labels_size += 3;
-				labels = realloc(labels, 3 * sizeof(Label));
-			}
-			ch = fgetc(src); // the ':'
-		}
-	}
-
-	return labels;
-}
-*/
 void End(void) {
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Closing Saturn environment\n");
 
@@ -460,35 +419,3 @@ int FindLabel(const char *label, fpos_t *loc) {
 	ABORT("Label not found: \"%s\"\n", label);
 
 }
-
-/*
-int match(const char *label) {
-	char c;
-	int i;
-	for (i = 0; label[i] != '\0'; i++) {
-		c = fgetc(src);
-		if (feof(src) || c != label[i])
-			return 0;
-	}
-	return 1;
-}
-
-int FindLabel(const char *label, fpos_t *loc) {
-	if(label[0] == '\0') {
-		fgetpos(src, loc);
-		return 1;
-	}
-	char c;
-	for(c = fgetc(src); !feof(src); c = fgetc(src)) {
-		if(c == label[0]) {
-			if(loc != NULL) {
-				fgetpos(src, loc);
-			}
-			if(match(label + 1) == 1) {
-				return 1;
-			}
-		}
-    }
-    return 0;
-}
-*/
