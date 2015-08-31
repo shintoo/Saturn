@@ -192,14 +192,43 @@ Basics
   ignored if it's not jumped to. So, when using jumps and labels, it is always
   a good idea to have an 'end' label.
 
+ Control Flow
+
+  Jumps can be used to move the program flow from one place to another.
+  Conditional jumps are jumps that are only executed if a condition is
+  true. This condition is set by the 'cmp' keyword, which compares two
+  values.
+
+      int a
+      int b
+      rin a, stdin
+      rin b, stdin
+      cmp a, b
+
+  Here, 'cmp a, b' compares the values of a and b. 'cmp' can be used with two
+  numeric values, or two string values. 'cmp' changes the value of what's
+  referred to as the status word. The status word indicates that most recent
+  result of 'cmp'. Using the status word, we can decide if the program should
+  jump to different labels, using conditional jumps.
+
+      int num1, 2
+      int num2, 5
+      cmp num1, num2
+      jeq equal
+      
+  The flow of this program will jump to the label 'equal' if num1 and num2 are
+  equal. Since 2 and 5 are not equal, the jump to 'equal' is not executed.
+  There are many types of conditional jumps, one for each result of 'cmp'.
+  They are are listed in the keywords.txt file.
+
 Pre-Release Woes
 
  As Saturn is still in its very early stages of development, some features
  that you would expect in any progrmming language are not yet available.
  
   One feature missing is the ability to concatenate ints and flts to
-  strings. This will be added very shortly.
+  strings. This will be added very shortly. Various other string features
+  have yet to be added, such as tokenizing a string.
 
-  The behemoth of a feature that is control structures is also not yet
-  implemented, but is also the next step for Saturn, and will be top priority
-  upon the inclusion of the previously mentioned missing features.
+  While output to files is working, support for input from files has yet to be
+  completed.

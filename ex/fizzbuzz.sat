@@ -1,0 +1,52 @@
+#!/usr/bin/saturn
+; fizzbuzz.sat - Fizzbuzz using labels and
+;                conditional jumps.
+
+start:
+	int i, 1
+	int c
+	int printnum
+
+loop:
+	mov printnum, 1
+	mov c, i
+	mod c, 15
+	cmp c, 0
+	jeq fizzbuzz
+	mov c, i
+	mod c, 3
+	cmp c, 0
+	jeq fizz
+	mov c, i
+	mod c, 5
+	cmp c, 0
+	jeq buzz
+	cmp printnum, 1
+	jeq num
+	back:
+	out stdout, newline
+	inc i
+	cmp i, 100
+	jig end
+	jmp loop
+
+fizzbuzz:
+	out stdout, 'fizzbuzz'
+	mov printnum, 0
+	jmp back
+
+fizz:
+	out stdout, 'fizz'
+	mov printnum, 0
+	jmp back
+
+buzz:
+	out stdout, 'buzz'
+	mov printnum, 0
+	jmp back
+
+num:
+	out stdout, i
+	jmp back
+
+end:

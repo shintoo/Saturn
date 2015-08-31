@@ -71,10 +71,46 @@
  |            | argument's string onto the      |                             |
  |            | first's. Both bust be str.      |                             |
  +------------+---------------------------------+-----------------------------+
+
+ +--------------+
+ | Control Flow |
+ +------------+---------------------------------+-----------------------------+
+ | cmp        | Takes two arguments             | int a, 5                    |
+ |            | Compares the values of the      | int b, 8                    |
+ |            | arguments and sets the status   | cmp a, b                    |
+ |            | word accordingly.               | ; status word: 'less than'  |
+ +------------+---------------------------------+-----------------------------+
  | jmp        | Takes one argument (label)      | jmp print_a                 |
  |            | Shifts the flow of execution to | printa:                     |
  |            | the label.                      | out stdout, a               |
  +------------+---------------------------------+-----------------------------+
+ | jeq        | Takes one argument (label)      | cmp 3, 3.0                  |
+ |            | Jumps to the label if the       | jeq equal                   |
+ |            | result of cmp is 'equal'.       | equal:                      |
+ +------------+---------------------------------+-----------------------------+
+ | jne        | Takes one argument (label)      | cmp 3, 4                    |
+ |            | Jumps to the label if the       | jne not_equal               |
+ |            | result of cmp is 'not equal'.   | not_equal:                  |
+ +------------+---------------------------------+-----------------------------+
+ | jig        | Taken one argument (label)      | cmp 7, 3                    |
+ |            | Jumps to the label if the       | jig greater_than            |
+ |            | cmp's result is 'greater than'. | greater_than:               |
+ +------------+---------------------------------+-----------------------------+
+ | jil        | Takes one argument (label)      | cmp 3, 7                    |
+ |            | Jumps to the label if the       | jil less_than               |
+ |            | cmp's result is 'less than'.    | less_than:                  |
+ +------------+---------------------------------+-----------------------------+
+ | jge        | Takes one argument (label)      | cmp 6, 6                    |
+ |            | Jumps to the label if the       | jge g_or_eq                 |
+ |            | result of cmp is 'greater than  | g_or_eq:                    |
+ |            | or equal to'.                   |                             |
+ +------------+---------------------------------+-----------------------------+
+ | jle        | Takes one argument (label)      | cmp 2, 2                    |
+ |            | Jumps to the label if the       | jle l_or_eq                 |
+ |            | result of cmp is 'less than or  | l_or_eq:                    |
+ |            | equal to'.                      | out stdout, '2 == 2!'       |
+ +------------+---------------------------------+-----------------------------+
+
  +-----+
  | I/O |
  +------------+---------------------------------+-----------------------------+

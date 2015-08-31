@@ -21,7 +21,7 @@ What is Saturn?
 
 What's Saturn like?
 
-  Syntactically, it is heavily inspired by x86 Assembly. Semantically, it is
+  Syntactically, it is somewhat inspired by x86 Assembly. Semantically, it is
   somewhat high level. Here's a peek:
 
       int num

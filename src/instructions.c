@@ -6,11 +6,12 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count  18
+#define __instruction_count  25
 
 extern Environment *env;
 extern int __linecount;
 extern FILE *src_file;
+extern char StatusWord;
 
 int __instruction_location = 0;
 
@@ -284,6 +285,54 @@ void saturn_jmp(Arg *dst, const Arg *src) {
 
 }
 
+void saturn_jeq(Arg *dst, const Arg *src) {
+	if (StatusWord == 0) {
+		saturn_jmp(dst, src);
+	}
+}
+
+MAKE_COND_JMP(jne, 1, 2);
+
+MAKE_COND_JMP(jig, 2, 2);
+
+MAKE_COND_JMP(jil, 1, 1);
+
+MAKE_COND_JMP(jle, 1, 0);
+
+MAKE_COND_JMP(jge, 2, 0);
+
+void saturn_cmp(Arg *dst, const Arg *src) {
+	int strcmp_ret = 0;
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Comparing\n");
+ 	if ((src->var->type | dst->var->type) > 1 &&
+			src->var->type + dst->var->type != 4) {
+		ABORT(" Invalid types for cmp\n");
+	}
+	switch(dst->var->type) {
+		case _INT:
+		case _FLT:
+			if (INT_OR_FLT(dst) > INT_OR_FLT(src)) {
+				StatusWord = 2;
+			} else if (INT_OR_FLT(dst) < INT_OR_FLT(src)) {
+				StatusWord = 1;
+			} else {
+				StatusWord = 0;
+			}
+		break;
+		case _STR:
+			strcmp_ret = strcmp(ARGVAL(dst, STR), ARGVAL(src, STR));
+			if (strcmp_ret > 0) {
+				StatusWord = 2;
+			} else if (strcmp_ret < 0) {
+				StatusWord = 1;
+			} else {
+				StatusWord = 0;
+			}
+	}
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Set StatusWord to %d\n", StatusWord);
+}
+
+
 /* Declares a file variable */
 void saturn_fil(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FIL variable \"%s\"\n", dst->token);
@@ -334,11 +383,6 @@ void saturn_cls(Arg *dst, const Arg *src) {
 
 	fclose(dst->var->val.FIL.pntr);
 	dst->var->val.FIL.isopen = false;
-}
-
-void saturn_cmp(Arg *dst, const Arg *src) {
-
-
 }
 
 void AddToEnv(Var *v) {

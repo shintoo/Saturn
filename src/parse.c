@@ -8,19 +8,20 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count 18
+#define __instruction_count 25
 
 int __linecount = 0;
 extern void (*instructions[__instruction_count])(Arg *, const Arg *);
 extern int __instruction_location;
 extern FILE *src_file;
+extern char StatusWord;
 Environment *env;
 
 const char *__COMMANDS2  =
 	"MOV CAT ADD SUB MUL DIV MOD"
-	"OUT RIN FIL OPN CLS";
+	"OUT RIN FIL OPN CLS CMP";
 const char *__COMMANDS1  =
-	"INC DEC JMP";
+	"INC DEC JMP JEQ JNE JIG JGE JIL JLE";
 const char *__COMMANDS12 =
 	"INT STR FLT ";
 
@@ -55,6 +56,13 @@ void Init(void) {
 	instructions[16] = saturn_cls;
 
 	instructions[17] = saturn_jmp;
+	instructions[18] = saturn_cmp;
+	instructions[19] = saturn_jeq;
+	instructions[20] = saturn_jne;
+	instructions[21] = saturn_jig;
+	instructions[22] = saturn_jge;
+	instructions[23] = saturn_jil;
+	instructions[24] = saturn_jle;
 
 	env->vars[0] = malloc(sizeof(Var));
 	env->vars[0]->label = "stdin";
@@ -142,7 +150,8 @@ Statement * Parse(char *line) {
 	char *commands[] = {
 		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV", "MOD",
 		"INC", "DEC", "MOV", "CAT", "RIN", "OUT", "FIL", "OPN",
-		"CLS", "JMP"
+		"CLS", "JMP", "CMP", "JEQ", "JNE", "JIG", "JGE", "JIL",
+		"JLE"
 	};
 	int temp;
 

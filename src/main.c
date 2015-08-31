@@ -9,6 +9,7 @@
 
 extern int __linecount;
 FILE *src_file;
+char StatusWord;
 
 int main(int argc, char **argv) {
 	char line[81];
@@ -16,12 +17,11 @@ int main(int argc, char **argv) {
 	bool interactive = false;
 	char *comment = NULL;
 	int envflags; // rename later
-//	Label *labels;
 
+	StatusWord = 0;
 	if (argc != 1) {
 		src_file = fopen(argv[1], "r");
 		linecount = CountLines(src_file);
-//		labels = ScrapeForLabels(src);
 	}
 	else {
 		src_file = stdin;
@@ -42,8 +42,10 @@ int main(int argc, char **argv) {
 		fgets(line, 80, src_file);
 		if (feof(src_file)) {
 			break;
-		}
-
+		}		
+#ifdef DEBUG
+		getchar();
+#endif
 		__linecount++;
 
 		comment = strchr(line, ';');

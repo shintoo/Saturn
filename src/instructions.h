@@ -20,6 +20,13 @@ void saturn_##NAME(Arg *dst, const Arg *src) { \
 	ARITHMETIC(dst, OP, src); \
 }
 
+/* finish this */
+#define MAKE_COND_JMP(NAME, SW1, SW2) \
+void saturn_##NAME(Arg *dst, const Arg *src) { \
+	if (StatusWord == SW1 || StatusWord == SW2) { \
+		saturn_jmp(dst, src); \
+	} \
+}
 
 /* AddToEnv
  * Adds a variable to the environment
@@ -58,6 +65,8 @@ void saturn_opn(Arg *dst, const Arg *src);
 
 void saturn_cls(Arg *dst, const Arg *src);
 
+void saturn_cmp(Arg *dst, const Arg *src);
+
 /* declaration instructions *
  * if src is null, the var  *
  * is not initialized       */
@@ -76,6 +85,13 @@ void saturn_inc(Arg *dst, const Arg *src);
 void saturn_dec(Arg *dst, const Arg *src);
 
 void saturn_jmp(Arg *dst, const Arg *src);
+
+void saturn_jeq(Arg *dst, const Arg *src);
+void saturn_jne(Arg *dst, const Arg *src);
+void saturn_jig(Arg *dst, const Arg *src);
+void saturn_jge(Arg *dst, const Arg *src);
+void saturn_jil(Arg *dst, const Arg *src);
+void saturn_jle(Arg *dst, const Arg *src);
 
 /*********************************************************/
 /*                   Misc Functions                      */
