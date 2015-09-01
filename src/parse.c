@@ -96,13 +96,9 @@ void End(void) {
 		free(env->vars[i]);
 	}
 	for (int i = 4; i < env->varcount; i++) {
+		free(env->vars[i]->label);
 		if (env->vars[i]->type == _STR) {
 			free(env->vars[i]->val.STR);
-		}
-		if (env->vars[i]->type == _FIL) {
-			if (env->vars[i]->val.FIL.isopen) {
-				fclose(env->vars[i]->val.FIL.pntr);
-			}
 		}
 		free(env->vars[i]);
 	}
@@ -139,7 +135,7 @@ Statement * Parse(char *line) {
 		return NULL;
 	}
 
-	Statement *ret = NewStatement();
+	Statement *ret;
 	char *token;
 	char *strlit = NULL; /* */
 	char *extra; /* for string literals */
@@ -161,8 +157,11 @@ Statement * Parse(char *line) {
 	
 	token = strtok(line, " ");
 	if (token[0] == '\n' || token[0] == ';') {
+//		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Freeing memory at %p\n", ret);
+//		free(ret);
 		return NULL;
 	}
+	ret = NewStatement();
 	ToUpper(token);
 
 	/* Check the COMMANDS enum in types.h */
@@ -340,6 +339,8 @@ Arg * CreateVarArg(char *token) {
 	if ((ret->var = Env(token)) != NULL) {
 		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found %s in environment\n",
 		    ret->var->label);
+		ret->isliteral = false;
+		ret->token = token;
 		return ret;
 	}
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] \"%s\" not found in environment\n", token);
@@ -373,7 +374,7 @@ Statement * NewStatement(void) {
 	newst->args = malloc(2 * sizeof(Arg *));
 	newst->args[0] = NULL;
 	newst->args[1] = NULL;
-
+	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Creating Statement at %p\n", newst);
 	return newst;
 }
 
@@ -387,12 +388,18 @@ void Validate(const Statement *st) {
 
 void DeleteStatement(Statement *st) {
 	for (int i = 0; i < st->argcount; i++) {
-/*		if (st->args[i]->var->type == _STR && st->args[i]->isliteral) {
-			free(ARGVAL(st->args[i], STR));
+		if (st->args[i]->isliteral) {
+			if (st->args[i]->var->type == _STR) {
+				free(st->args[i]->var->val.STR);
+			}
+			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Freeing literal: \"%s\"\n",
+				st->args[i]->var->label);
+			free(st->args[i]->var);
 		}
-*/		free(st->args[i]);
+		free(st->args[i]);
 	}
-
+	free(st->args);
+	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Freeing Memory at %p\n", st);
 	free(st);
 }	
 
@@ -426,7 +433,7 @@ int FindLabel(const char *label, fpos_t *loc) {
 				break;
 			}
 		}
-		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ]\t%s\n", str);
+		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ]\t%s", str);
 		if (strstr(lab, label) && lab[0] == label[0]) {
 			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found label in FindLabel\n");
 			fgetpos(src_file, loc);

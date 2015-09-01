@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
 		/* Skip empty lines and labels*/
 		if (instruction == NULL) {
 			DEBUGMSG("<blank line or label>\n");
+			free(instruction);
 			continue;
 		}
 

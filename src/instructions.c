@@ -120,11 +120,11 @@ void saturn_mov(Arg *dst, const Arg *src) {
 		break;
 		case _STR:
 			if (ARGVAL(dst, STR) = NULL) {
-				ARGVAL(dst, STR) = malloc(strlen(ARGVAL(src, STR)));
+				ARGVAL(dst, STR) = malloc(strlen(ARGVAL(src, STR)) + 2);
 			} else {
 				ARGVAL(dst, STR) = realloc(
 				    ARGVAL(dst, STR),
-				    strlen(ARGVAL(src, STR))
+				    strlen(ARGVAL(src, STR) + 2)
 				);
 			}
 			strcpy(ARGVAL(dst, STR), ARGVAL(src, STR));
@@ -193,7 +193,7 @@ MAKE_ARITHMETIC_FUNCTION(div, /=);
  * for float types 
  */
 void saturn_mod(Arg *dst, const Arg *src) {
-	if (dst->var->type | src->var->type != 0) {
+	if ((dst->var->type != _INT && src->var->type != _INT)) {
 		ABORT("Error: MOD may only take INT types");
 	}
 	if (dst->var->isconst) {
@@ -248,7 +248,7 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	if (dst->var->isconst) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
-	sz = sizeof(ARGVAL(dst, STR));
+	sz = strlen(ARGVAL(dst, STR));
 /*
 	switch(src->var->type) {
 		case _INT: 
