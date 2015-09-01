@@ -16,15 +16,23 @@ Setting Up
 
       ./sourcefile.sat
 
- Interactive
-
-  Saturn provides an interactive programming environment, allowing you to enter
-  lines one at a time and see the results immediately. To enter interactive
-  mode, simply run saturn with no command line arguments. A prompt will appear,
-  in which you can enter Saturn code. You can enter 'help' for assistance with
-  various topics, and 'quit' to exit Saturn.
-
 Basics
+
+ main
+  
+  Every Saturn program must have a main label. This label indicates where
+  execution will begin. It does not have to be at the beginning of the file,
+  but it must be included. See the following program:
+
+      int a, 10
+      add a, 7
+
+      main:
+          out stdout, a
+
+  This program will not run, because the only line actually executed is
+  `out stdout, a'. However, `a' has not been declared, because the first
+  two lines in the file were never executed.
 
  Syntax
 
@@ -158,16 +166,6 @@ Basics
   Typically, programs have labels for each of their sections for
   organization.
 
-      main:
-          fil output, 'data.txt'
-          opn output, 'w'
-          jmp get_input
-          input_got:
-          jmp print_out
-          print_done:
-          cls output
-          jmp end
-     
       get_input:
           int a
           out stdout, 'Enter an integer: '
@@ -180,6 +178,16 @@ Basics
           out output, newline
           jmp print_done
 
+      main:
+          fil output, 'data.txt'
+          opn output, 'w'
+          jmp get_input
+          input_got:
+          jmp print_out
+          print_done:
+          cls output
+          jmp end
+     
       end:
           out stdout, 'Done!'
           out stdout, newline

@@ -2,7 +2,28 @@
 ; fizzbuzz.sat - Fizzbuzz using labels and
 ;                conditional jumps.
 
-start:
+; Sections for printing
+fizzbuzz:
+	out stdout, 'fizzbuzz'
+	mov printnum, 0
+	jmp back
+
+fizz:
+	out stdout, 'fizz'
+	mov printnum, 0
+	jmp back
+
+buzz:
+	out stdout, 'buzz'
+	mov printnum, 0
+	jmp back
+
+num:
+	out stdout, i
+	jmp back
+
+; main - includes loop
+main:
 	int i, 1
 	int c
 	int printnum
@@ -29,24 +50,5 @@ loop:
 	cmp i, 100
 	jle loop
 	jmp end
-
-fizzbuzz:
-	out stdout, 'fizzbuzz'
-	mov printnum, 0
-	jmp back
-
-fizz:
-	out stdout, 'fizz'
-	mov printnum, 0
-	jmp back
-
-buzz:
-	out stdout, 'buzz'
-	mov printnum, 0
-	jmp back
-
-num:
-	out stdout, i
-	jmp back
 
 end:

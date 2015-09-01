@@ -100,6 +100,9 @@ void End(void) {
 		if (env->vars[i]->type == _STR) {
 			free(env->vars[i]->val.STR);
 		}
+		if (env->vars[i]->type == _FIL) {
+			free(env->vars[i]->val.FIL.path);
+		}
 		free(env->vars[i]);
 	}
 	free(env->vars);

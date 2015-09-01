@@ -16,8 +16,7 @@ int main(int argc, char **argv) {
 	int linecount;
 	bool interactive = false;
 	char *comment = NULL;
-	int envflags; // rename later
-
+	
 	StatusWord = 0;
 	if (argc != 1) {
 		src_file = fopen(argv[1], "r");
@@ -33,8 +32,16 @@ int main(int argc, char **argv) {
 		printf("Saturn v0.1.2\nEnter \'help\' for more information.\n"
 			"Enter 'quit' to exit.\n");
 	}
+
 	Init();
 	Statement *instruction;
+
+	// start at the label `main'
+	Arg _main;
+	_main.token = "main";
+	saturn_jmp(&_main, NULL);
+
+	// Begin processing source file
 	for (int i = 0; !feof(src_file); i++) {
 		if (interactive) {
 			printf("saturn> ");

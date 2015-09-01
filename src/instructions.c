@@ -347,8 +347,9 @@ void saturn_fil(Arg *dst, const Arg *src) {
 	dst->var->isconst = false;
 	dst->var->val.FIL.isopen = false;
 
-	DEBUGMSG("[EXECUTE] Path to file: \"%s\"\n", src->token);
-	dst->var->val.FIL.path = src->var->val.STR;
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Path to file: \"%s\"\n", src->token);
+	dst->var->val.FIL.path = malloc(strlen(src->var->val.STR) + 1);
+	strcpy(dst->var->val.FIL.path, src->var->val.STR);
 
 	AddToEnv(dst->var);
 	
@@ -356,7 +357,9 @@ void saturn_fil(Arg *dst, const Arg *src) {
 
 /* Opens a stream from a file variable */
 void saturn_opn(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Opening FIL variable \"%s\"\n", dst->token);
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Opening FIL variable \"%s\"\n"
+	         "[" _YELLOW "EXECUTE" _RESET "]    Path: %s; Mode: %s\n",
+              dst->var->label, dst->var->val.FIL.path, src->var->val.STR);
 
 /*	if (dst->var->type != _FIL || src->var->type != _STR) {
 		ABORT("Error: Incorrect types for fil\n");

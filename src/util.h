@@ -2,8 +2,8 @@
 #define _UTIL_H_
 #include "types.h"
 
-#define DEBUG
-#define VERSION "0.1.3"
+//#define DEBUG
+#define VERSION "0.2"
 
 #define _RED     "\x1b[31m"
 #define _GREEN   "\x1b[32m"

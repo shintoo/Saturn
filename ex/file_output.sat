@@ -4,22 +4,19 @@
 ; This program prints some variables and some
 ; literals to a file called output.txt
 
-int a, 10
-flt b, 16.89
-str s, 'this is a test'
+main:
+	int a, 10
+	flt b, 16.89
+	str s, 'this is a test'
 
-fil output, 'output.txt'
-opn output, 'w'
+	fil output, 'output.txt'
+	opn output, 'w'
 
-cat s, ' and a big test'
-str s2, 'big test'
-mov s2, 'many tests'
+	out output, a
+	out output, newline
+	out output, b
+	out output, newline
+	out output, s
+	out output, newline
 
-out output, a
-out output, newline
-out output, b
-out output, newline
-out output, s
-out output, newline
-
-cls output
+	cls output

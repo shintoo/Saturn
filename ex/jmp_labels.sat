@@ -3,16 +3,6 @@
 ; This program takes a very roundabout path to
 ; read an integer from the user and print it to
 ; a file - for the sake of demonstrating jumps.
-
-main:
-    fil output, 'data.txt'
-    opn output, 'w'
-    jmp input
-    _input:
-    jmp print
-    _print:
-    cls output
-    jmp end
    
 input:
     int a
@@ -25,6 +15,16 @@ print:
     out output, a
     out output, newline
     jmp _print
+
+main:
+    fil output, 'data.txt'
+    opn output, 'w'
+    jmp input
+    _input:
+    jmp print
+    _print:
+    cls output
+    jmp end
 
 end:
     out stdout, 'Done!'
