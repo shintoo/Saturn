@@ -11,6 +11,10 @@ str s, 'this is a test'
 fil output, 'output.txt'
 opn output, 'w'
 
+cat s, ' and a big test'
+str s2, 'big test'
+mov s2, 'many tests'
+
 out output, a
 out output, newline
 out output, b
