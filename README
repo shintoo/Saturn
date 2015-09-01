@@ -24,13 +24,9 @@ What's Saturn like?
   Syntactically, it is somewhat inspired by x86 Assembly. Semantically, it is
   somewhat high level. Here's a peek:
 
-      int num
-      rin num, stdin
-      out stdout, num
-      out stdout, '+ 10 = '
-      add num, 10
-      out stdout, num
-      out stdout, newline
+      main:
+          out stdout, 'Hello, world!'
+          out stdout, newline
 
 How do I install Saturn?
 
