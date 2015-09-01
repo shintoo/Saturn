@@ -27,8 +27,8 @@ loop:
 	out stdout, newline
 	inc i
 	cmp i, 100
-	jig end
-	jmp loop
+	jle loop
+	jmp end
 
 fizzbuzz:
 	out stdout, 'fizzbuzz'
