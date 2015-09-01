@@ -285,11 +285,10 @@ void saturn_jmp(Arg *dst, const Arg *src) {
 
 }
 
-void saturn_jeq(Arg *dst, const Arg *src) {
-	if (StatusWord == 0) {
-		saturn_jmp(dst, src);
-	}
-}
+
+/* instructions.h */
+
+MAKE_COND_JMP(jeq, 0, 0);
 
 MAKE_COND_JMP(jne, 1, 2);
 

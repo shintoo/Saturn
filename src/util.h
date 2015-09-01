@@ -2,7 +2,7 @@
 #define _UTIL_H_
 #include "types.h"
 
-//#define DEBUG
+#define DEBUG
 #define VERSION "0.1.3"
 
 #define _RED     "\x1b[31m"

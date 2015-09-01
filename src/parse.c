@@ -138,7 +138,7 @@ Statement * Parse(char *line) {
 	Statement *ret;
 	char *token;
 	char *strlit = NULL; /* */
-	char *extra; /* for string literals */
+	char *line_copy; /* line is broken with strtok, this holds a copy */
 	char *tab;
 	char *comma = ",";
 	char *nl = "\n";
@@ -150,6 +150,9 @@ Statement * Parse(char *line) {
 		"JLE"
 	};
 	int temp;
+
+	line_copy = malloc(strlen(line) + 1);
+	strcpy(line_copy, line);
 
 	while ((tab = strchr(line, '\t')) != NULL) {
 		*tab = ' ';
@@ -220,18 +223,12 @@ Statement * Parse(char *line) {
 	 * must be used for string literals
 	 */
 	if (token[0] == '\'') {
-		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] %d: String literal with spaces\n",
+		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] %d: String literal\n",
 		    __LINE__);
 		strlit = malloc(80);
-		strlit[0] = '\0';
-		strncat(strlit, token, 31);
-		while ((extra = strtok(NULL, " ")) != NULL) {
-			replace(extra, '\n', '\0');
-			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Appending %s to string\n", extra);
-//			printf("extra: %s\n", extra);
-			strcat(strlit, " ");
-			strcat(strlit, extra);
-		}
+		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Copying literal from line: \"%s\"\n", line_copy);
+		strncpy(strlit, strstr(line_copy, token), 79);
+		*(strchr(strlit + 1, '\'') + 1) = '\0';
 	}
 	if (strlit) {
 		ret->args[1] = CreateArg(strlit);
