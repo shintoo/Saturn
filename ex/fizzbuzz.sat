@@ -49,6 +49,3 @@ loop:
 	inc i
 	cmp i, 100
 	jle loop
-	jmp end
-
-end:
