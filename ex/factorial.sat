@@ -1,0 +1,26 @@
+#!/usr/bin/saturn
+; factorial.sat - find the factorial of a number
+
+factorial:
+	out stdout, i
+	cmp i, num
+	jeq no_asterisk
+	out stdout, ' * '
+	no_asterisk:
+	mul b, i
+	cmp i, num
+	jeq back
+	inc i
+	jle factorial
+
+main:
+	int num
+	int i, 1
+	int b, 1
+	out stdout, 'Enter a value: '
+	rin num, stdin
+	jmp factorial
+	back:
+	out stdout, ' = '
+	out stdout, b
+	out stdout, newline
