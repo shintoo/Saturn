@@ -18,25 +18,27 @@ int main(int argc, char **argv) {
 	char *comment = NULL;
 	
 	StatusWord = 0;
-	if (argc != 1) {
+
+	if (argc == 2) {
 		src_file = fopen(argv[1], "r");
+		if (!src_file) {
+			fprintf(stderr, "saturn: error: %s: No such file or directory\n"
+			                "saturn: fatal error: no input files\n"
+			                "interpretation terminated.\n", argv[1]);
+			exit(1);
+		}
 		linecount = CountLines(src_file);
 	}
 	else {
-		src_file = stdin;
-		linecount = -1;
-		interactive = true;
-	}
-
-	if (interactive) {
-		printf("Saturn v0.1.2\nEnter \'help\' for more information.\n"
-			"Enter 'quit' to exit.\n");
+		fprintf(stderr, "saturn: fatal error: no input files\n"
+		                "interpretation terminated.\n");
+		exit(1);
 	}
 
 	Init();
 	Statement *instruction;
 
-	// start at the label `main'
+	/* start at the label `main' */
 	Arg _main;
 	_main.token = "main";
 	saturn_jmp(&_main, NULL);
@@ -49,26 +51,13 @@ int main(int argc, char **argv) {
 		fgets(line, 80, src_file);
 		if (feof(src_file)) {
 			break;
-		}		
-#ifdef DEBUG
-		getchar();
-#endif
-		__linecount++;
+		}
 
 		comment = strchr(line, ';');
 		if (comment) {
 			*comment = '\n';
 		}
 
-		if (interactive) {
-			if (strncmp(line, "help", 4) == 0) {
-				Help();
-				continue;
-			}
-			if (strncmp(line, "quit", 4) == 0) {
-				break;
-			}
-		}
 		if (line[0] == '#') {
 			continue;
 		}
@@ -83,9 +72,6 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
-		/* Validate the statement */
-		Validate(instruction);
-
 		/* Execute the instruction */
 		Execute(instruction);
 
@@ -94,9 +80,8 @@ int main(int argc, char **argv) {
 
 	}
 
-	if (argc != 1) {
-		fclose(src_file);
-	}
+	fclose(src_file);
+
 	End();
 	return 0;
 }

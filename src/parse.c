@@ -86,7 +86,6 @@ void Init(void) {
 	env->vars[3]->label = "newline";
 	env->vars[3]->type = _STR;
 	env->vars[3]->val.STR = "\n";
-	env->vars[3]->val.FIL.isopen = true;
 }
 
 void End(void) {
@@ -163,8 +162,7 @@ Statement * Parse(char *line) {
 	
 	token = strtok(line, " ");
 	if (token[0] == '\n' || token[0] == ';') {
-//		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Freeing memory at %p\n", ret);
-//		free(ret);
+		free(line_copy);
 		return NULL;
 	}
 	ret = NewStatement();
@@ -180,10 +178,11 @@ Statement * Parse(char *line) {
 	token = strtok(NULL, " ");
 	if (!token) {                     // 0 arguments
 		ret->argcount = 0;
+		free(line_copy);
 		return ret;
 	}
 
-	comma = strchr(token, ',');             // check if token exists as var
+	comma = strchr(token, ',');       // check if token exists as var
 	if (!comma) {
 		onearg = true;
 		nl = strchr(token, '\n');
@@ -202,11 +201,13 @@ Statement * Parse(char *line) {
 	if (!token) {                    // 1 argument
 		ret->argcount = 1;
 		ret->args[1] = NULL;
+		free(line_copy);
 		return ret;
 	}
 	if (token[0] == ';') {
 		ret->argcount = 1;
 		ret->args[1] = NULL;
+		free(line_copy);
 		return ret;
 	}
 
@@ -233,6 +234,7 @@ Statement * Parse(char *line) {
 		strncpy(strlit, strstr(line_copy, token), 79);
 		*(strchr(strlit + 1, '\'') + 1) = '\0';
 	}
+	free(line_copy);
 	if (strlit) {
 		ret->args[1] = CreateArg(strlit);
 	} else {

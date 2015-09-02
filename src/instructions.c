@@ -164,7 +164,7 @@ void saturn_rin(Arg *dst, const Arg *src) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
 	char str[32];
-	fgets(str, 32, ARGVAL(src, FIL.pntr));
+	fgets(str, 32, src->var->val.FIL.pntr);
 	*strchr(str, '\n') = '\0';
 
 	switch(dst->var->type) {
@@ -361,10 +361,6 @@ void saturn_opn(Arg *dst, const Arg *src) {
 	         "[" _YELLOW "EXECUTE" _RESET "]    Path: %s; Mode: %s\n",
               dst->var->label, dst->var->val.FIL.path, src->var->val.STR);
 
-/*	if (dst->var->type != _FIL || src->var->type != _STR) {
-		ABORT("Error: Incorrect types for fil\n");
-	}
-*/
 	dst->var->val.FIL.mode = src->var->val.STR;
 	dst->var->val.FIL.pntr = fopen(dst->var->val.FIL.path, dst->var->val.FIL.mode);
 	dst->var->val.FIL.isopen = true;

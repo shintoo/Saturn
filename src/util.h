@@ -38,13 +38,6 @@
 #define DEBUGMSG(...)
 #endif
 
-/* Only for interactive mode, if 'help' is entered, this
- * is called; creates a new help prompt for topics */
-void Help(void);
-
-/* Used in Help() to show information the user asked for */
-void DisplayTopic(int topic);
-
 /* Find the index o a string in an array of strings */
 int arraystr(char **arr, int nmemb, char *str);
 
