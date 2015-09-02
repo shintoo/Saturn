@@ -240,7 +240,6 @@ void saturn_dec(Arg *dst, const Arg *src) {
 void saturn_cat(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Concatenating \"%s\" to \"%s\"\n",
 		src->var->label, dst->var->label);
-	int temp, sz;
 
 	if (src->var->type != _STR) {
 		ABORT("Error: First argument must be STR");
@@ -248,24 +247,10 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	if (dst->var->isconst) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
-	sz = strlen(ARGVAL(dst, STR));
-/*
-	switch(src->var->type) {
-		case _INT: 
-			temp = numlen(ARGVAL(src, INT)) + 1;
-			if (sz < sz + numlen(ARGVAL(src, INT))) {
-				ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), strlen(ARGVAL(dst, STR) + temp));
-			}
-			snprintf(ARGVAL(dst, STR), temp, "%d", ARGVAL(src, INT);
-		break;
-		case FLT:
 
+	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), 
+		strlen(ARGVAL(src, STR)) + strlen(ARGVAL(dst, STR) + 2));
 
-	}
-*/	if (sz < strlen(ARGVAL(dst, STR)) + strlen(ARGVAL(src, STR))) {
-		ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), 
-			strlen(ARGVAL(src, STR)) + sz + 2);
-	}
 	strcat(ARGVAL(dst, STR), ARGVAL(src, STR));
 }
 

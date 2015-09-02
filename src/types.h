@@ -12,15 +12,10 @@ enum COMMANDS {
 	MOV, CAT, RIN, OUT, FIL, OPN, CLS
 };
 
-typedef struct _label {
-	char *string;
-	fpos_t *loc;
-} Label;
-
 struct _file {
 	FILE *pntr;
 	char *path;
-	char *mode;
+	char *mode; /* C style file modes, (rwab+) */
 	bool isopen;
 };
 
@@ -42,13 +37,9 @@ typedef struct _var {
 
 /* The argument to a statement */
 typedef struct _arg {
-	char *token;    // Used for creating variables
+	char *token;
 	bool isliteral;
-	bool islabel;
-	union {
-		Var *var;
-		Label label;
-	};
+	Var *var;
 } Arg;
 
 /* A single line consisting of an

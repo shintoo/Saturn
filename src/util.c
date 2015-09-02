@@ -13,8 +13,6 @@ inline bool out_stdout(const Statement *st) {
 	return false;
 }
 
-//int numlen(
-
 int arraystr(char **arr, int nmemb, char *str) {
 	for (int i = 0; i < nmemb; i++) {
 		if (strcmp(arr[i], str) == 0) {
