@@ -2,16 +2,10 @@
 ; fizzbuzz.sat - Fizzbuzz using labels and
 ;                conditional jumps.
 
-; Sections for printing
-fizzbuzz:
-	out stdout, 'fizzbuzz'
-	mov printnum, 0
-	jmp back
-
 fizz:
 	out stdout, 'fizz'
 	mov printnum, 0
-	jmp back
+	jmp _fizz
 
 buzz:
 	out stdout, 'buzz'
@@ -22,7 +16,7 @@ num:
 	out stdout, i
 	jmp back
 
-; main - includes loop
+
 main:
 	int i, 1
 	int c
@@ -31,13 +25,10 @@ main:
 loop:
 	mov printnum, 1
 	mov c, i
-	mod c, 15
-	cmp c, 0
-	jeq fizzbuzz
-	mov c, i
 	mod c, 3
 	cmp c, 0
 	jeq fizz
+	_fizz:
 	mov c, i
 	mod c, 5
 	cmp c, 0
