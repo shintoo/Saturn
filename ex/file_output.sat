@@ -1,8 +1,8 @@
 #!/usr/bin/saturn
 
-; files.sat - demonstrate output to files
+; files.sat - demonstrate putout to files
 ; This program prints some variables and some
-; literals to a file called output.txt
+; literals to a file called putput.txt
 
 main:
 	int a, 10

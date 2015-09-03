@@ -9,18 +9,30 @@ factorial:
 	no_asterisk:
 	mul b, i
 	cmp i, num
-	jeq back
+	jeq end
 	inc i
 	jle factorial
+
+retry_num:
+	out stdout, 'Invalid. '
+	out stdout, newline
+	out stdout, 'Please enter a positive integer, from 1 to 12: '
+	get num, stdin
+	jmp back
 
 main:
 	int num
 	int i, 1
 	int b, 1
 	out stdout, 'Enter a value: '
-	rin num, stdin
-	jmp factorial
+	get num, stdin
 	back:
+	cmp num, 0
+	jle retry_num
+	cmp num, 12
+	jig retry_num
+	jmp factorial
+	end:
 	out stdout, ' = '
 	out stdout, b
 	out stdout, newline

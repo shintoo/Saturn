@@ -9,7 +9,7 @@ enum COMMANDS {
 	INT, FLT, STR,
 	ADD, SUB, MUL, DIV, MOD,
 	INC, DEC,
-	MOV, CAT, RIN, OUT, FIL, OPN, CLS
+	MOV, CAT, GET, OUT, FIL, OPN, CLS
 };
 
 struct _file {

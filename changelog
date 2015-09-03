@@ -4,3 +4,4 @@
 0.1.3          Labels and jumps - 'jmp' keyword
 0.1.9          All keywords implemented (add conditional jumps)
 0.2            String literals fixed
+0.2.1          Change `rin' to `get'

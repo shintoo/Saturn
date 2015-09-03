@@ -17,9 +17,9 @@ main:
 	flt b
 	flt c, 0.0              ; will hold results
 	out stdout, 'Value for a: '
-	rin a, stdin
+	get a, stdin
 	out stdout, 'Value for b: '
-	rin b, stdin
+	get b, stdin
 
 	; addition
 	mov c, a

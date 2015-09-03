@@ -31,7 +31,7 @@ Basics
           out stdout, a
 
   This program will not run, because the only line actually executed is
-  `out stdout, a'. However, `a' has not been declared, because the first
+  `put stdout, a'. However, `a' has not been declared, because the first
   two lines in the file were never executed.
 
  Syntax
@@ -55,7 +55,7 @@ Basics
       ; and the number doubled
       int orig
       int dbl
-      rin orig, stdin           ; Read into orig an integer from stdin
+      get orig, stdin           ; Read into orig an integer from stdin
       mov dbl, orig             ; Copy orig into dbl
       mul dbl, 2                ; Double the number
       out stdout, orig          ; Output
@@ -110,18 +110,18 @@ Basics
   can be used like so;
 
       str input
-      rin input, stdin
+      get input, stdin
       out stdout, input
 
    The two keywords 'rin' and 'out' can be used with variables of any type im
    the same exact way:
 
-       int num1
-       flt num2
-       str string
-       rin num1, stdin
-       rin num2, stdin
-       rin string, stdin
+      int num1
+      flt num2
+      str string
+      get num1, stdin
+      get num2, stdin
+      get string, stdin
 
 
  File IO
@@ -169,7 +169,7 @@ Basics
       get_input:
           int a
           out stdout, 'Enter an integer: '
-          rin a, stdin
+          get a, stdin
           jmp input_got
 
       print_out:
@@ -209,8 +209,8 @@ Basics
 
       int a
       int b
-      rin a, stdin
-      rin b, stdin
+      get a, stdin
+      get b, stdin
       cmp a, b
 
   Here, 'cmp a, b' compares the values of a and b. 'cmp' can be used with two

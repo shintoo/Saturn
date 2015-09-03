@@ -55,7 +55,7 @@ void saturn_div(Arg *dst, const Arg *src);
 
 void saturn_mod(Arg *dst, const Arg *src);
 
-void saturn_rin(Arg *dst, const Arg *src);
+void saturn_get(Arg *dst, const Arg *src);
 
 void saturn_out(Arg *dst, const Arg *src);
 

@@ -19,7 +19,7 @@ Environment *env;
 
 const char *__COMMANDS2  =
 	"MOV CAT ADD SUB MUL DIV MOD"
-	"OUT RIN FIL OPN CLS CMP";
+	"OUT GET FIL OPN CLS CMP";
 const char *__COMMANDS1  =
 	"INC DEC JMP JEQ JNE JIG JGE JIL JLE";
 const char *__COMMANDS12 =
@@ -49,7 +49,7 @@ void Init(void) {
 	instructions[10] =  saturn_mov;
 	instructions[11] = saturn_cat;
 
-	instructions[12] = saturn_rin;
+	instructions[12] = saturn_get;
 	instructions[13] = saturn_out;
 	instructions[14] = saturn_fil;
 	instructions[15] = saturn_opn;
@@ -147,7 +147,7 @@ Statement * Parse(char *line) {
 	bool onearg = false;
 	char *commands[] = {
 		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV", "MOD",
-		"INC", "DEC", "MOV", "CAT", "RIN", "OUT", "FIL", "OPN",
+		"INC", "DEC", "MOV", "CAT", "GET", "OUT", "FIL", "OPN",
 		"CLS", "JMP", "CMP", "JEQ", "JNE", "JIG", "JGE", "JIL",
 		"JLE"
 	};

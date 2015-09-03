@@ -156,7 +156,7 @@ void saturn_out(Arg *dst, const Arg *src) {
 }
 
 /* Reads a value into the first argument from the stream that is the second */
-void saturn_rin(Arg *dst, const Arg *src) {
+void saturn_get(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Reading into variable \"%s\" from file \"%s\"\n",
 		dst->var->label, src->var->label);
 	DEBUGMSG(_GREEN "INPUT: " _RESET);
