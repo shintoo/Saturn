@@ -31,7 +31,7 @@ Basics
           out stdout, a
 
   This program will not run, because the only line actually executed is
-  `put stdout, a'. However, `a' has not been declared, because the first
+  `out stdout, a'. However, `a' has not been declared, because the first
   two lines in the file were never executed.
 
  Syntax
