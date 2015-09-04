@@ -13,12 +13,41 @@ extern int __linecount;
 extern FILE *src_file;
 extern char StatusWord;
 
-int __instruction_location = 0;
-
-void (*instructions[__instruction_count])(Arg *dst, const Arg *src);
+static inline void check_args(int is_decl, const Statement *st) {
+	if (st->args[0]->isliteral) {
+		ABORT("Error: first operand may not be literal");
+	}
+	if (!is_decl) {
+		if (!Env(st->args[0]->token)) {
+			ABORT("Error: \'%s\' undeclared", st->args[1]->token);
+		}
+		if (st->args[1]) {
+			if (!st->args[1]->isliteral) {
+				if (!Env(st->args[1]->token)) {
+					ABORT("Error: \'%s\' undeclared", st->args[1]->token);
+				}
+			}
+		}
+	}
+}
 
 /* Call the appropriate function indicated by the command member of the statement */
 void Execute(const Statement *st) {
+
+	static void (*instructions[__instruction_count])(Arg *dst, const Arg *src) = {
+		saturn_int, saturn_flt, saturn_str, saturn_fil, saturn_add, saturn_sub,
+		saturn_mul, saturn_div, saturn_mod, saturn_inc, saturn_dec, saturn_mov,
+		saturn_cat, saturn_get, saturn_out, saturn_opn, saturn_cls, saturn_cmp,
+		saturn_jmp, saturn_jeq, saturn_jne, saturn_jig, saturn_jil, saturn_jge,
+		saturn_jle
+	};
+
+	if (st->command > 3 && st->command < 17) {
+		check_args(0, st);
+	} else {
+		check_args(1, st);
+	}
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Calling #%d\n", st->command);
 	instructions[st->command](st->args[0], st->argcount == 2 ? st->args[1] : NULL);
 }
 
@@ -145,7 +174,7 @@ void saturn_out(Arg *dst, const Arg *src) {
 	}
 
 	if (dst->var->val.FIL.isopen == false) {
-		ABORT("Error: file not opened for IO\n");
+		ABORT("Error: file not opened for IO");
 	}
 
 	switch(src->var->type) {
@@ -290,7 +319,7 @@ void saturn_cmp(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Comparing\n");
  	if ((src->var->type | dst->var->type) > 1 &&
 			src->var->type + dst->var->type != 4) {
-		ABORT(" Invalid types for cmp\n");
+		ABORT(" Invalid types for cmp");
 	}
 	switch(dst->var->type) {
 		case _INT:
@@ -322,7 +351,7 @@ void saturn_fil(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FIL variable \"%s\"\n", dst->token);
 
 	if (Env(dst->token)) {
-		ABORT("Error: multiple declaration\n");
+		ABORT("Error: multiple declaration");
 	}
 
 	dst->var = malloc(sizeof(Var));
@@ -342,6 +371,13 @@ void saturn_fil(Arg *dst, const Arg *src) {
 
 /* Opens a stream from a file variable */
 void saturn_opn(Arg *dst, const Arg *src) {
+	if (dst->var->type != _FIL) {
+		ABORT("Error: `opn' takes type `fil'");
+	}
+	if (src->var->type != _STR) {
+		ABORT("Error: Mode for `opn' must be type `str'");
+	}
+
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Opening FIL variable \"%s\"\n"
 	         "[" _YELLOW "EXECUTE" _RESET "]    Path: %s; Mode: %s\n",
               dst->var->label, dst->var->val.FIL.path, src->var->val.STR);
@@ -357,7 +393,7 @@ void saturn_cls(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Closing FIL variable\n");
 
 	if (dst->var->type != _FIL) {
-		ABORT("You can only cls files\n");
+		ABORT("You can only cls files");
 	}
 
 	if (dst->var->val.FIL.isopen == false) {
@@ -369,12 +405,13 @@ void saturn_cls(Arg *dst, const Arg *src) {
 }
 
 void AddToEnv(Var *v) {
+	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Environment begins at %p\n", env->vars);
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Adding %s to environment at %d\n",
 	   v->label, env->varcount);
 
 	if (env->varcount == env->memsize) {
 		DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Adding 10 memory blocks to environment\n");
-		env = realloc(env, env->memsize + 10);
+		env->vars = realloc(env->vars, (env->memsize + 10) * sizeof(Var *));
 		env->memsize += 10;
 	}
 	env->vars[env->varcount] = v;

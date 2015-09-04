@@ -5,3 +5,5 @@
 0.1.9          All keywords implemented (add conditional jumps)
 0.2            String literals fixed
 0.2.1          Change `rin' to `get'
+0.2.3          Restructure how instruction array is created
+0.3            Fix environment, allowing for unlimited variables as intended

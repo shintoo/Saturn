@@ -45,9 +45,6 @@ int main(int argc, char **argv) {
 
 	// Begin processing source file
 	for (int i = 0; !feof(src_file); i++) {
-		if (interactive) {
-			printf("saturn> ");
-		}
 		fgets(line, 80, src_file);
 		if (feof(src_file)) {
 			break;
@@ -61,6 +58,7 @@ int main(int argc, char **argv) {
 		if (line[0] == '#') {
 			continue;
 		}
+		getchar();
 		DEBUGMSG("%d: %s", i, line);
 		/* Parse line into a statement */
 		instruction = Parse(line);

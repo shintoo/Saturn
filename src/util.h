@@ -1,9 +1,10 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
+#include <stdlib.h>
 #include "types.h"
 
 //#define DEBUG
-#define VERSION "0.2"
+#define VERSION "0.3"
 
 #define _RED     "\x1b[31m"
 #define _GREEN   "\x1b[32m"
@@ -25,7 +26,7 @@
 /* Get the hell outta there */
 #define ABORT(...) do {\
 		printf("[ " _RED "ABORT" _RESET " ] "); \
-		printf("%d:", __linecount); \
+		printf("saturn: "); \
 		printf(__VA_ARGS__); \
 		putchar('\n'); \
 		End(); \
@@ -41,6 +42,7 @@
 /* Find the index o a string in an array of strings */
 int arraystr(char **arr, int nmemb, char *str);
 
+/* Replace all instances of old with new */
 bool replace(char *str, char old, char new);
-
+                              /* Screw sepples */
 #endif

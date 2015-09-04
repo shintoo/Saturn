@@ -9,6 +9,8 @@ main:
 	flt b, 16.89
 	str s, 'this is a test'
 
+	add a, 5
+
 	fil output, 'output.txt'
 	opn output, 'w'
 

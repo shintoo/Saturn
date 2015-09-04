@@ -42,7 +42,7 @@
  |            | Subtracts the source's value    | sub quux, 0.5               |
  |            | from the destination's value.   |                             |
  |            | Both must be an int or flt.     |                             |
- +------------_---------------------------------+-----------------------------+
+ +------------+---------------------------------+-----------------------------+
  | mul        | Takes two arguments             | mul foo, 5                  |
  |            | Multiplies the destination's    | mul quux, foo               |
  |            | value by the source's value.    |                             |

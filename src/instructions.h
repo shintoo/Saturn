@@ -1,6 +1,7 @@
 #ifndef _INSTRUCTIONS_H_
 #define _INSTRUCTIONS_H_
 #include "types.h"
+#include "util.h"
 
 #define ARITHMETIC(DST, OP, SRC) \
 	switch ((DST)->var->type) { \
@@ -20,7 +21,6 @@ void saturn_##NAME(Arg *dst, const Arg *src) { \
 	ARITHMETIC(dst, OP, src); \
 }
 
-/* finish this */
 #define MAKE_COND_JMP(NAME, SW1, SW2) \
 void saturn_##NAME(Arg *dst, const Arg *src) { \
 	if (StatusWord == SW1 || StatusWord == SW2) { \

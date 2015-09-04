@@ -6,10 +6,11 @@
 enum types {_INT, _FLT, _STR, _FIL, _LABEL };
 
 enum COMMANDS {
-	INT, FLT, STR,
+	INT, FLT, STR, FIL,
 	ADD, SUB, MUL, DIV, MOD,
 	INC, DEC,
-	MOV, CAT, GET, OUT, FIL, OPN, CLS
+	MOV, CAT, GET, OUT, OPN, CLS,
+	CMP, JMP, JEQ, JNE, JIG, JIL, JGE, JLE
 };
 
 struct _file {

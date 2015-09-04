@@ -10,20 +10,10 @@
 
 #define __instruction_count 25
 
-int __linecount = 0;
-extern void (*instructions[__instruction_count])(Arg *, const Arg *);
-extern int __instruction_location;
+
 extern FILE *src_file;
 extern char StatusWord;
 Environment *env;
-
-const char *__COMMANDS2  =
-	"MOV CAT ADD SUB MUL DIV MOD"
-	"OUT GET FIL OPN CLS CMP";
-const char *__COMMANDS1  =
-	"INC DEC JMP JEQ JNE JIG JGE JIL JLE";
-const char *__COMMANDS12 =
-	"INT STR FLT ";
 
 void Init(void) {
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Initializing Saturn environment\n");
@@ -32,37 +22,6 @@ void Init(void) {
 	env->vars = malloc(10 * sizeof(Var *));
 	env->memsize = 10;
 	env->varcount = 4;
-
-	instructions[0] =  saturn_int;
-	instructions[1] =  saturn_flt;
-	instructions[2] =  saturn_str;
-
-	instructions[3] =  saturn_add;
-	instructions[4] =  saturn_sub;
-	instructions[5] =  saturn_mul;
-	instructions[6] =  saturn_div;
-	instructions[7] =  saturn_mod;
-
-	instructions[8] =  saturn_inc;
-	instructions[9] =  saturn_dec;
-
-	instructions[10] =  saturn_mov;
-	instructions[11] = saturn_cat;
-
-	instructions[12] = saturn_get;
-	instructions[13] = saturn_out;
-	instructions[14] = saturn_fil;
-	instructions[15] = saturn_opn;
-	instructions[16] = saturn_cls;
-
-	instructions[17] = saturn_jmp;
-	instructions[18] = saturn_cmp;
-	instructions[19] = saturn_jeq;
-	instructions[20] = saturn_jne;
-	instructions[21] = saturn_jig;
-	instructions[22] = saturn_jge;
-	instructions[23] = saturn_jil;
-	instructions[24] = saturn_jle;
 
 	env->vars[0] = malloc(sizeof(Var));
 	env->vars[0]->label = "stdin";
@@ -92,9 +51,13 @@ void End(void) {
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Closing Saturn environment\n");
 
 	for (int i = 0; i < 4; i++) {
+		DEBUGMSG("[  " _GREEN "ENV" _RESET "  ] Freeing \"%s\" at %p\n",
+			env->vars[i]->label, env->vars + i);
 		free(env->vars[i]);
 	}
 	for (int i = 4; i < env->varcount; i++) {
+		DEBUGMSG("[  " _GREEN "ENV" _RESET " ] Freeing \"%s\" at %p\n",
+			env->vars[i]->label, env->vars + i)
 		free(env->vars[i]->label);
 		if (env->vars[i]->type == _STR) {
 			free(env->vars[i]->val.STR);
@@ -127,7 +90,6 @@ char * getline(FILE *src_file) {
 	char *ret = malloc(81);
 	fgets(ret, 80, src_file);
 	replace(ret, ';', '\n');
-	__instruction_location++;
 
 	return ret;
 }
@@ -146,9 +108,9 @@ Statement * Parse(char *line) {
 	char *nl = "\n";
 	bool onearg = false;
 	char *commands[] = {
-		"INT", "FLT", "STR", "ADD", "SUB", "MUL", "DIV", "MOD",
-		"INC", "DEC", "MOV", "CAT", "GET", "OUT", "FIL", "OPN",
-		"CLS", "JMP", "CMP", "JEQ", "JNE", "JIG", "JGE", "JIL",
+		"INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV",
+		"MOD", "INC", "DEC", "MOV", "CAT", "GET", "OUT", "OPN", 
+		"CLS", "CMP", "JMP", "JEQ", "JNE", "JIG", "JIL", "JGE",
 		"JLE"
 	};
 	int temp;
@@ -379,14 +341,6 @@ Statement * NewStatement(void) {
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Creating Statement at %p\n", newst);
 	return newst;
 }
-
-void Validate(const Statement *st) {
-/*	if (st->argcount > 0) {
-		if (st->args[0]->isliteral) {
-			ABORT("First argument may not be a literal: %s", st->args[0]->var->label);
-		}
-	}
-*/}
 
 void DeleteStatement(Statement *st) {
 	for (int i = 0; i < st->argcount; i++) {
