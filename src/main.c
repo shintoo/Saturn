@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 		if (line[0] == '#') {
 			continue;
 		}
-		getchar();
+
 		DEBUGMSG("%d: %s", i, line);
 		/* Parse line into a statement */
 		instruction = Parse(line);
