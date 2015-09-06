@@ -10,11 +10,21 @@
 
 #define __instruction_count 25
 
-
 extern FILE *src_file;
+
+/* The two rightmost bits are flags set by the `cmp' command,
+ * equal to 0 if equal, 1 if less than, 2 if greater than
+ */
 extern char StatusWord;
+
+/* Holds the list of variables */
 Environment *env;
 
+
+/* Initialize the environment
+ *    Allocate room for 10 variables
+ *    Set the global constants
+ */
 void Init(void) {
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Initializing Saturn environment\n");
 
@@ -230,6 +240,7 @@ Arg * CreateArg(char *token) {
 	return newarg;
 }
 
+/* Creates an Arg from a string literal token */
 Arg * CreateStringLiteral(char *token) {
 	char *end;
 	Arg *ret;
@@ -259,6 +270,7 @@ Arg * CreateStringLiteral(char *token) {
 	return ret;
 }
 
+/* Creates an Arg from a numeric literal token */
 Arg * CreateNumericLiteral(char *token) {
 	bool flt = false;
 	Arg *ret;
@@ -277,7 +289,6 @@ Arg * CreateNumericLiteral(char *token) {
 			       token);
 		}
 	}
-
 
 	ret = malloc(sizeof(Arg));
 	ret->isliteral = true;
@@ -377,6 +388,7 @@ void DeleteStatement(Statement *st) {
 	free(st);
 }	
 
+/* Used for debugging */
 const char * TypeLabel(enum types type) {
 	static const char *TYPELABELS[] = {
 		"INT", "FLT", "STR", "FIL"

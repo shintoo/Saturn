@@ -8,11 +8,18 @@
 
 #define __instruction_count  25
 
+/* Holds variables */
 extern Environment *env;
-extern int __linecount;
+
 extern FILE *src_file;
+
+/* The two rightmost bits serve as flags that are used
+ * with the `cmp' command. They are set 00 for equal, 01
+ * for less than, and 10 for greater than.
+ */
 extern char StatusWord;
 
+/* Verify the arguments in a statement before execution */
 static inline void check_args(int is_decl, const Statement *st) {
 	if (st->argcount < 1) {
 		ABORT("Error: No arguments");
@@ -20,6 +27,8 @@ static inline void check_args(int is_decl, const Statement *st) {
 	if (st->args[0]->isliteral) {
 		ABORT("Error: first operand may not be literal");
 	}
+
+	/* Statements that are not declarations */
 	if (!is_decl) {
 		if (!Env(st->args[0]->token)) {
 			ABORT("Error: \'%s\' undeclared", st->args[0]->token);
@@ -55,6 +64,7 @@ void Execute(const Statement *st) {
 		check_args(1, st);
 	}
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Calling #%d\n", st->command);
+
 	instructions[st->command](st->args[0], st->argcount == 2 ? st->args[1] : NULL);
 }
 
@@ -88,6 +98,10 @@ void saturn_flt(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FLT variable \"%s\"\n",
 	    dst->token);
 
+	if (Env(dst->token)) {
+		ABORT("Error: multiple declaration of %s", dst->token);
+	}
+
 	dst->var = malloc(sizeof(Var));
 	dst->var->label = malloc(strlen(dst->token) + 1);
 	strcpy(dst->var->label, dst->token);
@@ -108,7 +122,8 @@ void saturn_flt(Arg *dst, const Arg *src) {
 
 /* Declares a string variable */
 void saturn_str(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating STR variable \"%s\"\n", dst->token);
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating STR variable \"%s\"\n",
+	    dst->token);
 
 	if (src) {
 		if (src->var->type != _STR) {
@@ -132,7 +147,8 @@ void saturn_str(Arg *dst, const Arg *src) {
 
 /* Declares a file variable */
 void saturn_fil(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FIL variable \"%s\"\n", dst->token);
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FIL variable \"%s\"\n",
+	    dst->token);
 
 	if (Env(dst->token)) {
 		ABORT("Error: multiple declaration");
@@ -260,7 +276,7 @@ void saturn_mod(Arg *dst, const Arg *src) {
 
 }
 
-/* Increments the argument by 1 */
+/* Increments the dst argument by 1 */
 void saturn_inc(Arg *dst, const Arg *src) {
 	if (src != NULL) {
 		ABORT("INC takes only one argument");
@@ -276,7 +292,7 @@ void saturn_inc(Arg *dst, const Arg *src) {
 	}
 }
 
-/* Decrements the argument by 1 */
+/* Decrements the dst argument by 1 */
 void saturn_dec(Arg *dst, const Arg *src) {
 	if (src != NULL) {
 		ABORT("DEC takes only one argument");
@@ -299,7 +315,7 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	int sz = 0;
 	if (src->var->type != _STR) {
 		ABORT("Error: First argument must be STR");
-	}
+ 	}
 	if (dst->var->isconst) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
@@ -309,6 +325,9 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	strncat(ARGVAL(dst, STR), ARGVAL(src, STR), sz);
 }
 
+/* Find the token for the second argument in the src_file and
+ * set the file pointer to that location
+ */
 void saturn_jmp(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Searching for label \"%s\"\n", dst->token);
 	fpos_t destination;
@@ -326,7 +345,10 @@ void saturn_jmp(Arg *dst, const Arg *src) {
 }
 
 
-/* instructions.h */
+/* instructions.h
+ * Conditional jumps. The latter two numeric macro arguments
+ * correspond to the two possible values of StatusWord.
+ */
 MAKE_COND_JMP(jeq, 0, 0);
 MAKE_COND_JMP(jne, 1, 2);
 MAKE_COND_JMP(jig, 2, 2);
@@ -334,6 +356,7 @@ MAKE_COND_JMP(jil, 1, 1);
 MAKE_COND_JMP(jle, 1, 0);
 MAKE_COND_JMP(jge, 2, 0);
 
+/* Compare two arguments, set the StatusWord accordingly */
 void saturn_cmp(Arg *dst, const Arg *src) {
 	int strcmp_ret = 0;
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Comparing\n");
@@ -370,6 +393,9 @@ void saturn_opn(Arg *dst, const Arg *src) {
 	if (dst->var->type != _FIL) {
 		ABORT("Error: `opn' takes type `fil'");
 	}
+	if (!src) {
+		ABORT("Error: Must specify mode for `opn'");
+	}
 	if (src->var->type != _STR) {
 		ABORT("Error: Mode for `opn' must be type `str'");
 	}
@@ -386,6 +412,7 @@ void saturn_opn(Arg *dst, const Arg *src) {
 	dst->var->val.FIL.isopen = true;
 }
 
+/* Closes a file */
 void saturn_cls(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Closing FIL variable\n");
 
@@ -401,6 +428,7 @@ void saturn_cls(Arg *dst, const Arg *src) {
 	dst->var->val.FIL.isopen = false;
 }
 
+/* Append a newly declared variable to the list of variables (environment) */
 void AddToEnv(Var *v) {
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Environment begins at %p\n", env->vars);
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Adding %s to environment at %d\n",
@@ -417,4 +445,3 @@ void AddToEnv(Var *v) {
 
 	env->varcount++;
 }
-
