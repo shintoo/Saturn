@@ -213,11 +213,11 @@ Arg * CreateArg(char *token) {
 		newarg = CreateStringLiteral(token);
 		return newarg;
 	}
-	if (isdigit(token[0])) {
+	if (isdigit(token[0]) || token[0] == '-') {
 		newarg = CreateNumericLiteral(token);
 		return newarg;
 	}
-	if (strchr("abcdefghijklmnopqrstuvwxyz_", tolower(token[0])) == NULL) {
+	if (strchr("abcdefghijklmnopqrstuvwxyz_-", tolower(token[0])) == NULL) {
 		  ABORT("Illegal character beginning argument: %s", token);
 	}
 
@@ -258,8 +258,12 @@ Arg * CreateStringLiteral(char *token) {
 Arg * CreateNumericLiteral(char *token) {
 	bool flt = false;
 	Arg *ret;
+	int i = 0;
+	if (token[0] == '-') {
+		i++;
+	}
 
-	for (int i = 0; token[i] != '\0'; i++) {
+	for (; token[i] != '\0'; i++) {
 		if (token[i] == '.') {
 			flt = true;
 			continue;

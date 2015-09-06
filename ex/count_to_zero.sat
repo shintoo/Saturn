@@ -1,0 +1,30 @@
+#!/usr/bin/saturn
+; count from number to 0
+
+up:
+	out stdout, num
+	out stdout, newline
+	inc num
+	cmp num, 0
+	jil up
+	jeq end
+
+down:
+	out stdout, num
+	out stdout, newline
+	dec num
+	cmp num, 0
+	jig down
+	jeq end
+
+main:
+	int num
+	out stdout, 'Enter an integer value: '
+	get num, stdin
+	cmp num, 0
+	jil up
+	jig down
+
+end:
+	out stdout, 0
+	out stdout, newline
