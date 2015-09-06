@@ -68,8 +68,7 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
-		DEBUGMSG("%d: %s", i, line);
-		getchar();
+		DEBUGMSG("%d: %s", i, line);	
 		/* Parse line into a statement */
 		instruction = Parse(line);
 
