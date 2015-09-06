@@ -4,7 +4,7 @@
 #include "types.h"
 
 //#define DEBUG
-#define VERSION "0.3.1"
+#define VERSION "0.4"
 
 #define _RED     "\x1b[31m"
 #define _GREEN   "\x1b[32m"

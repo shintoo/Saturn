@@ -9,3 +9,4 @@
 0.3            Fix environment, allowing for unlimited variables as intended
 0.3.1          Cleaning up
 0.3.2          Fix negative numeric literals
+0.4            Complete File IO
