@@ -162,7 +162,7 @@ Statement * Parse(char *line) {
 
 	/* Retrieve second argument **************/
 	token = strtok(NULL, " ");
-	if (!token) {
+	if (!token || token[0] == '\n') {
 		ret->argcount = 1;
 		ret->args[1] = NULL;
 		free(line_copy);

@@ -14,6 +14,9 @@ extern FILE *src_file;
 extern char StatusWord;
 
 static inline void check_args(int is_decl, const Statement *st) {
+	if (st->argcount < 1) {
+		ABORT("Error: No arguments");
+	}
 	if (st->args[0]->isliteral) {
 		ABORT("Error: first operand may not be literal");
 	}
@@ -43,6 +46,9 @@ void Execute(const Statement *st) {
 		saturn_jle
 	};
 
+	if (st->command > 17) {
+		check_args(1, st);
+	}
 	if (st->command > 3 && st->command < 17) {
 		check_args(0, st);
 	} else {
@@ -290,20 +296,17 @@ void saturn_dec(Arg *dst, const Arg *src) {
 void saturn_cat(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Concatenating \"%s\" to \"%s\"\n",
 		src->var->label, dst->var->label);
-
+	int sz = 0;
 	if (src->var->type != _STR) {
 		ABORT("Error: First argument must be STR");
 	}
 	if (dst->var->isconst) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
+	sz = strlen(ARGVAL(dst, STR)) + strlen(ARGVAL(src, STR)) + 2;
+	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), sz);
 
-//	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), 
-//		strlen(ARGVAL(src, STR)) + strlen(ARGVAL(dst, STR) + 1));
-
-	dst->var->val.STR = realloc(dst->var->val.STR, strlen(dst->var->val.STR) + strlen(src->var->val.STR));
-
-	strcat(ARGVAL(dst, STR), ARGVAL(src, STR));
+	strncat(ARGVAL(dst, STR), ARGVAL(src, STR), sz);
 }
 
 void saturn_jmp(Arg *dst, const Arg *src) {
