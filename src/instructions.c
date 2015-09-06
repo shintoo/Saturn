@@ -19,7 +19,7 @@ static inline void check_args(int is_decl, const Statement *st) {
 	}
 	if (!is_decl) {
 		if (!Env(st->args[0]->token)) {
-			ABORT("Error: \'%s\' undeclared", st->args[1]->token);
+			ABORT("Error: \'%s\' undeclared", st->args[0]->token);
 		}
 		if (st->args[1]) {
 			if (!st->args[1]->isliteral) {
@@ -33,6 +33,7 @@ static inline void check_args(int is_decl, const Statement *st) {
 
 /* Call the appropriate function indicated by the command member of the statement */
 void Execute(const Statement *st) {
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Calling #%d\n", st->command);
 
 	static void (*instructions[__instruction_count])(Arg *dst, const Arg *src) = {
 		saturn_int, saturn_flt, saturn_str, saturn_fil, saturn_add, saturn_sub,
@@ -121,6 +122,31 @@ void saturn_str(Arg *dst, const Arg *src) {
 	dst->var->isconst = false;
 	AddToEnv(dst->var);
 
+}
+
+/* Declares a file variable */
+void saturn_fil(Arg *dst, const Arg *src) {
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FIL variable \"%s\"\n", dst->token);
+
+	if (Env(dst->token)) {
+		ABORT("Error: multiple declaration");
+	}
+	if (!src) {
+		ABORT("Error: must specify file path in declaration");
+	}
+
+	dst->var = malloc(sizeof(Var));
+	dst->var->type = _FIL;
+	dst->var->label = malloc(strlen(dst->token) + 1);
+	strcpy(dst->var->label, dst->token);
+	dst->var->isconst = false;
+	dst->var->val.FIL.isopen = false;
+
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Path to file: \"%s\"\n", src->token);
+	dst->var->val.FIL.path = malloc(strlen(src->var->val.STR) + 1);
+	strcpy(dst->var->val.FIL.path, src->token);	
+
+	AddToEnv(dst->var);
 }
 
 /* Assigns the value of the second argument to the first */
@@ -338,31 +364,6 @@ void saturn_cmp(Arg *dst, const Arg *src) {
 			}
 	}
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Set StatusWord to %d\n", StatusWord);
-}
-
-
-/* Declares a file variable */
-void saturn_fil(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FIL variable \"%s\"\n", dst->token);
-
-	if (Env(dst->token)) {
-		ABORT("Error: multiple declaration");
-	}
-	if (!src) {
-		ABORT("Error: must specify file path in declaration");
-	}
-
-	dst->var = malloc(sizeof(Var));
-	dst->var->type = _FIL;
-	dst->var->label = malloc(strlen(dst->token) + 1);
-	strcpy(dst->var->label, dst->token);
-	dst->var->isconst = false;
-	dst->var->val.FIL.isopen = false;
-
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Path to file: \"%s\"\n", src->token);
-	dst->var->val.FIL.path = malloc(strlen(src->var->val.STR) + 1);
-	strcpy(dst->var->val.FIL.path, src->var->val.STR);
-	
 }
 
 /* Opens a stream from a file variable */

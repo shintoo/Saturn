@@ -1,0 +1,32 @@
+#!/usr/bin/saturn
+; file_IO.sat - input and output from files
+; Reads in an integer from input.txt, adds 10,
+; then prints it to output.txt
+
+main:
+	int num_1
+	flt num_2
+	str string
+	fil output, 'output.txt'
+	fil input, 'input.txt'
+
+	opn input, 'r'
+	opn output, 'w'
+
+	get num_1, input
+	get num_2, input
+	get string, input
+
+	add num_1, 10
+	add num_2, 3.5
+	cat string, ' test'
+
+	out output, num_1
+	out output, newline
+	out output, num_2
+	out output, newline
+	out output, string
+	out output, newline
+
+	cls input
+	cls output

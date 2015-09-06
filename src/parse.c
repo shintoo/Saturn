@@ -256,7 +256,6 @@ Arg * CreateStringLiteral(char *token) {
 	ret->var->type = _STR;
 	ret->var->val.STR = token;
 	ret->token = token;
-
 	return ret;
 }
 
