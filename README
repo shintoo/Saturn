@@ -37,5 +37,5 @@ How do I install Saturn?
       make
       sudo make install
 
-More information can be found in the Documentation/ directory, and an example
+More information can be found in the Documentation/ directory, and examples
 can be found in the ex/ directory.
