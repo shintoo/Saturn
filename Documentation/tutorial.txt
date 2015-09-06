@@ -123,7 +123,6 @@ Basics
       get num2, stdin
       get string, stdin
 
-
  File IO
 
   The two keywords 'fil' and 'opn' are used for dealing with user-declared files.
@@ -133,15 +132,19 @@ Basics
   mode for how the file wll be handled: 'r' for read, 'w' for write, 'b' for
   binary IO, and 'a' for appending:
 
-      int a, 10
+      int a
+      fil input, 'input.txt'
       fil output, 'output.txt'
-      opn output, 'w'
+      opn input, 'r'            ; open the input.txt file for reading
+      opn output, 'w'           ; open the output.txt file for writing
+      get a, input
       out output, a
 
-  This will result in 10 being printed to the file output.txt. When finished
-  reading and writing to and from a file, it is wise to close the file. This
-  is done using the 'cls' keyword:
+  This snippet will open input.txt and read an integer from it, then print it
+  to output.txt. When finished reading and writing to and from a file, it is
+  wise to close the file. This is done using the 'cls' keyword:
 
+      cls input
       cls output
 
   This will ensure the data will be written and cut off access to the file.
@@ -228,23 +231,3 @@ Basics
   equal. Since 2 and 5 are not equal, the jump to 'equal' is not executed.
   There are many types of conditional jumps, one for each result of 'cmp'.
   They are are listed in the keywords.txt file.
-
-Pre-Release Woes
-
- As Saturn is still in its very early stages of development, some features
- that you would expect in any progrmming language are not yet available.
- 
-  One feature missing is the ability to concatenate ints and flts to
-  strings. This will be added very shortly. Various other string features
-  have yet to be added, such as tokenizing a string.
-
-  While output to files is working, support for input from files has yet to be
-  implemented to completion. There is a workaround: Declare a string and
-  initialize or assign it the path, then create the file variable with that
-  string variable as the path.
-
-     str path, 'input.txt'
-     fil input, path
-     opn input, 'r'
-	 
-  This will work as a placeholder for now. 
