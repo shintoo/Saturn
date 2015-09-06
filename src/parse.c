@@ -323,9 +323,9 @@ Arg * CreateVarArg(char *token) {
 /* Searches the environment for variables that are named token, and returns
  * a variable if found, null otherwise
  */
-Var * Env(char *tok) {
+Var * Env(char *token) {
 	Var *ret = NULL;
-	char *token = tok;
+
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Environment contains %d variables\n",
 	    env->varcount);
 

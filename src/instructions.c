@@ -181,9 +181,6 @@ void saturn_out(Arg *dst, const Arg *src) {
 		case _INT: fprintf(ARGVAL(dst, FIL.pntr), "%d", ARGVAL(src, INT)); break;
 		case _FLT: fprintf(ARGVAL(dst, FIL.pntr), "%g", ARGVAL(src, FLT)); break;
 		case _STR: fprintf(ARGVAL(dst, FIL.pntr), "%s", ARGVAL(src, STR)); break;
-		case _IPT: /* Fall through */
-		case _FPT: /* Fall through */
-		case _SPT: fprintf(ARGVAL(dst, FIL.pntr), "%p", ARGVAL(src, INT)); break;
 	}
 }
 

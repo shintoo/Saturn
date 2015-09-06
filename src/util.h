@@ -4,7 +4,7 @@
 #include "types.h"
 
 //#define DEBUG
-#define VERSION "0.3"
+#define VERSION "0.3.1"
 
 #define _RED     "\x1b[31m"
 #define _GREEN   "\x1b[32m"
@@ -38,6 +38,21 @@
 #else
 #define DEBUGMSG(...)
 #endif
+
+#define print_version do { \
+	puts("Saturn v" VERSION "\nThis is free software;" \
+	" see the source for copying conditions."); \
+} while (0)
+
+#define print_help do { \
+	printf("Usage: %s file | [options]\n" \
+	       "\nSaturn - a basic interpreted language.\n\n" \
+		   "Options:\n" \
+		   "  -v, --version\t\tprint version\n  -h, --help\t\tprint this help\n" \
+		   "\nSee the Documentation directory in the source for details\n" \
+		   "on how to use Saturn.\n", \
+		   argv[0]); \
+	} while (0)
 
 /* Find the index o a string in an array of strings */
 int arraystr(char **arr, int nmemb, char *str);

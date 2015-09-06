@@ -7,7 +7,6 @@
 #include "instructions.h"
 #include "util.h"
 
-
 FILE *src_file;
 char StatusWord;
 
@@ -17,7 +16,21 @@ int main(int argc, char **argv) {
 	
 	StatusWord = 0;
 
-	if (argc = 2) {
+	if (argc == 2) {
+		if (!strncmp(argv[1], "-V", 2) != !strncmp(argv[1], "--version", 9)) {
+			print_version;
+			return 0;
+		}
+		if (!strncmp(argv[1], "-h", 2) != !strncmp(argv[1], "--help", 6)) {
+			print_help;
+			return 0;
+		}
+		if (argv[1][0] == '-') {
+			printf("Unrecognized option \'%s\'\nSee `%s -h for more information.\n",
+			       argv[1], argv[0]);
+			return 1;
+		}
+
 		src_file = fopen(argv[1], "r");
 		if (!src_file) {
 			fprintf(stderr, "saturn: error: %s: No such file or directory\n"
@@ -25,8 +38,7 @@ int main(int argc, char **argv) {
 			                "interpretation terminated.\n", argv[1]);
 			exit(1);
 		}
-	}
-	else {
+	} else {
 		fprintf(stderr, "saturn: fatal error: no input files\n"
 		                "interpretation terminated.\n");
 		exit(1);
