@@ -1,7 +1,8 @@
 #!/usr/bin/saturn
-; file_IO.sat - input and output from files
-; Reads in an integer from input.txt, adds 10,
-; then prints it to output.txt
+; file_io.sat - input and output from files
+; Reads in an integer, float, and string from
+; input.txt, modifies them, then prints them to
+; output.txt
 
 main:
 	int num_1
