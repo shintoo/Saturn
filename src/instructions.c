@@ -181,6 +181,9 @@ void saturn_out(Arg *dst, const Arg *src) {
 		case _INT: fprintf(ARGVAL(dst, FIL.pntr), "%d", ARGVAL(src, INT)); break;
 		case _FLT: fprintf(ARGVAL(dst, FIL.pntr), "%g", ARGVAL(src, FLT)); break;
 		case _STR: fprintf(ARGVAL(dst, FIL.pntr), "%s", ARGVAL(src, STR)); break;
+		case _IPT: /* Fall through */
+		case _FPT: /* Fall through */
+		case _SPT: fprintf(ARGVAL(dst, FIL.pntr), "%p", ARGVAL(src, INT)); break;
 	}
 }
 
@@ -195,7 +198,8 @@ void saturn_get(Arg *dst, const Arg *src) {
 	char str[32];
 	fgets(str, 32, src->var->val.FIL.pntr);
 	*strchr(str, '\n') = '\0';
-
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Fetched line \"%s\" from file \"%s\""
+	         " at path \"%s\"\n", str, src->var->label, src->var->val.FIL.path);
 	switch(dst->var->type) {
 		case _INT: ARGVAL(dst, INT) = atoi(str); break;
 		case _FLT: ARGVAL(dst, FLT) = atof(str); break;
@@ -384,9 +388,10 @@ void saturn_opn(Arg *dst, const Arg *src) {
 
 	dst->var->val.FIL.mode = src->var->val.STR;
 	dst->var->val.FIL.pntr = fopen(dst->var->val.FIL.path, dst->var->val.FIL.mode);
+	if (dst->var->val.FIL.pntr == NULL) {
+		ABORT("Error: %s: No such file or directory", dst->var->val.FIL.path);
+	}
 	dst->var->val.FIL.isopen = true;
-
-
 }
 
 void saturn_cls(Arg *dst, const Arg *src) {

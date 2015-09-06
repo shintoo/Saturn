@@ -1,6 +1,4 @@
 TODO:
-	Command line arguments
-	Multiple files
-	Maximize type security for all keywords
 	Restructure files
-
+	length-specific types (8, 16, 32, 64)
+	Bitwise operators

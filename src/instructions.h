@@ -12,6 +12,7 @@
 
 #define MAKE_ARITHMETIC_FUNCTION(NAME, OP) \
 void saturn_##NAME(Arg *dst, const Arg *src) { \
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] " #NAME "ing\n"); \
 	if ((dst->var->type | src->var->type) > 1) { \
 		ABORT("May only %s numeric values\n", #NAME); \
 	} \
@@ -76,6 +77,12 @@ void saturn_flt(Arg *dst, const Arg *src);
 
 void saturn_str(Arg *dst, const Arg *src);
 
+void saturn_ipt(Arg *dst, const Arg *src);
+
+void saturn_fpt(Arg *dst, const Arg *src);
+
+void saturn_spt(Arg *dst, const Arg *src);
+
 /* These two only have the second parameter
  * so that they may be in the same array
  * of function pointers as the rest. All
@@ -98,3 +105,4 @@ void saturn_jle(Arg *dst, const Arg *src);
 /*********************************************************/
 
 #endif
+

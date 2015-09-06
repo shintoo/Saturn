@@ -76,18 +76,6 @@ void Execute(const Statement *st);
 /*                   Misc Functions                      */
 /*********************************************************/
 
-/* Count the amount of lines in a file */
-int CountLines(FILE *src);
-
-/* Retreive the line from the file                       */
-char * GetLine(FILE *source);
-
-/* Abort interpretation and print error, 
- * including the line number and a detail.
- * e.g.: "15: Too few arguments for MOV"
- */
-void Abort(char *error, char *detail);
-
 const char * TypeLabel(enum types type);
 
 void ToUpper(char *st);

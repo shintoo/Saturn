@@ -18,11 +18,13 @@ Environment *env;
 void Init(void) {
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Initializing Saturn environment\n");
 
+	/* Allocate room for 10 variables to begin with */
 	env = malloc(sizeof(Environment));
 	env->vars = malloc(10 * sizeof(Var *));
 	env->memsize = 10;
 	env->varcount = 4;
 
+	/* Create global constants */
 	env->vars[0] = malloc(sizeof(Var));
 	env->vars[0]->label = "stdin";
 	env->vars[0]->type = _FIL;
@@ -47,14 +49,20 @@ void Init(void) {
 	env->vars[3]->val.STR = "\n";
 }
 
+/* Called at the end of the program. Frees up all memory allocated for
+ * variables.
+ */
 void End(void) {
 	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Closing Saturn environment\n");
 
+	/* Freeing the constants created in Init() */
 	for (int i = 0; i < 4; i++) {
 		DEBUGMSG("[  " _GREEN "ENV" _RESET "  ] Freeing \"%s\" at %p\n",
 			env->vars[i]->label, env->vars + i);
 		free(env->vars[i]);
 	}
+
+	/* Freeing the variables declared by the user */
 	for (int i = 4; i < env->varcount; i++) {
 		DEBUGMSG("[  " _GREEN "ENV" _RESET " ] Freeing \"%s\" at %p\n",
 			env->vars[i]->label, env->vars + i)
@@ -72,46 +80,28 @@ void End(void) {
 
 	exit(EXIT_SUCCESS);
 }
-int CountLines(FILE *src_file) {
-	char ch;
-	int ret = 0;
-	do {
-		ch = fgetc(src_file);
-		if (ch == '\n') {
-			ret++;
-		}
-	} while (!feof(src_file));
 
-	rewind(src_file);
-	return ret;
-}
-
-char * getline(FILE *src_file) {
-	char *ret = malloc(81);
-	fgets(ret, 80, src_file);
-	replace(ret, ';', '\n');
-
-	return ret;
-}
-
+/* Takes a single line of source and returns a Statement that can be executed */
 Statement * Parse(char *line) {
+	/* Gross hack: Skip labels, which are identified by a ':', but account for
+	 * strings that have ':' in them
+	 */
 	if (strchr(line, ':') && !strchr(line, '\'')) {
 		return NULL;
 	}
 
 	Statement *ret;
 	char *token;
-	char *strlit = NULL; /* */
+	char *strlit = NULL; /* Used for holding a string literal */
 	char *line_copy; /* line is broken with strtok, this holds a copy */
 	char *tab;
 	char *comma = ",";
 	char *nl = "\n";
 	bool onearg = false;
 	char *commands[] = {
-		"INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV",
-		"MOD", "INC", "DEC", "MOV", "CAT", "GET", "OUT", "OPN", 
-		"CLS", "CMP", "JMP", "JEQ", "JNE", "JIG", "JIL", "JGE",
-		"JLE"
+		"INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV", "MOD", "INC",
+		"DEC", "MOV", "CAT", "GET", "OUT", "OPN", "CLS", "CMP", "JMP", "JEQ",
+		"JNE", "JIG", "JIL", "JGE", "JLE"
 	};
 	int temp;
 
@@ -122,29 +112,34 @@ Statement * Parse(char *line) {
 		*tab = ' ';
 	}
 	
+	/* Blank lines and comments */
 	token = strtok(line, " ");
 	if (token[0] == '\n' || token[0] == ';') {
 		free(line_copy);
 		return NULL;
 	}
+
 	ret = NewStatement();
-	ToUpper(token);
+	ToUpper(token); /* For finding in commands[] array */
 
 	/* Check the COMMANDS enum in types.h */
+	/* Gets the index of the token in commands[] array */
 	ret->command = arraystr(commands, __instruction_count, token);
 
 	if (ret->command == -1) {
 		ABORT("Error: unknown keyword: %s", token);
 	}
 
+	/* Retrieve first argument ******************/
 	token = strtok(NULL, " ");
-	if (!token) {                     // 0 arguments
+	if (!token) { 
 		ret->argcount = 0;
 		free(line_copy);
 		return ret;
 	}
 
-	comma = strchr(token, ',');       // check if token exists as var
+	/* Comma required after first argument */
+	comma = strchr(token, ',');
 	if (!comma) {
 		onearg = true;
 		nl = strchr(token, '\n');
@@ -154,18 +149,21 @@ Statement * Parse(char *line) {
 		nl = NULL;
 	}
 	else {
+		/* Don't include comma in token */
 		*comma = '\0';
 	}
 
 	ret->args[0] = CreateArg(token);
 
+	/* Retrieve second argument **************/
 	token = strtok(NULL, " ");
-	if (!token) {                    // 1 argument
+	if (!token) {
 		ret->argcount = 1;
 		ret->args[1] = NULL;
 		free(line_copy);
 		return ret;
 	}
+	/* May have picked up a comment... somehow */
 	if (token[0] == ';') {
 		ret->argcount = 1;
 		ret->args[1] = NULL;
@@ -182,11 +180,12 @@ Statement * Parse(char *line) {
 		*nl = '\0';
 	}
 
-	ret->argcount = 2;              // 2 arguments
+	ret->argcount = 2;
 
 	/* string literals must be handled differently - tokens are seperated
 	 * by spaces, and a string may contain spaces, so the whole line
-	 * must be used for string literals
+	 * must be used for string literals. Since the first arg can't be a literal,
+	 * this is here.
 	 */
 	if (token[0] == '\'') {
 		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] %d: String literal\n",
@@ -197,6 +196,7 @@ Statement * Parse(char *line) {
 		*(strchr(strlit + 1, '\'') + 1) = '\0';
 	}
 	free(line_copy);
+
 	if (strlit) {
 		ret->args[1] = CreateArg(strlit);
 	} else {
@@ -205,6 +205,7 @@ Statement * Parse(char *line) {
 	return ret;
 }
 
+/* Medium to create arguments from the token */
 Arg * CreateArg(char *token) {
 	Arg * newarg;
 
@@ -242,6 +243,7 @@ Arg * CreateStringLiteral(char *token) {
 	end = strchr(token, '\'');
 	*end = '\0';
 	
+	/* Create the literal space */
 	ret = malloc(sizeof(Arg));
 	ret->isliteral = true;
 	ret->var = malloc(sizeof(Var));
@@ -268,9 +270,11 @@ Arg * CreateNumericLiteral(char *token) {
 		}
 	}
 
+
 	ret = malloc(sizeof(Arg));
 	ret->isliteral = true;
 	ret->var = malloc(sizeof(Var));
+
 	if (flt) {
 		ret->var->label = "FLT_LITERAL";
 		ret->var->type = _FLT;
@@ -285,12 +289,14 @@ Arg * CreateNumericLiteral(char *token) {
 	return ret;
 }
 
+/* Create an argument for a variable */
 Arg * CreateVarArg(char *token) {
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Creating variable argument for \"%s\"\n",
 	    token);
 	Arg *ret;
 	int len = strlen(token);
 
+	/* Check for illegal characters */		
 	for (int i = 0; i < len; i++) {
 		if (!isalnum(token[i]) && token[i] != '_') {
 			ABORT("Illegal character in variable name: %s", token);
@@ -298,7 +304,7 @@ Arg * CreateVarArg(char *token) {
 	}
 	
 	ret = malloc(sizeof(Arg));
-
+	
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Searching environment for \"%s\"\n", token);
 	if ((ret->var = Env(token)) != NULL) {
 		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found %s in environment\n",
@@ -314,11 +320,15 @@ Arg * CreateVarArg(char *token) {
 	return ret;
 }
 
-Var * Env(char *token) {
+/* Searches the environment for variables that are named token, and returns
+ * a variable if found, null otherwise
+ */
+Var * Env(char *tok) {
 	Var *ret = NULL;
-
+	char *token = tok;
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Environment contains %d variables\n",
 	    env->varcount);
+
 	for (int i = 0; i < env->varcount; i++) {
 		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] \t%s variable: \"%s\"\n",
 		    TypeLabel(env->vars[i]->type),
@@ -360,7 +370,7 @@ void DeleteStatement(Statement *st) {
 }	
 
 const char * TypeLabel(enum types type) {
-	const char *TYPELABELS[] = {
+	static const char *TYPELABELS[] = {
 		"INT", "FLT", "STR", "FIL"
 	};
 	return TYPELABELS[type];
@@ -374,6 +384,7 @@ void ToUpper(char *st) {
 	}
 }
 
+/* Searches for label in the source file and returns its position */
 int FindLabel(const char *label, fpos_t *loc) {
 	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Searching for \"%s\"\n", label);
 	char str[80];

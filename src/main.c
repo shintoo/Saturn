@@ -7,19 +7,17 @@
 #include "instructions.h"
 #include "util.h"
 
-extern int __linecount;
+
 FILE *src_file;
 char StatusWord;
 
 int main(int argc, char **argv) {
 	char line[81];
-	int linecount;
-	bool interactive = false;
 	char *comment = NULL;
 	
 	StatusWord = 0;
 
-	if (argc == 2) {
+	if (argc = 2) {
 		src_file = fopen(argv[1], "r");
 		if (!src_file) {
 			fprintf(stderr, "saturn: error: %s: No such file or directory\n"
@@ -27,7 +25,6 @@ int main(int argc, char **argv) {
 			                "interpretation terminated.\n", argv[1]);
 			exit(1);
 		}
-		linecount = CountLines(src_file);
 	}
 	else {
 		fprintf(stderr, "saturn: fatal error: no input files\n"
