@@ -8,3 +8,4 @@
 0.2.3          Restructure how instruction array is created
 0.3            Fix environment, allowing for unlimited variables as intended
 0.3.1          Cleaning up
+0.3.2          Fix negative numeric literals
