@@ -149,11 +149,11 @@ void saturn_mov(Arg *dst, const Arg *src) {
 		break;
 		case _STR:
 			if (ARGVAL(dst, STR) = NULL) {
-				ARGVAL(dst, STR) = malloc(strlen(ARGVAL(src, STR)) + 2);
+				ARGVAL(dst, STR) = malloc(strlen(ARGVAL(src, STR)) + 1);
 			} else {
 				ARGVAL(dst, STR) = realloc(
 				    ARGVAL(dst, STR),
-				    strlen(ARGVAL(src, STR) + 2)
+				    strlen(ARGVAL(src, STR) + 1)
 				);
 			}
 			strcpy(ARGVAL(dst, STR), ARGVAL(src, STR));
@@ -201,7 +201,7 @@ void saturn_get(Arg *dst, const Arg *src) {
 		case _INT: ARGVAL(dst, INT) = atoi(str); break;
 		case _FLT: ARGVAL(dst, FLT) = atof(str); break;
 		case _STR:
-			if (ARGVAL(dst, STR) != NULL) {
+			if (ARGVAL(dst, STR)) {
 				free(ARGVAL(dst, STR));
 			}
 			ARGVAL(dst, STR) = malloc(strlen(str) + 1);
@@ -210,7 +210,7 @@ void saturn_get(Arg *dst, const Arg *src) {
 	}
 }
 
-/* Check out util.h */
+/* Check out instructions.h */
 MAKE_ARITHMETIC_FUNCTION(add, +=);
 
 MAKE_ARITHMETIC_FUNCTION(sub, -=);
@@ -279,7 +279,7 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	}
 
 	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), 
-		strlen(ARGVAL(src, STR)) + strlen(ARGVAL(dst, STR) + 2));
+		strlen(ARGVAL(src, STR)) + strlen(ARGVAL(dst, STR) + 1));
 
 	strcat(ARGVAL(dst, STR), ARGVAL(src, STR));
 }
@@ -302,17 +302,11 @@ void saturn_jmp(Arg *dst, const Arg *src) {
 
 
 /* instructions.h */
-
 MAKE_COND_JMP(jeq, 0, 0);
-
 MAKE_COND_JMP(jne, 1, 2);
-
 MAKE_COND_JMP(jig, 2, 2);
-
 MAKE_COND_JMP(jil, 1, 1);
-
 MAKE_COND_JMP(jle, 1, 0);
-
 MAKE_COND_JMP(jge, 2, 0);
 
 void saturn_cmp(Arg *dst, const Arg *src) {
@@ -354,6 +348,9 @@ void saturn_fil(Arg *dst, const Arg *src) {
 	if (Env(dst->token)) {
 		ABORT("Error: multiple declaration");
 	}
+	if (!src) {
+		ABORT("Error: must specify file path in declaration");
+	}
 
 	dst->var = malloc(sizeof(Var));
 	dst->var->type = _FIL;
@@ -365,8 +362,6 @@ void saturn_fil(Arg *dst, const Arg *src) {
 	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Path to file: \"%s\"\n", src->token);
 	dst->var->val.FIL.path = malloc(strlen(src->var->val.STR) + 1);
 	strcpy(dst->var->val.FIL.path, src->var->val.STR);
-
-	AddToEnv(dst->var);
 	
 }
 

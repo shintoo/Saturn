@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 
 		comment = strchr(line, ';');
 		if (comment) {
-			*comment = '\n';
+			*comment = '\0';
 		}
 
 		if (line[0] == '#') {
@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
 		}
 
 		DEBUGMSG("%d: %s", i, line);
+		getchar();
 		/* Parse line into a statement */
 		instruction = Parse(line);
 

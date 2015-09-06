@@ -114,7 +114,12 @@ Statement * Parse(char *line) {
 	
 	/* Blank lines and comments */
 	token = strtok(line, " ");
-	if (token[0] == '\n' || token[0] == ';') {
+	if (token) {
+		if (token[0] == '\n' || token[0] == ';') {
+			free(line_copy);
+			return NULL;
+		}
+	} else {
 		free(line_copy);
 		return NULL;
 	}

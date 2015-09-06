@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "types.h"
 
-//#define DEBUG
+#define DEBUG
 #define VERSION "0.3.1"
 
 #define _RED     "\x1b[31m"
