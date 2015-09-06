@@ -88,7 +88,7 @@ Basics
   on integers, assigning the modulus of the two arguments to the first:
   
       int a, 10
-	  mod a, 3                  ; a is now 10 % 3, or 1
+      mod a, 3                  ; a is now 10 % 3, or 1
   
   Also, there are two commands 'inc' and 'dec', for
   increment and decrement:
@@ -239,4 +239,12 @@ Pre-Release Woes
   have yet to be added, such as tokenizing a string.
 
   While output to files is working, support for input from files has yet to be
-  completed.
+  implemented to completion. There is a workaround: Declare a string and
+  initialize or assign it the path, then create the file variable with that
+  string variable as the path.
+
+     str path, 'input.txt'
+     fil input, path
+     opn input, 'r'
+	 
+  This will work as a placeholder for now. 
