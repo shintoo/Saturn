@@ -64,7 +64,7 @@ void End(void) {
 
 	/* Freeing the variables declared by the user */
 	for (int i = 4; i < env->varcount; i++) {
-		DEBUGMSG("[  " _GREEN "ENV" _RESET " ] Freeing \"%s\" at %p\n",
+		DEBUGMSG("[  " _GREEN "ENV" _RESET "  ] Freeing \"%s\" at %p\n",
 			env->vars[i]->label, env->vars + i)
 		free(env->vars[i]->label);
 		if (env->vars[i]->type == _STR) {

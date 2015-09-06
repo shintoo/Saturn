@@ -174,14 +174,8 @@ void saturn_mov(Arg *dst, const Arg *src) {
 
 		break;
 		case _STR:
-			if (ARGVAL(dst, STR) = NULL) {
-				ARGVAL(dst, STR) = malloc(strlen(ARGVAL(src, STR)) + 1);
-			} else {
-				ARGVAL(dst, STR) = realloc(
-				    ARGVAL(dst, STR),
-				    strlen(ARGVAL(src, STR) + 1)
-				);
-			}
+			ARGVAL(dst, STR) = realloc(
+			    ARGVAL(dst, STR), strlen(ARGVAL(src, STR)) + 1);
 			strcpy(ARGVAL(dst, STR), ARGVAL(src, STR));
 			DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Moved \"%s\" into variable \"%s\"\n",
 			        ARGVAL(src, STR), dst->var->label);
@@ -304,8 +298,10 @@ void saturn_cat(Arg *dst, const Arg *src) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
 
-	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), 
-		strlen(ARGVAL(src, STR)) + strlen(ARGVAL(dst, STR) + 1));
+//	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), 
+//		strlen(ARGVAL(src, STR)) + strlen(ARGVAL(dst, STR) + 1));
+
+	dst->var->val.STR = realloc(dst->var->val.STR, strlen(dst->var->val.STR) + strlen(src->var->val.STR));
 
 	strcat(ARGVAL(dst, STR), ARGVAL(src, STR));
 }
