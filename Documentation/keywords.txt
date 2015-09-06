@@ -78,7 +78,8 @@
  | cmp        | Takes two arguments             | int a, 5                    |
  |            | Compares the values of the      | int b, 8                    |
  |            | arguments and sets the status   | cmp a, b                    |
- |            | word accordingly.               | ; status word: 'less than'  |
+ |            | word accordingly. For strings,  | ; status word: 'less than'  |
+ |            | it compares them alphabetically.|                             |
  +------------+---------------------------------+-----------------------------+
  | jmp        | Takes one argument (label)      | jmp print_a                 |
  |            | Shifts the flow of execution to | printa:                     |
