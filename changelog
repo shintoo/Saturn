@@ -10,3 +10,4 @@
 0.3.1          Cleaning up
 0.3.2          Fix negative numeric literals
 0.4            Complete File IO
+0.4.1          Not crash over trailing whitespace
