@@ -48,7 +48,7 @@
 	printf("Usage: %s file | [options]\n" \
 	       "\nSaturn - a basic interpreted language.\n\n" \
 		   "Options:\n" \
-		   "  -v, --version\t\tprint version\n  -h, --help\t\tprint this help\n" \
+		   "  -V, --version\t\tprint version\n  -h, --help\t\tprint this help\n" \
 		   "\nSee the Documentation directory in the source for details\n" \
 		   "on how to use Saturn.\n", \
 		   argv[0]); \
