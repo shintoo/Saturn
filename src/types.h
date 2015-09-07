@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-enum types {_INT, _FLT, _STR, _FIL, _IPT, _FPT, _SPT};
+enum types {_INT, _FLT, _STR, _FIL};
 
 enum COMMANDS {
-	INT, FLT, STR, FIL, IPT, FPT, SPT,
+	INT, FLT, STR, FIL,
 	ADD, SUB, MUL, DIV, MOD,
 	INC, DEC,
 	MOV, CAT, GET, OUT, OPN, CLS,
@@ -21,7 +21,7 @@ struct _file {
 };
 
 typedef union _val {
-	int INT; /* INT is also used for the poiner types IPT, FPT, and SPT */
+	int INT;
 	float FLT;
 	char *STR;
 	struct _file FIL;
