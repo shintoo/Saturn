@@ -20,7 +20,7 @@ extern FILE *src_file;
 char StatusWord;
 
 /* Verify the arguments in a statement before execution */
-static inline void check_args(int is_decl, const Statement *st) {
+static inline void check_args(int is_decl_or_jump, const Statement *st) {
 	if (st->argcount < 1) {
 		ABORT("Error: No arguments");
 	}
@@ -29,7 +29,7 @@ static inline void check_args(int is_decl, const Statement *st) {
 	}
 
 	/* Statements that are not declarations */
-	if (!is_decl) {
+	if (!is_decl_or_jump) {
 		if (!Env(st->args[0]->token)) {
 			ABORT("Error: \'%s\' undeclared", st->args[0]->token);
 		}
