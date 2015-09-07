@@ -80,8 +80,8 @@ Basics
       mov baz, 10               ; Assigns the value 10 to baz
 
       add foo, 10               ; Add 10 to foo
-      cat bar, 'v0.1'           ; Concatenate 'v0.1' to 'Saturn
-      add baz, 2                ; Add 2 to baz
+      cat bar, ' v1.1'          ; Concatenate ' v1.1' to 'Saturn'
+	  len baz, bar              ; Assigns the length of string bar to baz
 
   The commands 'sub', 'mul', and 'div' can be used just as 'add', to subtract,
   multiply, and divide integers and floats. The 'mod' command can be used only

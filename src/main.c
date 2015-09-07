@@ -8,7 +8,7 @@
 #include "util.h"
 
 FILE *src_file;
-char StatusWord;
+extern char StatusWord;
 
 int main(int argc, char **argv) {
 	char line[81];

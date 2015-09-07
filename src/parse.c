@@ -8,7 +8,7 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count 25
+#define __instruction_count 26
 
 extern FILE *src_file;
 
@@ -110,8 +110,8 @@ Statement * Parse(char *line) {
 	bool onearg = false;
 	char *commands[] = {
 		"INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV", "MOD", "INC",
-		"DEC", "MOV", "CAT", "GET", "OUT", "OPN", "CLS", "CMP", "JMP", "JEQ",
-		"JNE", "JIG", "JIL", "JGE", "JLE"
+		"DEC", "MOV", "CAT", "LEN", "GET", "OUT", "OPN", "CLS", "CMP", "JMP",
+		"JEQ", "JNE", "JIG", "JIL", "JGE", "JLE"
 	};
 	int temp;
 

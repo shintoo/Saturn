@@ -48,6 +48,8 @@ void saturn_add(Arg *dst, const Arg *src);
 
 void saturn_cat(Arg *dst, const Arg *src);
 
+void saturn_len(Arg *dst, const Arg *src);
+
 void saturn_sub(Arg *dst, const Arg *src);
 
 void saturn_mul(Arg *dst, const Arg *src);

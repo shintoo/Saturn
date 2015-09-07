@@ -6,7 +6,7 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count  25
+#define __instruction_count  26
 
 /* Holds variables */
 extern Environment *env;
@@ -17,7 +17,7 @@ extern FILE *src_file;
  * with the `cmp' command. They are set 00 for equal, 01
  * for less than, and 10 for greater than.
  */
-extern char StatusWord;
+char StatusWord;
 
 /* Verify the arguments in a statement before execution */
 static inline void check_args(int is_decl, const Statement *st) {
@@ -50,15 +50,15 @@ void Execute(const Statement *st) {
 	static void (*instructions[__instruction_count])(Arg *dst, const Arg *src) = {
 		saturn_int, saturn_flt, saturn_str, saturn_fil, saturn_add, saturn_sub,
 		saturn_mul, saturn_div, saturn_mod, saturn_inc, saturn_dec, saturn_mov,
-		saturn_cat, saturn_get, saturn_out, saturn_opn, saturn_cls, saturn_cmp,
-		saturn_jmp, saturn_jeq, saturn_jne, saturn_jig, saturn_jil, saturn_jge,
-		saturn_jle
+		saturn_cat, saturn_len, saturn_get, saturn_out, saturn_opn, saturn_cls,
+		saturn_cmp, saturn_jmp, saturn_jeq, saturn_jne, saturn_jig, saturn_jil,
+		saturn_jge, saturn_jle
 	};
 
-	if (st->command > 17) {
+	if (st->command > 18) {
 		check_args(1, st);
 	}
-	if (st->command > 3 && st->command < 17) {
+	if (st->command > 3 && st->command < 18) {
 		check_args(0, st);
 	} else {
 		check_args(1, st);
@@ -323,6 +323,20 @@ void saturn_cat(Arg *dst, const Arg *src) {
 	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), sz);
 
 	strncat(ARGVAL(dst, STR), ARGVAL(src, STR), sz);
+}
+
+/* Move the value of the length of the string in src to dst */
+void saturn_len(Arg *dst, const Arg *src) {
+	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Moving length of %s into %s\n",
+	    src->var->label, dst->var->label);
+	if (src->var->type != _STR || dst->var->type > 1) {
+		ABORT("Error: `len' takes int/flt and str arguments");
+	}
+	
+	switch(dst->var->type) {
+		case _FLT: dst->var->val.FLT = strlen(ARGVAL(src, STR)); break;
+		case _INT: dst->var->val.INT = strlen(ARGVAL(src, STR)); break;
+	}
 }
 
 /* Find the token for the second argument in the src_file and

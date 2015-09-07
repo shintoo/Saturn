@@ -71,6 +71,12 @@
  |            | argument's string onto the      |                             |
  |            | first's. Both bust be str.      |                             |
  +------------+---------------------------------+-----------------------------+
+ | len        | Takes two arguments             | len foo, hello              |
+ |            | Finds the length of the string  | len baz, 'world'            |
+ |            | of the second argument and      |                             |
+ |            | assigns it to the int or flt    |                             |
+ |            | that is the second argument.    |                             |
+ +------------+---------------------------------+-----------------------------+
 
  +--------------+
  | Control Flow |

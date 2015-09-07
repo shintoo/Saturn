@@ -12,3 +12,4 @@
 0.4            Complete File IO
 0.4.1          Not crash over trailing whitespace
 1.0            Full release
+1.1            Add `len' - find the length of a string
