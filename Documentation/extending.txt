@@ -1,0 +1,165 @@
+Extending Saturn - Adding functions
+
+  Saturn is structured in such a way that each `keyword' calls a function
+  that is defined in ../src/instructions.c. It is quite simple to add
+  new functions, and I encourage any clever contributors to submit a PR.
+
+  To add a function to Saturn, four files need to be changed: instructions.c,
+  parse.c, types.h, and instructions.h.
+
+  To explain the process of adding a function, I will demonstrate with an
+  example function, `foo.' `foo' will take two arguments, perform some
+  computation, and assign the result to the first argument.
+
+      foo bean, bag        ; applies foo to bean using bag
+  
+  First, we must update the instruction count constant in parse.c and
+  instructions.c. Simply add 1 to the `define __instruction_count X' in
+  both files.
+
+  Then, we must add the function's name to the list of functions in parse.c.
+  You will find this list being initialized in the beginning of Parse() in
+  parse.c. Find a good place for it to fit in, in all caps.
+
+      char *commands[] = {                                   /* Here it is v */
+          "INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV", "MOD", "FOO",
+          "DEC", "MOV", "CAT", "LEN", "GET", "OUT" // etc etc
+      };
+
+  That's all that's required for parse.c. Next, we add FOO to the list of
+  functions in types.h, in the same place.
+
+      enum COMMANDS {
+          INT, FLT, STR, FIL,
+          ADD, SUB, MUL, DIV, MOD, FOO,
+          INC, Dec, // etc etc
+      };
+
+  That's all that's required for types.h. Now, we must add the prototype
+  to instructions.h. This is simple enough: just append it to the list
+  of instruction functions. The order doesn't matter, but you're welcome
+  to organize if you like.
+
+      void saturn_mod(Arg *dst, const Arg *src);
+      void saturn_foo(Arg *dst, const Arg *src); /* Fits right in. */
+      void saturn_get(Arg *dst, const Arg *src);
+
+  We must also include the function in the instructions[] array that can
+  be found in Execute() in instructions.c Make sure to place the functon
+  name in the same order as you did in enum COMMANDS and char *commands[]
+  in types.h and parse.c, respectively.
+
+  Finally, we must write the actual function in instructions.c.
+  Once again, the order does not matter but it would be nice if
+  it followed the order as seen in parse.c and types.h.
+
+      void saturn_foo(Arg *dst, const Arg *src) {
+          // foo
+      }
+
+ Writing the Actual Function
+
+  When writing the actual function, types.h will be your guide. In short:
+  an Arg contains a Var, which has a Val. The Arg contains the token,
+  if it's a literal, and a pointer to the variable. The variable
+  contains the label, if it's const, the type, and the value. The value
+  is a union of each type: int, flt, str, and fil. the FIL has the
+  FILE *pointer, the path, mode, and if it's open.
+  Let's say calling foo assigns dst->var->val.INT the value of
+  src->var->val.INT xor dst->var->val.INT:
+
+      void saturn_foo(Arg *dst, const Arg *src) {
+         if (!src) {
+              ABORT("Error: xor takes two arguments");
+         }
+         if (dst->var->type != src->var->type != _INT) {
+              ABORT("Error: xor takes two ints");
+         }
+
+         dst->var->val.INT ^= src->var->val.INT;
+      }
+
+  Here's an example program that uses foo:
+
+      main:
+          int a, 10
+          int b
+          out stdout, 'Enter value for b: '
+          get b, stdin
+          foo a, b        ; a ^= b
+          out stdout, '10 ^ '
+          out stdout, b
+          out stdout, ' = '
+          out stdout, a
+          out stdout, newline
+
+  Here is the output:
+
+      $ ./foo.sat
+      Enter value for b: 13
+      10 ^ 13 = 7
+      $
+
+ Adding a type to Saturn
+
+  If you wish to add a new datatype to Saturn, it only requires a couple more
+  steps than just adding a function.
+  
+  First, append your datatype to the enum types in type.h.
+
+                                      /* Your type */
+      enum types {_INT, _FLT, _STR, _FIL, _TYP};
+
+  Then, also append it to the Val union:
+
+      typedef union _val {
+          int INT;
+          float FLT;
+          char *STR;
+          struct _file FIL;
+          YourType TYP;
+      } Val;
+
+  At the end of your declaration function, call `AddToEnv(dst->var);'.
+  This will append the declared variable to the environment (so that it can
+  be used after being declared). It is best to follow the convention that
+  dst->var is being declared, and that if a second argument is provided,
+  dst->var is initialized to src->var. I have pasted the function for declaring
+  integers below with additional comments for your convenience.
+
+      /* Declares an integer variable */
+      void saturn_int(Arg *dst, const Arg *src) {
+          DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating INT variable \"%s\"\n", dst->token);
+
+          /* If the variable already exists, don't declare it! */
+          if (Env(dst->token)) {
+              ABORT("Error: multiple declaration of %s", dst->token);
+          }
+
+          /* Manually create the variable */
+          dst->var = malloc(sizeof(Var));
+          dst->var->label = malloc(strlen(dst->token) + 1);
+          strcpy(dst->var->label, dst->token);
+          dst->var->type = _INT;
+          dst->var->isconst = false;
+
+          /* If there's a second argument, initialize the variable */
+          if (src) {
+              /* For declaring ints, we can initialize with either a flt or 
+               * int. These are types 0 (int) and 1 (flt). If src isn't an
+               * int or flt, abort.
+               */
+              if (src->var->type > 1) {
+                  ABORT("Mismatched type for initialization");
+              }
+              /* Initialize dst->var->val.INT to src's int or flt */
+              ARGVAL(dst, INT) = INT_OR_FLT(src);
+          } else {
+              /* We'd like to implicity initialize to 0 otherwise */
+              ARGVAL(dst, INT) = 0;
+          }
+          /* Append the new variable to the environment */
+          AddToEnv(dst->var);
+      }
+
+  Happy hacking.
