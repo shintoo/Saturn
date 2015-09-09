@@ -63,14 +63,14 @@ void Execute(const Statement *st) {
 	} else {
 		check_args(1, st);
 	}
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Calling #%d\n", st->command);
+	DEBUG_EXEC("Calling #%d\n", st->command);
 
 	instructions[st->command](st->args[0], st->argcount == 2 ? st->args[1] : NULL);
 }
 
 /* Declares an integer variable */
 void saturn_int(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating INT variable \"%s\"\n", dst->token);
+	DEBUG_EXEC("Creating INT variable \"%s\"\n", dst->token);
 
 	if (Env(dst->token)) {
 		ABORT("Error: multiple declaration of %s", dst->token);
@@ -95,7 +95,7 @@ void saturn_int(Arg *dst, const Arg *src) {
 
 /* Declares a float variable */
 void saturn_flt(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FLT variable \"%s\"\n",
+	DEBUG_EXEC("Creating FLT variable \"%s\"\n",
 	    dst->token);
 
 	if (Env(dst->token)) {
@@ -122,8 +122,7 @@ void saturn_flt(Arg *dst, const Arg *src) {
 
 /* Declares a string variable */
 void saturn_str(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating STR variable \"%s\"\n",
-	    dst->token);
+	DEBUG_EXEC("Creating STR variable \"%s\"\n", dst->token);
 
 	if (src) {
 		if (src->var->type != _STR) {
@@ -147,8 +146,7 @@ void saturn_str(Arg *dst, const Arg *src) {
 
 /* Declares a file variable */
 void saturn_fil(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Creating FIL variable \"%s\"\n",
-	    dst->token);
+	DEBUG_EXEC("Creating FIL variable \"%s\"\n", dst->token);
 
 	if (Env(dst->token)) {
 		ABORT("Error: multiple declaration");
@@ -173,8 +171,7 @@ void saturn_fil(Arg *dst, const Arg *src) {
 
 /* Assigns the value of the second argument to the first */
 void saturn_mov(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Destination: %s, source: %s\n",
-	        dst->var->label, src->var->label);
+	DEBUG_EXEC("Destination: %s, source: %s\n", dst->var->label, src->var->label);
 
 	if ((src->var->type | dst->var->type) > 1 &&
 			src->var->type + dst->var->type != 4) {
@@ -185,21 +182,21 @@ void saturn_mov(Arg *dst, const Arg *src) {
 	switch (dst->var->type) {
 		case _INT:
 			ARGVAL(dst, INT) = INT_OR_FLT(src); 
-			DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Moved %d into variable \"%s\"\n",
+			DEBUG_EXEC("Moved %d into variable \"%s\"\n",
 		        src->var->val.INT, dst->var->label);
 
 		break;
 		case _FLT:
 			ARGVAL(dst, FLT) = INT_OR_FLT(src);
-			DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Moved %f into variable \"%s\"\n",
-			        src->var->val.FLT, dst->var->label);
+			DEBUG_EXEC("Moved %f into variable \"%s\"\n",
+			       src->var->val.FLT, dst->var->label);
 
 		break;
 		case _STR:
 			ARGVAL(dst, STR) = realloc(
 			    ARGVAL(dst, STR), strlen(ARGVAL(src, STR)) + 1);
 			strcpy(ARGVAL(dst, STR), ARGVAL(src, STR));
-			DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Moved \"%s\" into variable \"%s\"\n",
+			DEBUG_EXEC("Moved \"%s\" into variable \"%s\"\n",
 			        ARGVAL(src, STR), dst->var->label);
 
 		break;
@@ -208,7 +205,7 @@ void saturn_mov(Arg *dst, const Arg *src) {
 
 /* Prints the second argument to the stream that is the first argument */
 void saturn_out(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Writing variable \"%s\" to file \"%s\"\n", 
+	DEBUG_EXEC("Writing variable \"%s\" to file \"%s\"\n", 
 		src->var->label, dst->var->label);
 
 	if (dst->var->type != _FIL) {
@@ -228,7 +225,7 @@ void saturn_out(Arg *dst, const Arg *src) {
 
 /* Reads a value into the first argument from the stream that is the second */
 void saturn_get(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Reading into variable \"%s\" from file \"%s\"\n",
+	DEBUG_EXEC("Reading into variable \"%s\" from file \"%s\"\n",
 		dst->var->label, src->var->label);
 	DEBUGMSG(_GREEN "INPUT: " _RESET);
 	if (dst->var->isconst) {
@@ -237,7 +234,7 @@ void saturn_get(Arg *dst, const Arg *src) {
 	char str[32];
 	fgets(str, 32, src->var->val.FIL.pntr);
 	*strchr(str, '\n') = '\0';
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Fetched line \"%s\" from file \"%s\""
+	DEBUG_EXEC("Fetched line \"%s\" from file \"%s\""
 	         " at path \"%s\"\n", str, src->var->label, src->var->val.FIL.path);
 	switch(dst->var->type) {
 		case _INT: ARGVAL(dst, INT) = atoi(str); break;
@@ -310,7 +307,7 @@ void saturn_dec(Arg *dst, const Arg *src) {
 
 /* Concatenates the second argument onto the first, which is a string */
 void saturn_cat(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Concatenating \"%s\" to \"%s\"\n",
+	DEBUG_EXEC("Concatenating \"%s\" to \"%s\"\n",
 		src->var->label, dst->var->label);
 	int sz = 0;
 	if (src->var->type != _STR) {
@@ -327,7 +324,7 @@ void saturn_cat(Arg *dst, const Arg *src) {
 
 /* Move the value of the length of the string in src to dst */
 void saturn_len(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Moving length of %s into %s\n",
+	DEBUG_EXEC("Moving length of %s into %s\n",
 	    src->var->label, dst->var->label);
 	if (src->var->type != _STR || dst->var->type > 1) {
 		ABORT("Error: `len' takes int/flt and str arguments");
@@ -343,17 +340,17 @@ void saturn_len(Arg *dst, const Arg *src) {
  * set the file pointer to that location
  */
 void saturn_jmp(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Searching for label \"%s\"\n", dst->token);
+	DEBUG_EXEC("Searching for label \"%s\"\n", dst->token);
 	fpos_t destination;
 	char label[18];
 	strncpy(label, dst->token, 16);
 	strcat(label, ":");
 
 	if ((FindLabel(label, &destination)) == 1) {
-		DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Found label \"%s\". Jumping\n", label);
+		DEBUG_EXEC("Found label \"%s\". Jumping\n", label);
 		fsetpos(src_file, &destination);
 	} else {
-		DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Label \"%s\" not found\n", label);
+		DEBUG_EXEC("Label \"%s\" not found\n", label);
 	}
 
 }
@@ -414,9 +411,9 @@ void saturn_opn(Arg *dst, const Arg *src) {
 		ABORT("Error: Mode for `opn' must be type `str'");
 	}
 
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Opening FIL variable \"%s\"\n"
-	         "[" _YELLOW "EXECUTE" _RESET "]    Path: %s; Mode: %s\n",
-              dst->var->label, dst->var->val.FIL.path, src->var->val.STR);
+	DEBUG_EXEC("Opening FIL variable \"%s\"\n", dst->var->label);
+	DEBUG_EXEC("\tPath: %s; Mode: %s\n",
+              dst->var->val.FIL.path, src->var->val.STR);
 
 	dst->var->val.FIL.mode = src->var->val.STR;
 	dst->var->val.FIL.pntr = fopen(dst->var->val.FIL.path, dst->var->val.FIL.mode);
@@ -428,7 +425,7 @@ void saturn_opn(Arg *dst, const Arg *src) {
 
 /* Closes a file */
 void saturn_cls(Arg *dst, const Arg *src) {
-	DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] Closing FIL variable\n");
+	DEBUG_EXEC("Closing FIL variable %s\n", dst->var->label);
 
 	if (dst->var->type != _FIL) {
 		ABORT("You can only cls files");
@@ -444,17 +441,17 @@ void saturn_cls(Arg *dst, const Arg *src) {
 
 /* Append a newly declared variable to the list of variables (environment) */
 void AddToEnv(Var *v) {
-	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Environment begins at %p\n", env->vars);
-	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Adding %s to environment at %d\n",
+	DEBUG_ENV("Environment begins at %p\n", env->vars);
+	DEBUG_ENV("Adding %s to environment at %d\n",
 	   v->label, env->varcount);
 
 	if (env->varcount == env->memsize) {
-		DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Adding 10 memory blocks to environment\n");
+		DEBUG_EXEC("Adding 10 memory blocks to environment\n");
 		env->vars = realloc(env->vars, (env->memsize + 10) * sizeof(Var *));
 		env->memsize += 10;
 	}
 	env->vars[env->varcount] = v;
-	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] %s added to environment at %d\n",
+	DEBUG_EXEC("%s added to environment at %d\n",
 	        env->vars[env->varcount]->label, env->varcount);
 
 	env->varcount++;

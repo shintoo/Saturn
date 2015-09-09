@@ -26,7 +26,7 @@ Environment *env;
  *    Set the global constants
  */
 void Init(void) {
-	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Initializing Saturn environment\n");
+	DEBUG_EXEC("Initializing Saturn environment\n");
 
 	/* Allocate room for 10 variables to begin with */
 	env = malloc(sizeof(Environment));
@@ -63,19 +63,17 @@ void Init(void) {
  * variables.
  */
 void End(void) {
-	DEBUGMSG("[" _GREEN "  ENV  " _RESET "] Closing Saturn environment\n");
+	DEBUG_EXEC("Closing Saturn environment\n");
 
 	/* Freeing the constants created in Init() */
 	for (int i = 0; i < 4; i++) {
-		DEBUGMSG("[  " _GREEN "ENV" _RESET "  ] Freeing \"%s\" at %p\n",
-			env->vars[i]->label, env->vars + i);
+		DEBUG_ENV("Freeing \"%s\" at %p\n", env->vars[i]->label, env->vars + i);
 		free(env->vars[i]);
 	}
 
 	/* Freeing the variables declared by the user */
 	for (int i = 4; i < env->varcount; i++) {
-		DEBUGMSG("[  " _GREEN "ENV" _RESET "  ] Freeing \"%s\" at %p\n",
-			env->vars[i]->label, env->vars + i)
+		DEBUG_ENV("Freeing \"%s\" at %p\n", env->vars[i]->label, env->vars + i)
 		free(env->vars[i]->label);
 		if (env->vars[i]->type == _STR) {
 			free(env->vars[i]->val.STR);
@@ -203,10 +201,7 @@ Statement * Parse(char *line) {
 	 * this is here.
 	 */
 	if (token[0] == '\'') {
-		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] %d: String literal\n",
-		    __LINE__);
 		strlit = malloc(80);
-		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Copying literal from line: \"%s\"\n", line_copy);
 		strncpy(strlit, strstr(line_copy, token), 79);
 		*(strchr(strlit + 1, '\'') + 1) = '\0';
 	}
@@ -244,7 +239,6 @@ Arg * CreateArg(char *token) {
 Arg * CreateStringLiteral(char *token) {
 	char *end;
 	Arg *ret;
-	DEBUGMSG("[ " _MAGENTA "PARSE " _RESET "] %d: token: \"%s\"\n", __LINE__, token);
 
 	if (token[strlen(token) - 1] != '\'') {
 		if (strchr(token + 1, '\'') == NULL) {
@@ -310,8 +304,7 @@ Arg * CreateNumericLiteral(char *token) {
 
 /* Create an argument for a variable */
 Arg * CreateVarArg(char *token) {
-	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Creating variable argument for \"%s\"\n",
-	    token);
+	DEBUG_PARS("Creating variable argument for \"%s\"\n", token);
 	Arg *ret;
 	int len = strlen(token);
 
@@ -324,15 +317,14 @@ Arg * CreateVarArg(char *token) {
 	
 	ret = malloc(sizeof(Arg));
 	
-	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Searching environment for \"%s\"\n", token);
+	DEBUG_PARS("Searching environment for \"%s\"\n", token);
 	if ((ret->var = Env(token)) != NULL) {
-		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found %s in environment\n",
-		    ret->var->label);
+		DEBUG_PARS("Found %s in environment\n", ret->var->label);
 		ret->isliteral = false;
 		ret->token = token;
 		return ret;
 	}
-	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] \"%s\" not found in environment\n", token);
+	DEBUG_PARS(" \"%s\" not found in environment\n", token);
 
 	ret->isliteral = false;
 	ret->token = token;
@@ -345,16 +337,13 @@ Arg * CreateVarArg(char *token) {
 Var * Env(char *token) {
 	Var *ret = NULL;
 
-	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Environment contains %d variables\n",
-	    env->varcount);
+	DEBUG_PARS("Environment contains %d variables\n", env->varcount);
 
 	for (int i = 0; i < env->varcount; i++) {
-		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] \t%s variable: \"%s\"\n",
-		    TypeLabel(env->vars[i]->type),
-		       env->vars[i]->label);
+		DEBUG_PARS("\t%s variable: \"%s\"\n", TypeLabel(env->vars[i]->type),
+		                                      env->vars[i]->label);
 		if (strcmp(env->vars[i]->label, token) == 0) {
-			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found %s in environment at %d\n",
-				env->vars[i]->label, i);
+			DEBUG_EXEC("Found %s in environment at %d\n", env->vars[i]->label, i);
 			ret = env->vars[i];
 		}
 	}
@@ -367,7 +356,7 @@ Statement * NewStatement(void) {
 	newst->args = malloc(2 * sizeof(Arg *));
 	newst->args[0] = NULL;
 	newst->args[1] = NULL;
-	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Creating Statement at %p\n", newst);
+	DEBUG_PARS("Creating Statement at %p\n", newst);
 	return newst;
 }
 
@@ -377,14 +366,13 @@ void DeleteStatement(Statement *st) {
 			if (st->args[i]->var->type == _STR) {
 				free(st->args[i]->var->val.STR);
 			}
-			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Freeing literal: \"%s\"\n",
-				st->args[i]->var->label);
+			DEBUG_PARS("Freeing literal: \"%s\"\n", st->args[i]->var->label);
 			free(st->args[i]->var);
 		}
 		free(st->args[i]);
 	}
 	free(st->args);
-	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Freeing Memory at %p\n", st);
+	DEBUG_PARS("Freeing Memory at %p\n", st);
 	free(st);
 }	
 
@@ -406,7 +394,7 @@ void ToUpper(char *st) {
 
 /* Searches for label in the source file and returns its position */
 int FindLabel(const char *label, fpos_t *loc) {
-	DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Searching for \"%s\"\n", label);
+	DEBUG_PARS("Searching for \"%s\"\n", label);
 	char str[80];
 	char *lab;
 	char ch;
@@ -420,9 +408,9 @@ int FindLabel(const char *label, fpos_t *loc) {
 				break;
 			}
 		}
-		DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ]\t%s", str);
+		DEBUG_PARS("\t%s", str);
 		if (strstr(lab, label) && lab[0] == label[0]) {
-			DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] Found label in FindLabel\n");
+			DEBUG_PARS("Found label in FindLabel\n");
 			fgetpos(src_file, loc);
 			return 1;
 		}
