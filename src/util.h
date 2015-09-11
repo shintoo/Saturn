@@ -39,11 +39,12 @@
 #define DEBUGMSG(...)
 #endif
 
-#define DEBUG_EXEC(...) fprintf(stderr, "[" _YELLOW "EXECUTE" _RESET "] " __VA_ARGS__);
 
-#define DEBUG_PARS(...) fprintf(stderr, "[ " _MAGENTA "PARSE" _RESET " ] " __VA_ARGS__);
+#define DEBUG_EXEC(...) DEBUGMSG("[" _YELLOW "EXECUTE" _RESET "] " __VA_ARGS__);
 
-#define DEBUG_ENV(...)  fprintf(stderr, "[  " _GREEN "ENV" _RESET "  ] " __VA_ARGS__);
+#define DEBUG_PARS(...) DEBUGMSG("[ " _MAGENTA "PARSE" _RESET " ] " __VA_ARGS__);
+
+#define DEBUG_ENV(...)  DEBUGMSG("[  " _GREEN "ENV" _RESET "  ] " __VA_ARGS__);
 
 #define print_version do { \
 	puts("Saturn v" VERSION "\nThis is free software;" \
