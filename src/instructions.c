@@ -228,12 +228,15 @@ void saturn_get(Arg *dst, const Arg *src) {
 	DEBUG_EXEC("Reading into variable \"%s\" from file \"%s\"\n",
 		dst->var->label, src->var->label);
 	DEBUGMSG(_GREEN "INPUT: " _RESET);
+	char *newline;
 	if (dst->var->isconst) {
 		ABORT("Error: constant variable: %s", dst->var->label);
 	}
 	char str[32];
 	fgets(str, 32, src->var->val.FIL.pntr);
-	*strchr(str, '\n') = '\0';
+	
+	newline = strchr(str, '\n');
+	if (newline) *newline = '\0';
 	DEBUG_EXEC("Fetched line \"%s\" from file \"%s\""
 	         " at path \"%s\"\n", str, src->var->label, src->var->val.FIL.path);
 	switch(dst->var->type) {
