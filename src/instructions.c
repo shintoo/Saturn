@@ -443,6 +443,10 @@ void saturn_cls(Arg *dst, const Arg *src) {
 }
 
 void saturn_ext(Arg *dst, const Arg *src) {
+	if (src != NULL) {
+		ABORT("ext takes only one argument");
+	}
+
 	if (dst->var->type != _INT) {
 		ABORT("ext must take an integer return code");
 	}
