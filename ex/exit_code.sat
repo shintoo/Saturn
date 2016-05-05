@@ -1,0 +1,22 @@
+#!/usr/bin/saturn
+
+main:
+	int x, 10
+	int y
+	add x, 5
+
+	out stdout, 'Enter a number that is not 15: '
+	get y, stdin
+	cmp y, x
+	jeq error
+	jne success
+
+error:
+	out stdout, 'error (this process should return 1)'
+	out stdout, newline
+	ext 1
+
+success:
+	out stdout, 'success (this process should return 0)'
+	out stdout, newline
+	ext 0

@@ -10,7 +10,8 @@ enum COMMANDS {
 	ADD, SUB, MUL, DIV, MOD,
 	INC, DEC,
 	MOV, CAT, LEN, GET, OUT, OPN, CLS,
-	CMP, JMP, JEQ, JNE, JIG, JIL, JGE, JLE
+	CMP, JMP, JEQ, JNE, JIG, JIL, JGE, JLE,
+	EXT
 };
 
 struct _file {

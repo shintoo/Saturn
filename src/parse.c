@@ -8,7 +8,7 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count 26
+#define __instruction_count 27
 
 extern FILE *src_file;
 
@@ -109,7 +109,7 @@ Statement * Parse(char *line) {
 	char *commands[] = {
 		"INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV", "MOD", "INC",
 		"DEC", "MOV", "CAT", "LEN", "GET", "OUT", "OPN", "CLS", "CMP", "JMP",
-		"JEQ", "JNE", "JIG", "JIL", "JGE", "JLE"
+		"JEQ", "JNE", "JIG", "JIL", "JGE", "JLE", "EXT"
 	};
 	int temp;
 
@@ -335,8 +335,6 @@ Arg * CreateVarArg(char *token) {
  * a variable if found, null otherwise
  */
 Var * Env(char *token) {
-	Var *ret = NULL;
-
 	DEBUG_PARS("Environment contains %d variables\n", env->varcount);
 
 	for (int i = 0; i < env->varcount; i++) {
@@ -344,11 +342,11 @@ Var * Env(char *token) {
 		                                      env->vars[i]->label);
 		if (strcmp(env->vars[i]->label, token) == 0) {
 			DEBUG_EXEC("Found %s in environment at %d\n", env->vars[i]->label, i);
-			ret = env->vars[i];
+			return env->vars[i];
 		}
 	}
-	
-	return ret;
+
+	return NULL;
 }
 
 Statement * NewStatement(void) {

@@ -6,7 +6,7 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count  26
+#define __instruction_count  27
 
 /* Holds variables */
 extern Environment *env;
@@ -24,12 +24,12 @@ static inline void check_args(int is_decl_or_jump, const Statement *st) {
 	if (st->argcount < 1) {
 		ABORT("Error: No arguments");
 	}
-	if (st->args[0]->isliteral) {
+	if (st->args[0]->isliteral && st->command != EXT) {
 		ABORT("Error: first operand may not be literal");
 	}
 
 	/* Statements that are not declarations */
-	if (!is_decl_or_jump) {
+	if (!is_decl_or_jump && st->command != EXT) {
 		if (!Env(st->args[0]->token)) {
 			ABORT("Error: \'%s\' undeclared", st->args[0]->token);
 		}
@@ -52,7 +52,7 @@ void Execute(const Statement *st) {
 		saturn_mul, saturn_div, saturn_mod, saturn_inc, saturn_dec, saturn_mov,
 		saturn_cat, saturn_len, saturn_get, saturn_out, saturn_opn, saturn_cls,
 		saturn_cmp, saturn_jmp, saturn_jeq, saturn_jne, saturn_jig, saturn_jil,
-		saturn_jge, saturn_jle
+		saturn_jge, saturn_jle, saturn_ext
 	};
 
 	if (st->command > 18) {
@@ -440,6 +440,17 @@ void saturn_cls(Arg *dst, const Arg *src) {
 
 	fclose(dst->var->val.FIL.pntr);
 	dst->var->val.FIL.isopen = false;
+}
+
+void saturn_ext(Arg *dst, const Arg *src) {
+	if (dst->var->type != _INT) {
+		ABORT("ext must take an integer return code");
+	}
+	
+	DEBUG_EXEC("Exiting with code %d\n", dst->var->val.INT);
+	End();
+
+	exit(src->var->val.INT);
 }
 
 /* Append a newly declared variable to the list of variables (environment) */

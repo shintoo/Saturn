@@ -29,43 +29,24 @@ void saturn_##NAME(Arg *dst, const Arg *src) { \
 	} \
 }
 
-/* AddToEnv
- * Adds a variable to the environment
- * This function is called when a declaration
- * statement is executed, adding the label of
- * the variable to the environment for use
- * in later statements
- */
-void AddToEnv(Var *v);
-
 /*********************************************************/
 /*              Instruction Functions                    */
 /*********************************************************/
 
 void saturn_mov(Arg *dst, const Arg *src);
-
 void saturn_add(Arg *dst, const Arg *src);
-
 void saturn_cat(Arg *dst, const Arg *src);
-
 void saturn_len(Arg *dst, const Arg *src);
-
 void saturn_sub(Arg *dst, const Arg *src);
-
 void saturn_mul(Arg *dst, const Arg *src);
-
 void saturn_div(Arg *dst, const Arg *src);
-
 void saturn_mod(Arg *dst, const Arg *src);
 
 void saturn_get(Arg *dst, const Arg *src);
-
 void saturn_out(Arg *dst, const Arg *src);
 
 void saturn_fil(Arg *dst, const Arg *src);
-
 void saturn_opn(Arg *dst, const Arg *src);
-
 void saturn_cls(Arg *dst, const Arg *src);
 
 void saturn_cmp(Arg *dst, const Arg *src);
@@ -74,16 +55,8 @@ void saturn_cmp(Arg *dst, const Arg *src);
  * if src is null, the var  *
  * is not initialized       */
 void saturn_int(Arg *dst, const Arg *src);
-
 void saturn_flt(Arg *dst, const Arg *src);
-
 void saturn_str(Arg *dst, const Arg *src);
-
-void saturn_ipt(Arg *dst, const Arg *src);
-
-void saturn_fpt(Arg *dst, const Arg *src);
-
-void saturn_spt(Arg *dst, const Arg *src);
 
 /* These two only have the second parameter
  * so that they may be in the same array
@@ -93,8 +66,9 @@ void saturn_spt(Arg *dst, const Arg *src);
 void saturn_inc(Arg *dst, const Arg *src);
 void saturn_dec(Arg *dst, const Arg *src);
 
+/* Jumping functions, see keywords.txt
+ * for which condition maps to which function */
 void saturn_jmp(Arg *dst, const Arg *src);
-
 void saturn_jeq(Arg *dst, const Arg *src);
 void saturn_jne(Arg *dst, const Arg *src);
 void saturn_jig(Arg *dst, const Arg *src);
@@ -102,9 +76,22 @@ void saturn_jge(Arg *dst, const Arg *src);
 void saturn_jil(Arg *dst, const Arg *src);
 void saturn_jle(Arg *dst, const Arg *src);
 
+/* System functions */
+void saturn_ext(Arg *dst, const Arg *src);
 /*********************************************************/
 /*                   Misc Functions                      */
 /*********************************************************/
+
+/* AddToEnv
+ * Adds a variable to the environment
+ * This function is called when a declaration
+ * statement is executed, adding the label of
+ * the variable to the environment for use
+ * in later statements
+ */
+void AddToEnv(Var *v);
+
+
 
 #endif
 

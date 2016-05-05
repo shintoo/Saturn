@@ -13,3 +13,4 @@
 0.4.1          Not crash over trailing whitespace
 1.0            Full release
 1.1            Add `len' - find the length of a string
+1.2            Add `ext' - exit anywhere in a script with an exit code
