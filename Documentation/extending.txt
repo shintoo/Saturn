@@ -8,10 +8,10 @@ Extending Saturn - Adding functions
   parse.c, types.h, and instructions.h.
 
   To explain the process of adding a function, I will demonstrate with an
-  example function, `foo.' `foo' will take two arguments, perform some
+  example function, `xor.' `xor' will take two arguments, perform some
   computation, and assign the result to the first argument.
 
-      foo bean, bag        ; applies foo to bean using bag
+      xor bean, bag        ; applies xor to bean using bag
   
   First, we must update the instruction count constant in parse.c and
   instructions.c. Simply add 1 to the `define __instruction_count X' in
@@ -22,16 +22,16 @@ Extending Saturn - Adding functions
   parse.c. Find a good place for it to fit in, in all caps.
 
       char *commands[] = {                                   /* Here it is v */
-          "INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV", "MOD", "FOO",
+          "INT", "FLT", "STR", "FIL", "ADD", "SUB", "MUL", "DIV", "MOD", "XOR",
           "DEC", "MOV", "CAT", "LEN", "GET", "OUT" // etc etc
       };
 
-  That's all that's required for parse.c. Next, we add FOO to the list of
+  That's all that's required for parse.c. Next, we add XOR to the list of
   functions in types.h, in the same place.
 
       enum COMMANDS {
           INT, FLT, STR, FIL,
-          ADD, SUB, MUL, DIV, MOD, FOO,
+          ADD, SUB, MUL, DIV, MOD, XOR,
           INC, Dec, // etc etc
       };
 
@@ -41,7 +41,7 @@ Extending Saturn - Adding functions
   to organize if you like.
 
       void saturn_mod(Arg *dst, const Arg *src);
-      void saturn_foo(Arg *dst, const Arg *src); /* Fits right in. */
+      void saturn_xor(Arg *dst, const Arg *src); /* Fits right in. */
       void saturn_get(Arg *dst, const Arg *src);
 
   We must also include the function in the instructions[] array that can
@@ -53,8 +53,8 @@ Extending Saturn - Adding functions
   Once again, the order does not matter but it would be nice if
   it followed the order as seen in parse.c and types.h.
 
-      void saturn_foo(Arg *dst, const Arg *src) {
-          // foo
+      void saturn_xor(Arg *dst, const Arg *src) {
+          // xor
       }
 
  Writing the Actual Function
@@ -65,10 +65,10 @@ Extending Saturn - Adding functions
   contains the label, if it's const, the type, and the value. The value
   is a union of each type: int, flt, str, and fil. the FIL has the
   FILE *pointer, the path, mode, and if it's open.
-  Let's say calling foo assigns dst->var->val.INT the value of
+  Let's say calling xor assigns dst->var->val.INT the value of
   src->var->val.INT xor dst->var->val.INT:
 
-      void saturn_foo(Arg *dst, const Arg *src) {
+      void saturn_xor(Arg *dst, const Arg *src) {
          if (!src) {
               ABORT("Error: xor takes two arguments");
          }
@@ -79,14 +79,14 @@ Extending Saturn - Adding functions
          dst->var->val.INT ^= src->var->val.INT;
       }
 
-  Here's an example program that uses foo:
+  Here's an example program that uses xor:
 
       main:
           int a, 10
           int b
           out stdout, 'Enter value for b: '
           get b, stdin
-          foo a, b        ; a ^= b
+          xor a, b        ; a ^= b
           out stdout, '10 ^ '
           out stdout, b
           out stdout, ' = '
@@ -95,7 +95,7 @@ Extending Saturn - Adding functions
 
   Here is the output:
 
-      $ ./foo.sat
+      $ ./xor.sat
       Enter value for b: 13
       10 ^ 13 = 7
       $

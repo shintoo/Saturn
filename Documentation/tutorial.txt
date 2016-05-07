@@ -34,6 +34,23 @@ Basics
   `out stdout, a'. However, `a' has not been declared, because the first
   two lines in the file were never executed.
 
+ ending a program
+
+  Every Saturn program ends when the control flow reaches the end of the file.
+  This will by default return 0 to the operating system. However, you can exit
+  out of a program from anywhere with the use of 'ext'. 'ext' stands for 'exit',
+  as seen here:
+
+      main:
+	      int a, 10
+		  out stdout, 'Hello, world!'
+		  ext 1
+		  add a, 5
+  
+  This program will return 1 to the operating system, indicating an error.
+  The line 'add a, 5' will never execute, as the program will end on the line
+  before it, 'ext 1'.
+
  Syntax
 
   Every line in Saturn consists of one of two structures:

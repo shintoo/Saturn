@@ -117,6 +117,10 @@
  |            | result of cmp is 'less than or  | l_or_eq:                    |
  |            | equal to'.                      | out stdout, '2 == 2!'       |
  +------------+---------------------------------+-----------------------------+
+ | ext        | Takes one integer argument,     | ext 0                       |
+ |            | exits the program with an exit  | ext 127                     |
+ |            | code of that integer.           |                             |
+ +------------+---------------------------------+-----------------------------+
 
  +-----+
  | I/O |
@@ -139,4 +143,4 @@
  | cls        | Takes one argument              | cls output                  |
  |            | Closes the file that was        | cls data                    |
  |            | previously used for IO.         |                             |
- +----------------------------------------------------------------------------+
+ +------------+---------------------------------+-----------------------------+
