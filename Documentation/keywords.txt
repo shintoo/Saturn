@@ -77,6 +77,18 @@
  |            | assigns it to the int or flt    |                             |
  |            | that is the second argument.    |                             |
  +------------+---------------------------------+-----------------------------+
+ | fst        | Takes two arguments             | fst hello, 4                |
+ |            | Stores the first src characters |                             |
+ |            | from dest in dest.              |                             |
+ |            | Dest must be str.               |                             |
+ |            | Src must be int 0<=src<=len dest|                             |
+ +------------+---------------------------------+-----------------------------+
+ | lst        | Takes two arguments             | lst hello, 4                |
+ |            | Stores the last src characters  |                             |
+ |            | from dest into dest.            |                             |
+ |            | Dest must be str.               |                             |
+ |            | Src must be int 0<=src<=len dest|                             |
+ +------------+---------------------------------+-----------------------------+
 
  +--------------+
  | Control Flow |

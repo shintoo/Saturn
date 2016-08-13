@@ -1,0 +1,22 @@
+#!/usr/bin/saturn
+; reverse.sat - reverse a string
+main:
+    str string
+    int slen
+    str s
+    out stdout, 'Please enter a string: '
+    get string, stdin
+
+chk_zero:
+    len slen, string
+    cmp slen, 0
+    jne out
+    ext 0
+
+out:
+    mov s, string
+    lst s, 1 ;is lst even necessary? fst with negative arg?
+    out stdout, s
+    dec slen
+    fst string, slen
+    jmp chk_zero
