@@ -6,7 +6,7 @@
 #include "instructions.h"
 #include "util.h"
 
-#define __instruction_count  27
+#define __instruction_count  29
 
 /* Holds variables */
 extern Environment *env;
@@ -50,7 +50,8 @@ void Execute(const Statement *st) {
 	static void (*instructions[__instruction_count])(Arg *dst, const Arg *src) = {
 		saturn_int, saturn_flt, saturn_str, saturn_fil, saturn_add, saturn_sub,
 		saturn_mul, saturn_div, saturn_mod, saturn_inc, saturn_dec, saturn_mov,
-		saturn_cat, saturn_len, saturn_get, saturn_out, saturn_opn, saturn_cls,
+		saturn_cat, saturn_len, saturn_fst, saturn_lst,
+		saturn_get, saturn_out, saturn_opn, saturn_cls,
 		saturn_cmp, saturn_jmp, saturn_jeq, saturn_jne, saturn_jig, saturn_jil,
 		saturn_jge, saturn_jle, saturn_ext
 	};
@@ -337,6 +338,45 @@ void saturn_len(Arg *dst, const Arg *src) {
 		case _FLT: dst->var->val.FLT = strlen(ARGVAL(src, STR)); break;
 		case _INT: dst->var->val.INT = strlen(ARGVAL(src, STR)); break;
 	}
+}
+
+/* Store first src characters from dst in dst */
+void saturn_fst(Arg *dst, const Arg *src) { //fst
+	DEBUG_EXEC("Getting first %d characters from \"%s\"",
+	    ARGVAL(src, INT), ARGVAL(dst, STR));
+	if (src->var->type != _INT || dst->var->type != _STR) {
+		ABORT("Error: `fst' takes str and int arguments");
+	}
+	if (ARGVAL(src, INT) < 0 || ARGVAL(src, INT) > strlen(ARGVAL(dst, STR))) {
+		ABORT("Error: dst must be between 0 and len(src)");
+	}
+
+	/* realloc str */
+	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), ARGVAL(src, INT) + 1);
+	ARGVAL(dst, STR)[ARGVAL(src, INT)] = '\0';
+}
+
+/* Store last src characters from dst in dst */
+void saturn_lst(Arg *dst, const Arg *src) { //lst
+	DEBUG_EXEC("Getting last %d characters from \"%s\"",
+	    ARGVAL(src, INT), ARGVAL(dst, STR));
+	if (src->var->type != _INT || dst->var->type != _STR) {
+		ABORT("Error: `lst' takes str and int arguments");
+	}
+	if (ARGVAL(src, INT) < 0 || ARGVAL(src, INT) > strlen(ARGVAL(dst, STR))) {
+		ABORT("Error: dst must be between 0 and len(src)");
+	}
+	int len = strlen(ARGVAL(dst, STR));
+	int newlen = ARGVAL(src, INT);
+	int dif = len - newlen;
+	/* move chars back by dif */
+	for (int i = dif; i <= len; i += 1) {
+		ARGVAL(dst, STR)[i - dif] = ARGVAL(dst, STR)[i];
+	}
+	/* realloc to newlen + 1 */
+	ARGVAL(dst, STR) = realloc(ARGVAL(dst, STR), ARGVAL(src, INT) + 1);
+	/* add terminating zero (probably redundant) */
+	ARGVAL(dst, STR)[ARGVAL(src, INT)] = '\0';
 }
 
 /* Find the token for the second argument in the src_file and

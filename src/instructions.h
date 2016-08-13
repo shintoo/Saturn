@@ -51,6 +51,9 @@ void saturn_cls(Arg *dst, const Arg *src);
 
 void saturn_cmp(Arg *dst, const Arg *src);
 
+void saturn_fst(Arg *dst, const Arg *src);
+void saturn_lst(Arg *dst, const Arg *src);
+
 /* declaration instructions *
  * if src is null, the var  *
  * is not initialized       */
