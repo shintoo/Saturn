@@ -407,7 +407,7 @@ int FindLabel(const char *label, fpos_t *loc) {
 			}
 		}
 		DEBUG_PARS("\t%s", str);
-		if (strstr(lab, label) && lab[0] == label[0]) {
+		if (strstr(lab, label) && strlen(lab) == strlen(label) + 1) {
 			DEBUG_PARS("Found label in FindLabel\n");
 			fgetpos(src_file, loc);
 			return 1;
