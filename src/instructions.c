@@ -348,7 +348,7 @@ void saturn_fst(Arg *dst, const Arg *src) { //fst
 		ABORT("Error: `fst' takes str and int arguments");
 	}
 	if (ARGVAL(src, INT) < 0 || ARGVAL(src, INT) > strlen(ARGVAL(dst, STR))) {
-		ABORT("Error: dst must be between 0 and len(src)");
+		ABORT("Error: fst's dst must be between 0 and len(src)");
 	}
 
 	/* realloc str */
@@ -364,7 +364,7 @@ void saturn_lst(Arg *dst, const Arg *src) { //lst
 		ABORT("Error: `lst' takes str and int arguments");
 	}
 	if (ARGVAL(src, INT) < 0 || ARGVAL(src, INT) > strlen(ARGVAL(dst, STR))) {
-		ABORT("Error: dst must be between 0 and len(src)");
+		ABORT("Error: lst's dst must be between 0 and len(src)");
 	}
 	int len = strlen(ARGVAL(dst, STR));
 	int newlen = ARGVAL(src, INT);
