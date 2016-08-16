@@ -1,0 +1,154 @@
+#! /usr/bin/saturn
+; bubblesort.sat - bubblesort a string
+; of 0-9A-Za-z lexicographically (ascii value)
+
+; prototypes ---
+; sort prototype
+load_sort:
+	str sort_input_string
+	str sort_output
+	int sort_input_len
+	str a
+	str b
+	int i
+	int j
+	jmp _load_sort
+
+; swap prototype
+load_swap:
+	str swap_string
+	str swap_after_b
+	str swap_between
+	str swap_output
+	str swap_a
+	str swap_b
+	int swap_i
+	int swap_j
+	int swap_lenaj
+	int swap_lenbetween
+	jmp _load_swap
+
+; main - execution starts at main
+main:
+	; load sort and swap routines
+	jmp load_sort
+	_load_sort:
+	jmp load_swap
+	_load_swap:
+	
+	; input string
+	str input
+
+	; get input string from user
+	out stdout, 'Enter numbers 0-9A-Za-z: '
+	get input, stdin
+
+	; call sort
+	mov sort_input_string, input
+	jmp sort
+	_sort:
+
+	; print result
+	out stdout, '     Original: '
+	out stdout, input
+	out stdout, newline
+	out stdout, 'Sorted string: '
+	out stdout, sort_output
+	out stdout, newline
+	; end program
+	ext 0
+
+; sort - bubblesort a string lexicographically
+; @params sort_input_string - the string to be sorted
+; @return sort_output - the sorted string
+sort:
+	len sort_input_len, sort_input_string
+	dec sort_input_len
+	mov i, 0
+	mov j, 0
+outer_for:
+	cmp i, sort_input_len
+	jge sort_ret
+
+	mov j, i
+
+inner_for:
+	dec j
+	cmp j, sort_input_len
+	jge end_inner
+	inc j
+
+	inc i
+	mov a, sort_input_string
+	fst a, i
+	lst a, 1
+	dec i
+
+	inc j
+	mov b, sort_input_string
+	fst b, j
+	lst b, 1
+	dec j
+
+	cmp a, b
+	jle noswap
+
+	mov swap_i, i
+	mov swap_j, j
+	mov swap_string, sort_input_string
+	jmp swap
+	_swap:
+	mov sort_input_string, swap_output
+	noswap:
+	inc j
+	jmp inner_for
+end_inner:
+	inc i
+	jmp outer_for
+
+sort_ret:
+	mov sort_output, sort_input_string
+	jmp _sort
+
+
+
+; swap
+; swap two characters in a string using
+; their indexes
+; @params swap_string - the input string
+;         swap_i - the first (earliest) index
+;         swap_j - the second (latest) index
+; @return swap_output - the string with the elements
+;         swapped
+swap:
+	len swap_lenaj, swap_string
+	sub swap_lenaj, swap_j
+	mov swap_lenbetween, swap_j
+	sub swap_lenbetween, swap_i
+
+	mov swap_after_b, swap_string
+	lst swap_after_b, swap_lenaj
+	mov swap_b, swap_after_b
+	fst swap_b, 1
+	dec swap_lenaj
+	lst swap_after_b, swap_lenaj
+
+	mov swap_between, swap_string
+	fst swap_between, swap_j
+	lst swap_between, swap_lenbetween
+	mov swap_a, swap_between
+	fst swap_a, 1
+
+	mov swap_between, swap_string
+	fst swap_between, swap_j
+	dec swap_lenbetween
+	lst swap_between, swap_lenbetween
+	mov swap_output, swap_string
+	fst swap_output, swap_i
+
+	cat swap_output, swap_b
+	cat swap_output, swap_between
+	cat swap_output, swap_a
+	cat swap_output, swap_after_b
+
+	jmp _swap
